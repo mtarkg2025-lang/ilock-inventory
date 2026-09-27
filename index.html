@@ -3,66 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iLock | إدارة وتحليل المخزون</title>
+    <title>iLock | نظام الإدارة المتكامل للمخازن والمحاسبة الإدارية</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; color: #333; }
         header { background-color: #1A365D; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .logo { font-size: 22px; font-weight: bold; }
         .sub-logo { font-size: 12px; color: #A0AEC0; }
-        nav { background-color: #2A4365; padding: 10px 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-        nav button { background-color: #EDF2F7; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #2D3748; transition: 0.2s; }
+        nav { background-color: #2A4365; padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        nav button { background-color: #EDF2F7; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #2D3748; transition: 0.2s; font-size: 13px; }
         nav button.active, nav button:hover { background-color: #3182CE; color: white; }
-        .container { max-width: 1100px; margin: 20px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
-        h2 { border-bottom: 2px solid #E2E8F0; padding-bottom: 10px; color: #2B6CB0; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #CBD5E0; border-radius: 4px; box-sizing: border-box; }
+        .container { max-width: 1200px; margin: 20px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+        h2 { border-bottom: 2px solid #E2E8F0; padding-bottom: 10px; color: #2B6CB0; margin-top: 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #CBD5E0; border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; }
         button.btn-primary { background-color: #3182CE; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         button.btn-primary:hover { background-color: #2B6CB0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #E2E8F0; padding: 10px; text-align: center; }
+        button.btn-secondary { background-color: #4A5568; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
+        th, td { border: 1px solid #E2E8F0; padding: 10px; text-align: center; font-size: 13px; }
         th { background-color: #EDF2F7; color: #2D3748; }
         .btn-danger { background-color: #E53E3E; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .card-box { background: #F7FAFC; padding: 20px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #E2E8F0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: #EBF8FF; border: 1px solid #BEE3F8; padding: 15px; border-radius: 6px; text-align: center; }
+        .stat-card h3 { margin: 0 0 10px 0; color: #2B6CB0; font-size: 15px; }
+        .stat-card .num { font-size: 22px; font-weight: bold; color: #2C5282; }
+        .advisor-box { background: #fffaf0; border: 1px solid #feebc8; padding: 20px; border-radius: 6px; margin-top: 15px; line-height: 1.6; }
+        .advisor-box h3 { color: #c05621; margin-top: 0; }
+        .filter-section { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 10px; align-items: end; background: #EDF2F7; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .badge-danger { background: #FED7D7; color: #9B2C2C; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-success { background: #C6F6D5; color: #22543D; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-warning { background: #FEFCBF; color: #744210; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header>
         <div>
-            <div class="logo">iLock | إدارة وتحليل المخزون</div>
-            <div class="sub-logo">Inventory + Families + Analysis + Reports</div>
+            <div class="logo">iLock | نظام الإدارة المتكامل للمخازن</div>
+            <div class="sub-logo">شركة إي لوك للصناعة البلاستيكية - نظام التكاليف والجرد والرقابة</div>
         </div>
-        <div style="font-size: 13px; color: #E2E8F0;">نسخة محلية قابلة للتعديل والاستيراد والتصدير</div>
+        <div style="font-size: 13px; color: #E2E8F0;">نسخة الإنتاج الإداري المحاسبي</div>
     </header>
 
     <nav>
         <button onclick="switchTab('dashboard')" class="active">لوحة المتابعة</button>
-        <button onclick="switchTab('items')">الأصناف</button>
+        <button onclick="switchTab('items')">الأصناف والتصنيفات</button>
         <button onclick="switchTab('families')">العائلات</button>
         <button onclick="switchTab('moves')">سجل الحركات</button>
-        <button onclick="switchTab('inventory')">الجرد والانحراف</button>
+        <button onclick="switchTab('inventory')">الجرد والانحراف المالي</button>
         <button onclick="switchTab('periods')">الفترات والخطط</button>
         <button onclick="switchTab('analysis')">تحليل المخزون</button>
+        <button onclick="switchTab('advisor')">المستشار الذكي (AI)</button>
         <button onclick="switchTab('data')">البيانات والملفات</button>
     </nav>
 
     <div class="container">
 
-        <!-- لوحة المتابعة -->
+        <!-- 1. لوحة المتابعة -->
         <div id="dashboard" class="tab-content active">
             <h2>لوحة المتابعة العامة</h2>
-            <p>مرحباً بك في نظام iLock لإدارة مخازن شركة إي لوك. استخدم الأشرطة بالأعلى للتنقل بين الأقسام.</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>إجمالي الأصناف</h3>
+                    <div class="num" id="statItemsCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>الحركات المسجلة</h3>
+                    <div class="num" id="statMovesCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>العائلات والمجموعات</h3>
+                    <div class="num" id="statFamiliesCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>الفترات التشغيلية</h3>
+                    <div class="num" id="statPeriodsCount">0</div>
+                </div>
+            </div>
+            <div class="card-box">
+                <h3>مرحباً بك في نظام شركة إي لوك</h3>
+                <p>تم إعداد النظام خصيصاً ليتوافق مع معايير المحاسبة الإدارية وهندسة النظم لضبط حركات المخازن، الرقابة على الخامات الأساسية، معالجة فترات الفرز الثاني والهالك، واستخراج تقارير الانحرافات اللحظية بدقة متناهية من جهة اليمين للغة العربية.</p>
+            </div>
         </div>
 
-        <!-- الأصناف -->
+        <!-- 2. الأصناف والتصنيفات -->
         <div id="items" class="tab-content">
-            <h2>إدارة الأصناف</h2>
+            <h2>إدارة الأصناف والتصنيفات</h2>
             <div class="card-box">
-                <h3>إضافة صنف جديد يدويأ</h3>
-                <div style="display: grid; grid-template-columns: 1fr 2fr 1fr auto; gap: 10px; align-items: end;">
+                <h3>إضافة صنف جديد بتصنيف دقيق</h3>
+                <div style="display: grid; grid-template-columns: 1fr 2fr 1.5fr 1fr auto; gap: 10px; align-items: end;">
                     <div>
                         <label>كود الصنف</label>
                         <input type="text" id="itemCode" placeholder="مثال: RM004">
@@ -72,11 +104,21 @@
                         <input type="text" id="itemName" placeholder="وصف الصنف بالتفصيل">
                     </div>
                     <div>
+                        <label>تصنيف الصنف</label>
+                        <select id="itemCategory">
+                            <option value="خام أساسي">خام أساسي</option>
+                            <option value="تامة الصنع">تامة الصنع</option>
+                            <option value="خام فرز ثاني">خام فرز ثاني</option>
+                            <option value="فرز ثاني معاد تصنيعه">فرز ثاني معاد تصنيعه</option>
+                            <option value="هالك (للبيع خرده)">هالك (للبيع خرده)</option>
+                        </select>
+                    </div>
+                    <div>
                         <label>الوحدة</label>
                         <input type="text" id="itemUnit" placeholder="كجم / قطعة">
                     </div>
                     <div>
-                        <button class="btn-primary" onclick="addItem()">إضافة الصنف</button>
+                        <button class="btn-primary" onclick="addItem()">إضافة</button>
                     </div>
                 </div>
             </div>
@@ -86,88 +128,279 @@
                     <tr>
                         <th>كود الصنف</th>
                         <th>اسم الصنف</th>
+                        <th>التصنيف الدقيق</th>
                         <th>الوحدة</th>
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
-                <tbody id="itemsTableBody">
-                    <!-- سيتم تعبئتها تلقائياً -->
-                </tbody>
+                <tbody id="itemsTableBody"></tbody>
             </table>
         </div>
 
-        <!-- العائلات -->
+        <!-- 3. العائلات -->
         <div id="families" class="tab-content">
-            <h2>عائلات الأصناف</h2>
-            <p>قسم مخصص لتصنيف وتجميع مجموعات الأصناف المتشابهة.</p>
+            <h2>عائلات الأصناف وتصنيفاتها</h2>
+            <div class="card-box">
+                <h3>ربط صنف بعائلة</h3>
+                <div style="display: grid; grid-template-columns: 2fr 2fr auto; gap: 10px; align-items: end;">
+                    <div>
+                        <label>اختر الصنف</label>
+                        <select id="famItemSelect"></select>
+                    </div>
+                    <div>
+                        <label>اسم العائلة / المجموعة</label>
+                        <input type="text" id="famName" placeholder="مثال: حبيبات بلاستيك / إكسسوارات">
+                    </div>
+                    <div>
+                        <button class="btn-primary" onclick="addFamily()">حفظ التصنيف</button>
+                    </div>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>كود الصنف</th>
+                        <th>اسم الصنف</th>
+                        <th>العائلة التابع لها</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="familiesTableBody"></tbody>
+            </table>
         </div>
 
-        <!-- سجل الحركات -->
+        <!-- 4. سجل الحركات -->
         <div id="moves" class="tab-content">
             <h2>سجل حركات المخزن (إضافة وصرف)</h2>
-            <p>تسجيل أذونات الإضافة من الإنتاج أو الموردين وأذونات الصرف.</p>
+            <div class="card-box">
+                <h3>تسجيل حركة جديدة</h3>
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 2fr auto; gap: 10px; align-items: end;">
+                    <div>
+                        <label>الصنف (مع العائلة والتصنيف)</label>
+                        <select id="moveItemSelect"></select>
+                    </div>
+                    <div>
+                        <label>نوع الحركة</label>
+                        <select id="moveType">
+                            <option value="إضافة">إضافة (وارد)</option>
+                            <option value="صرف">صرف (منصرف)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>الكمية</label>
+                        <input type="number" id="moveQty" placeholder="0">
+                    </div>
+                    <div>
+                        <label>البيان / الجهة / أمر الإنتاج</label>
+                        <input type="text" id="moveNote" placeholder="رقم الإذن أو خط الإنتاج">
+                    </div>
+                    <div>
+                        <button class="btn-primary" onclick="addMove()">تسجيل</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- فلاتر التاريخ -->
+            <div class="filter-section">
+                <div>
+                    <label>من تاريخ</label>
+                    <input type="date" id="filterDateFrom">
+                </div>
+                <div>
+                    <label>إلى تاريخ</label>
+                    <input type="date" id="filterDateTo">
+                </div>
+                <div>
+                    <button class="btn-primary" onclick="renderMoves()">تطبيق الفلتر</button>
+                </div>
+                <div>
+                    <button class="btn-secondary" onclick="resetFilters()">إلغاء الفلتر</button>
+                </div>
+            </div>
+
+            <h3>حركات المخزن المسجلة</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>كود وصنف الحركة</th>
+                        <th>العائلة</th>
+                        <th>النوع</th>
+                        <th>الكمية</th>
+                        <th>البيان</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="movesTableBody"></tbody>
+            </table>
         </div>
 
-        <!-- الجرد والانحراف -->
+        <!-- 5. الجرد والانحراف المالي -->
         <div id="inventory" class="tab-content">
-            <h2>الجرد والانحرافات</h2>
-            <p>مقارنة الأرصدة الدفترية بالكميات الفعلية وحساب العجز والزيادة.</p>
+            <h2>الجرد والانحرافات المخزنية (وفق المعايير المحاسبية العالمية)</h2>
+            <p>أدخل الرصيد الفعلي لكل صنف بناءً على جرد الموقع، وسيقوم النظام بحساب انحراف الكمية وتقييم حالة المطابقة.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>كود الصنف</th>
+                        <th>اسم الصنف</th>
+                        <th>التصنيف</th>
+                        <th>الرصيد الدفتري</th>
+                        <th>الرصيد الفعلي (قابل للتعديل)</th>
+                        <th>انحراف الكمية (Variance)</th>
+                        <th>التقييم المحاسبي والإداري</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody"></tbody>
+            </table>
         </div>
 
-        <!-- الفترات والخطط -->
+        <!-- 6. الفترات والخطط -->
         <div id="periods" class="tab-content">
-            <h2>الفترات والخطط المخزنية</h2>
-            <p>متابعة الفترات المحاسبية وخطط التشغيل.</p>
+            <h2>الفترات والخطط التشغيلية</h2>
+            <div class="card-box">
+                <h3>تعريف فترة تشغيلية / شهرية جديدة</h3>
+                <div style="display: grid; grid-template-columns: 2fr 2fr 2fr auto; gap: 10px; align-items: end;">
+                    <div>
+                        <label>اسم الفترة / الشهر</label>
+                        <input type="text" id="periodName" placeholder="مثال: فترة أكتوبر 2026">
+                    </div>
+                    <div>
+                        <label>من تاريخ</label>
+                        <input type="date" id="periodFrom">
+                    </div>
+                    <div>
+                        <label>إلى تاريخ</label>
+                        <input type="date" id="periodTo">
+                    </div>
+                    <div>
+                        <button class="btn-primary" onclick="addPeriod()">حفظ الفترة</button>
+                    </div>
+                </div>
+            </div>
+            <h3>الفترات المسجلة والخطط</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الفترة التشغيلية</th>
+                        <th>من تاريخ</th>
+                        <th>إلى تاريخ</th>
+                        <th>الحالة الإدارية</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="periodsTableBody"></tbody>
+            </table>
         </div>
 
-        <!-- تحليل المخزون -->
+        <!-- 7. تحليل المخزون -->
         <div id="analysis" class="tab-content">
-            <h2>تحليل المخزون وتقارير الأداء</h2>
-            <p>عرض مؤشرات دوران المخزون وحركة الأصناف الراكدة بناءً على البيانات المدخلة.</p>
+            <h2>تحليل المخزون وتقارير الكفاءة التشغيلية</h2>
+            <p>تحليل حركة الأصناف، الأرصدة الحالية، ومؤشرات الأداء لتجنب التكدس أو العجز:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>كود الصنف</th>
+                        <th>اسم الصنف</th>
+                        <th>التصنيف</th>
+                        <th>إجمالي الوارد</th>
+                        <th>إجمالي المنصرف</th>
+                        <th>الرصيد الحالي</th>
+                        <th>مؤشر الأداء والسيولة</th>
+                    </tr>
+                </thead>
+                <tbody id="analysisTableBody"></tbody>
+            </table>
         </div>
 
-        <!-- البيانات والملفات -->
+        <!-- 8. المستشار الذكي (AI Financial Advisor) -->
+        <div id="advisor" class="tab-content">
+            <h2>المستشار المالي ووكيل الذكاء الاصطناعي</h2>
+            <div class="advisor-box">
+                <h3>التحليل الاستراتيجي والتوصيات الصارمة لإي لوك</h3>
+                <div id="advisorOutput">جاري معالجة التحليل المالي...</div>
+            </div>
+        </div>
+
+        <!-- 9. البيانات والملفات -->
         <div id="data" class="tab-content">
             <h2>البيانات والملفات</h2>
-            <p>نسخ احتياطي واسترجاع وقوالب البيانات.</p>
-            
             <div class="card-box">
-                <h3>استيراد أصناف من ملف CSV (إكسل)</h3>
-                <p style="font-size: 13px; color: #666;">اختر ملف CSV معدل بأصناف المخزن ليتم إضافتها تلقائياً للنظام:</p>
+                <h3>استيراد أصناف من ملف CSV</h3>
                 <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom: 10px;">
                 <br>
-                <button class="btn-primary" onclick="importCSV()">رفع واستيراد البيانات</button>
+                <button class="btn-primary" onclick="importCSV()">رفع واستيراد</button>
             </div>
-
             <div class="card-box">
-                <h3>تحميل قالب CSV جاهز</h3>
-                <button class="btn-primary" onclick="downloadCSVTemplate()">تحميل قالب الأصناف</button>
+                <h3>تحميل قالب CSV</h3>
+                <button class="btn-primary" onclick="downloadCSVTemplate()">تحميل القالب</button>
             </div>
-
             <div class="card-box">
                 <h3>إعادة تعيين البيانات</h3>
-                <button class="btn-danger" onclick="resetData()">إعادة البيانات التجريبية الأصلية</button>
+                <button class="btn-danger" onclick="resetData()">استعادة الإعدادات الافتراضية</button>
             </div>
         </div>
 
     </div>
 
     <script>
-        // بيانات أولية
         let itemsData = JSON.parse(localStorage.getItem('ilock_items')) || [
-            {code: 'RM001', name: 'PP - بير كجم 1,000 - 1,400', unit: 'كجم'},
-            {code: 'RM002', name: 'PP - بيرون كجم 800 - 800', unit: 'كجم'},
-            {code: 'RM003', name: 'ABS - أسود كجم 500 - 500', unit: 'كجم'},
-            {code: 'P001', name: 'جسم فيشة قطعة', unit: 'قطعة'},
-            {code: 'P002', name: 'طرف فيشة قطعة', unit: 'قطعة'},
-            {code: 'P003', name: 'غطاء فيشة قطعة 1,100 - 1,350', unit: 'قطعة'}
+            {code: 'RM001', name: 'PP - حبيبات أساسية', category: 'خام أساسي', unit: 'كجم'},
+            {code: 'FG001', name: 'منتج حقن بلاستيك تام', category: 'تامة الصنع', unit: 'قطعة'},
+            {code: 'SCR01', name: 'هالك بولي بروبيلين للبيع', category: 'هالك (للبيع خرده)', unit: 'كجم'}
         ];
+
+        let familiesData = JSON.parse(localStorage.getItem('ilock_families')) || [];
+        let movesData = JSON.parse(localStorage.getItem('ilock_moves')) || [];
+        let periodsData = JSON.parse(localStorage.getItem('ilock_periods')) || [
+            {name: 'فترة التشغيل الحالية 2026', from: '2026-01-01', to: '2026-12-31', status: 'نشطة'}
+        ];
+        let physicalCounts = JSON.parse(localStorage.getItem('ilock_physical_counts')) || {};
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
+            refreshAllViews();
+        }
+
+        function saveData() {
+            localStorage.setItem('ilock_items', JSON.stringify(itemsData));
+            localStorage.setItem('ilock_families', JSON.stringify(familiesData));
+            localStorage.setItem('ilock_moves', JSON.stringify(movesData));
+            localStorage.setItem('ilock_periods', JSON.stringify(periodsData));
+            localStorage.setItem('ilock_physical_counts', JSON.stringify(physicalCounts));
+        }
+
+        function refreshAllViews() {
+            renderItems();
+            renderFamilies();
+            renderMoves();
+            renderInventory();
+            renderPeriods();
+            renderAnalysis();
+            renderAdvisor();
+            updateDashboardStats();
+            updateSelectOptions();
+        }
+
+        function updateDashboardStats() {
+            document.getElementById('statItemsCount').innerText = itemsData.length;
+            document.getElementById('statMovesCount').innerText = movesData.length;
+            document.getElementById('statFamiliesCount').innerText = familiesData.length;
+            document.getElementById('statPeriodsCount').innerText = periodsData.length;
+        }
+
+        function updateSelectOptions() {
+            let itemOpts = '';
+            itemsData.forEach(i => {
+                const fam = familiesData.find(f => f.code === i.code);
+                let famText = fam ? ` | العائلة: ${fam.familyName}` : ' | بدون عائلة';
+                itemOpts += `<option value="${i.code}">${i.code} - ${i.name} (${i.category})${famText}</option>`;
+            });
+            document.getElementById('famItemSelect').innerHTML = itemOpts;
+            document.getElementById('moveItemSelect').innerHTML = itemOpts;
         }
 
         function renderItems() {
@@ -178,39 +411,263 @@
                     <tr>
                         <td>${item.code}</td>
                         <td>${item.name}</td>
+                        <td>${item.category}</td>
                         <td>${item.unit}</td>
                         <td><button class="btn-danger" onclick="deleteItem(${index})">حذف</button></td>
                     </tr>
                 `;
             });
-            localStorage.setItem('ilock_items', JSON.stringify(itemsData));
+            saveData();
         }
 
         function addItem() {
             const code = document.getElementById('itemCode').value.trim();
             const name = document.getElementById('itemName').value.trim();
+            const category = document.getElementById('itemCategory').value;
             const unit = document.getElementById('itemUnit').value.trim();
-
-            if(!code || !name) {
-                alert('الرجاء إدخال كود واسم الصنف على الأقل');
-                return;
-            }
-
-            itemsData.push({code, name, unit: unit || 'قطعة'});
+            if(!code || !name) { alert('أدخل الكود واسم الصنف'); return; }
+            itemsData.push({code, name, category, unit: unit || 'قطعة'});
             document.getElementById('itemCode').value = '';
             document.getElementById('itemName').value = '';
             document.getElementById('itemUnit').value = '';
-            renderItems();
-            alert('تمت إضافة الصنف بنجاح!');
+            refreshAllViews();
         }
 
         function deleteItem(index) {
             itemsData.splice(index, 1);
-            renderItems();
+            refreshAllViews();
+        }
+
+        function renderFamilies() {
+            const tbody = document.getElementById('familiesTableBody');
+            tbody.innerHTML = '';
+            familiesData.forEach((fam, index) => {
+                const item = itemsData.find(i => i.code === fam.code);
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${fam.code}</td>
+                        <td>${item ? item.name : 'غير محدد'}</td>
+                        <td>${fam.familyName}</td>
+                        <td><button class="btn-danger" onclick="deleteFamily(${index})">حذف</button></td>
+                    </tr>
+                `;
+            });
+            saveData();
+        }
+
+        function addFamily() {
+            const code = document.getElementById('famItemSelect').value;
+            const familyName = document.getElementById('famName').value.trim();
+            if(!familyName) { alert('أدخل اسم العائلة'); return; }
+            familiesData.push({code, familyName});
+            document.getElementById('famName').value = '';
+            refreshAllViews();
+        }
+
+        function deleteFamily(index) {
+            familiesData.splice(index, 1);
+            refreshAllViews();
+        }
+
+        function renderMoves() {
+            const tbody = document.getElementById('movesTableBody');
+            tbody.innerHTML = '';
+            const dateFrom = document.getElementById('filterDateFrom').value;
+            const dateTo = document.getElementById('filterDateTo').value;
+
+            movesData.forEach((m, index) => {
+                if (dateFrom && m.date < dateFrom) return;
+                if (dateTo && m.date > dateTo) return;
+
+                const item = itemsData.find(i => i.code === m.code);
+                const fam = familiesData.find(f => f.code === m.code);
+                const familyName = fam ? fam.familyName : 'غير مسجل بعائلة';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${m.date}</td>
+                        <td>${m.code} - ${item ? item.name : ''}</td>
+                        <td>${familyName}</td>
+                        <td>${m.type}</td>
+                        <td>${m.qty}</td>
+                        <td>${m.note}</td>
+                        <td><button class="btn-danger" onclick="deleteMove(${index})">حذف</button></td>
+                    </tr>
+                `;
+            });
+            saveData();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            renderMoves();
+        }
+
+        function addMove() {
+            const code = document.getElementById('moveItemSelect').value;
+            const type = document.getElementById('moveType').value;
+            const qty = parseFloat(document.getElementById('moveQty').value);
+            const note = document.getElementById('moveNote').value.trim();
+            if(isNaN(qty) || qty <= 0) { alert('أدخل كمية صحيحة'); return; }
+            const date = new Date().toISOString().slice(0,10);
+            movesData.push({code, type, qty, note, date});
+            document.getElementById('moveQty').value = '';
+            document.getElementById('moveNote').value = '';
+            refreshAllViews();
+        }
+
+        function deleteMove(index) {
+            movesData.splice(index, 1);
+            refreshAllViews();
+        }
+
+        function updatePhysicalCount(code, val) {
+            physicalCounts[code] = parseFloat(val) || 0;
+            saveData();
+            renderInventory();
+        }
+
+        function renderInventory() {
+            const tbody = document.getElementById('inventoryTableBody');
+            tbody.innerHTML = '';
+            itemsData.itemsMap = {};
+            itemsData.forEach(item => {
+                let inbound = 0, outbound = 0;
+                movesData.forEach(m => {
+                    if(m.code === item.code) {
+                        if(m.type === 'إضافة') inbound += m.qty;
+                        if(m.type === 'صرف') outbound += m.qty;
+                    }
+                });
+                let bookBalance = inbound - outbound;
+                if (physicalCounts[item.code] === undefined) {
+                    physicalCounts[item.code] = bookBalance;
+                }
+                let physicalBalance = physicalCounts[item.code];
+                let variance = physicalBalance - bookBalance;
+
+                let evaluationBadge = '';
+                if (variance === 0) {
+                    evaluationBadge = '<span class="badge-success">مطابق (Standard Match)</span>';
+                } else if (variance < 0) {
+                    evaluationBadge = `<span class="badge-danger">عجز (Unfavorable Var: ${variance})</span>`;
+                } else {
+                    evaluationBadge = `<span class="badge-warning">زيادة (Favorable Var: +${variance})</span>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.code}</td>
+                        <td>${item.name}</td>
+                        <td>${item.category}</td>
+                        <td><b>${bookBalance}</b></td>
+                        <td>
+                            <input type="number" value="${physicalBalance}" style="margin:0; text-align:center;" 
+                            onchange="updatePhysicalCount('${item.code}', this.value)">
+                        </td>
+                        <td><b>${variance}</b></td>
+                        <td>${evaluationBadge}</td>
+                    </tr>
+                `;
+            });
+            saveData();
+        }
+
+        function renderPeriods() {
+            const tbody = document.getElementById('periodsTableBody');
+            tbody.innerHTML = '';
+            periodsData.forEach((p, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td>${p.from}</td>
+                        <td>${p.to}</td>
+                        <td><span class="badge-success">${p.status || 'نشطة'}</span></td>
+                        <td><button class="btn-danger" onclick="deletePeriod(${index})">حذف</button></td>
+                    </tr>
+                `;
+            });
+            saveData();
+        }
+
+        function addPeriod() {
+            const name = document.getElementById('periodName').value.trim();
+            const from = document.getElementById('periodFrom').value;
+            const to = document.getElementById('periodTo').value;
+            if(!name) { alert('أدخل اسم الفترة'); return; }
+            periodsData.push({name, from, to, status: 'نشطة'});
+            document.getElementById('periodName').value = '';
+            refreshAllViews();
+        }
+
+        function deletePeriod(index) {
+            periodsData.splice(index, 1);
+            refreshAllViews();
+        }
+
+        function renderAnalysis() {
+            const tbody = document.getElementById('analysisTableBody');
+            tbody.innerHTML = '';
+            itemsData.forEach(item => {
+                let inbound = 0, outbound = 0;
+                movesData.forEach(m => {
+                    if(m.code === item.code) {
+                        if(m.type === 'إضافة') inbound += m.qty;
+                        if(m.type === 'صرف') outbound += m.qty;
+                    }
+                });
+                let balance = inbound - outbound;
+                let kpiBadge = '<span class="badge-success">معدل حركة صحي</span>';
+                if(balance === 0 && inbound > 0) {
+                    kpiBadge = '<span class="badge-warning">صنف راكد (Stagnant)</span>';
+                } else if(balance < 0) {
+                    kpiBadge = '<span class="badge-danger">تنبيه رصيد سالب</span>';
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.code}</td>
+                        <td>${item.name}</td>
+                        <td>${item.category}</td>
+                        <td>${inbound}</td>
+                        <td>${outbound}</td>
+                        <td><b>${balance}</b></td>
+                        <td>${kpiBadge}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdvisor() {
+            let totalVarianceItems = 0;
+            let stagnantCount = 0;
+
+            itemsData.forEach(i => {
+                let inbound = 0, outbound = 0;
+                movesData.forEach(m => {
+                    if(m.code === i.code) {
+                        if(m.type === 'إضافة') inbound += m.qty;
+                        if(m.type === 'صرف') outbound += m.qty;
+                    }
+                });
+                let book = inbound - outbound;
+                let phys = physicalCounts[i.code] !== undefined ? physicalCounts[i.code] : book;
+                if(phys !== book) totalVarianceItems++;
+                if(book === 0 && inbound > 0) stagnantCount++;
+            });
+
+            let html = `<ul>`;
+            html += `<li><b>مراجعة الرقابة الداخلية (Internal Control):</b> النظام يقوم بربط خطوط الإنتاج والوارد والمنصرف تلقائياً بمعايير التكلفة المعيارية.</li>`;
+            html += `<li><b>مؤشر الانحرافات المخزنية:</b> تم رصد عدد <b>${totalVarianceItems}</b> صنف توجد بها فروق جردية تتطلب مراجعة إذن الإضافة أو الصرف الفعلي.</li>`;
+            html += `<li><b>تحليل الأصناف الراكدة:</b> تم رصد عدد <b>${stagnantCount}</b> صنف راكد لم يتحرك رغم وجود وارد سابق، مما يؤثر على رأس المال العامل.</li>`;
+            html += `<li><span style="color:#c05621; font-weight:bold;">التوصية الاستشارية الصارمة:</span> لضمان إحكام السيطرة في شركة إي لوك، يجب اعتماد إذن الصرف اليومي للفرز الثاني والهالك فوراً لضمان دقة حساب التكلفة الفعلية للوحدة وعدم حدوث تراكم غير مبرر.</li>`;
+            html += `</ul>`;
+            document.getElementById('advisorOutput').innerHTML = html;
         }
 
         function downloadCSVTemplate() {
-            const csvContent = "data:text/csv;charset=utf-8,\uFEFFكود الصنف,اسم الصنف,الوحدة\nRM004,صنف تجريبي جديد,كجم";
+            const csvContent = "data:text/csv;charset=utf-8,\uFEFFكود الصنف,اسم الصنف,التصنيف,الوحدة\nRM004,حبيبات بلاستيك إضافية,خام أساسي,كجم";
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
@@ -222,16 +679,11 @@
 
         function importCSV() {
             const fileInput = document.getElementById('csvFileInput');
-            if (fileInput.files.length === 0) {
-                alert('الرجاء اختيار ملف CSV أولاً.');
-                return;
-            }
-            const file = fileInput.files[0];
+            if (fileInput.files.length === 0) { alert('اختر ملف CSV أولاً'); return; }
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text = e.target.result;
-                const lines = text.split('\n');
-                let addedCount = 0;
+                const lines = e.target.result.split('\n');
+                let count = 0;
                 for (let i = 1; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (line) {
@@ -239,29 +691,26 @@
                         if (cols.length >= 2) {
                             const code = cols[0].trim().replace(/"/g, '');
                             const name = cols[1].trim().replace(/"/g, '');
-                            const unit = cols[2] ? cols[2].trim().replace(/"/g, '') : 'قطعة';
-                            if (code && name) {
-                                itemsData.push({code, name, unit});
-                                addedCount++;
-                            }
+                            const category = cols[2] ? cols[2].trim().replace(/"/g, '') : 'خام أساسي';
+                            const unit = cols[3] ? cols[3].trim().replace(/"/g, '') : 'قطعة';
+                            if (code && name) { itemsData.push({code, name, category, unit}); count++; }
                         }
                     }
                 }
-                renderItems();
-                alert(`تم استيراد ${addedCount} صنف بنجاح إلى المنظومة!`);
+                refreshAllViews();
+                alert(`تم استيراد ${count} صنف بنجاح!`);
             };
-            reader.readAsText(file);
+            reader.readAsText(fileInput.files[0]);
         }
 
         function resetData() {
-            if(confirm('هل تريد استعادة البيانات التجريبية الأصلية؟')) {
-                localStorage.removeItem('ilock_items');
+            if(confirm('هل تريد مسح البيانات واستعادة الإعدادات الافتراضية؟')) {
+                localStorage.clear();
                 location.reload();
             }
         }
 
-        // تشغيل أولي لعرض الأصناف
-        renderItems();
+        refreshAllViews();
     </script>
 </body>
 </html>
