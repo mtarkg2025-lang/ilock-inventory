@@ -38,7 +38,6 @@
         
         .advisor-box { background: #fffaf0; border: 1px solid #feebc8; padding: 15px; border-radius: 6px; margin-top: 15px; line-height: 1.6; font-size: 13px; }
         .advisor-box h3 { color: #c05621; margin-top: 0; }
-        .badge-danger { background: #FED7D7; color: #9B2C2C; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
         .badge-success { background: #C6F6D5; color: #22543D; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
     </style>
 </head>
@@ -54,7 +53,7 @@
 
     <nav>
         <button onclick="switchTab('landing')" class="active">الواجهة الرئيسية</button>
-        <button onclick="switchTab('items')">الأصناف والحد الأدنى</button>
+        <button onclick="switchTab('items')">الأصناف ورصيد أول المدة</button>
         <button onclick="switchTab('production')">أوامر الإنتاج (BOM)</button>
         <button onclick="switchTab('moves')">سجل الحركات والتكلفة</button>
         <button onclick="switchTab('inventory')">الجرد المؤرخ والانحراف</button>
@@ -95,12 +94,12 @@
             </div>
         </div>
 
-        <!-- 1. الأصناف -->
+        <!-- 1. الأصناف ورصيد أول المدة -->
         <div id="items" class="tab-content">
-            <h2>إدارة الأصناف ومعايير حد إعادة الطلب (Reorder Point)</h2>
+            <h2>إدارة الأصناف، رصيد أول المدة، ومعايير حد إعادة الطلب</h2>
             <div class="card-box">
-                <h3>تسجيل صنف جديد</h3>
-                <div style="display: grid; grid-template-columns: 1fr 2fr 1.2fr 0.8fr 1fr auto; gap: 10px; align-items: end;">
+                <h3>تسجيل صنف جديد وتحديد رصيد أول المدة وتكوسته</h3>
+                <div style="display: grid; grid-template-columns: 1fr 2fr 1.2fr 0.8fr 1fr 1fr 1fr auto; gap: 8px; align-items: end;">
                     <div><label>كود الصنف</label><input type="text" id="itemCode" placeholder="RM001"></div>
                     <div><label>اسم الصنف</label><input type="text" id="itemName" placeholder="حبيبات بولي بروبيلين"></div>
                     <div>
@@ -113,13 +112,15 @@
                         </select>
                     </div>
                     <div><label>الوحدة</label><input type="text" id="itemUnit" placeholder="كجم"></div>
+                    <div><label>رصيد أول المدة</label><input type="number" id="itemOpeningQty" placeholder="0"></div>
+                    <div><label>تكلفة الوحدة (ج.م)</label><input type="number" id="itemOpeningCost" placeholder="0.00"></div>
                     <div><label>حد الطلب (Min)</label><input type="number" id="itemMinQty" placeholder="500"></div>
                     <div><button class="btn-primary" onclick="addItem()">إضافة</button></div>
                 </div>
             </div>
             <table>
                 <thead>
-                    <tr><th>الكود</th><th>اسم الصنف</th><th>التصنيف</th><th>الوحدة</th><th>حد الطلب الآمن</th><th>إجراء</th></tr>
+                    <tr><th>الكود</th><th>اسم الصنف</th><th>التصنيف</th><th>الوحدة</th><th>رصيد أول المدة</th><th>تكلفة الوحدة الافتتاحية</th><th>حد الطلب الآمن</th><th>إجراء</th></tr>
                 </thead>
                 <tbody id="itemsTableBody"></tbody>
             </table>
@@ -148,16 +149,15 @@
 
         <!-- 3. الحركات -->
         <div id="moves" class="tab-content">
-            <h2>سجل الحركات المخزنية (رصيد افتتاحي، وارد، صرف، مرتجع مورد)</h2>
+            <h2>سجل الحركات المخزنية التشغيلية (وارد شراء، صرف للإنتاج، مرتجع مورد)</h2>
             <div class="card-box">
                 <h3>إذن حركة مخزنية جديدة</h3>
-                <div style="display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr 1.2fr 1.2fr auto; gap: 6px; align-items: end;">
+                <div style="display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1.2fr 1.2fr 1.2fr auto; gap: 6px; align-items: end;">
                     <div><label>تاريخ الحركة</label><input type="date" id="moveDate"></div>
                     <div><label>الصنف</label><select id="moveItemSelect"></select></div>
                     <div>
                         <label>نوع الحركة</label>
                         <select id="moveType" onchange="toggleMoveFields()">
-                            <option value="رصيد افتتاحي">رصيد افتتاحي</option>
                             <option value="إضافة">إضافة (وارد شراء)</option>
                             <option value="صرف">صرف (للإنتاج)</option>
                             <option value="مرتجع مورد">مرتجع مورد</option>
@@ -183,12 +183,13 @@
         <div id="inventory" class="tab-content">
             <h2>الجرد الفعلي المؤرخ وتقييم فروق العجز والزيادة</h2>
             <div class="card-box">
-                <div style="display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 10px; align-items: end;">
+                <h3>تثبيت بيانات لجنة وجلسة الجرد</h3>
+                <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 10px; align-items: end;">
                     <div><label>تاريخ الجرد الفعلي</label><input type="date" id="inventoryDate"></div>
                     <div><label>لجنة الجرد / ملاحظات</label><input type="text" id="inventoryCommittee" placeholder="لجنة الجرد الشهري"></div>
-                    <div><button class="btn-primary" onclick="saveInventorySessionDate()">تثبيت تاريخ الجرد</button></div>
+                    <div><button class="btn-primary" onclick="saveInventorySessionDate()">تثبيت التاريخ واللجنة</button></div>
                 </div>
-                <p style="margin-top: 10px; font-size: 12px; color: #4A5568;">تاريخ الجرد المُعتمد حالياً: <b id="displayInvDate">-</b> | اللجنة: <b id="displayInvComm">-</b></p>
+                <p style="margin-top: 10px; font-size: 12px; color: #4A5568;">تاريخ الجرد المُعتمد: <b id="displayInvDate">-</b> | لجنة الجرد: <b id="displayInvComm">-</b></p>
             </div>
             <table>
                 <thead>
@@ -202,11 +203,11 @@
         <div id="costAnalysis" class="tab-content">
             <h2>نموذج تحليل التكاليف ورأس المال العامل (محاسبة التكاليف والإدارية)</h2>
             <div class="card-box">
-                <p>يوضح هذا الجدول تقييم الأرصدة الحالية للمخزون باستخدام طريقة <b>متوسط التكلفة المرجح (Weighted Average Cost)</b> متضمنةً الرصيد الافتتاحي وحركات الوارد والصرف والمرتجعات.</p>
+                <p>يوضح هذا الجدول تقييم الأرصدة الحالية للمخزون باستخدام طريقة <b>متوسط التكلفة المرجح (Weighted Average Cost)</b> متضمنةً رصيد أول المدة الثابت وحركات الوارد والصرف والمرتجعات.</p>
             </div>
             <table>
                 <thead>
-                    <tr><th>الكود</th><th>الصنف</th><th>التصنيف</th><th>إجمالي الوارد/الافتتاحي</th><th>إجمالي المنصرف/المرتجع</th><th>الرصيد الحالي</th><th>متوسط تكلفة الوحدة</th><th>إجمالي قيمة المخزون (الأصل المتداول)</th></tr>
+                    <tr><th>الكود</th><th>الصنف</th><th>التصنيف</th><th>رصيد أول المدة</th><th>إجمالي الوارد</th><th>إجمالي المنصرف/المرتجع</th><th>الرصيد الحالي</th><th>متوسط تكلفة الوحدة</th><th>إجمالي قيمة المخزون</th></tr>
                 </thead>
                 <tbody id="costAnalysisTableBody"></tbody>
             </table>
@@ -241,13 +242,24 @@
         }, 1000);
 
         let itemsData = JSON.parse(localStorage.getItem('ilock_items')) || [
-            {code: 'RM001', name: 'حبيبات بولي بروبيلين PP', category: 'خام أساسي', unit: 'كجم', minQty: 1000},
-            {code: 'FG001', name: 'فيشة كهرباء بلاستيك تام', category: 'تامة الصنع', unit: 'قطعة', minQty: 200}
+            {code: 'RM001', name: 'حبيبات بولي بروبيلين PP', category: 'خام أساسي', unit: 'كجم', openingQty: 5000, openingCost: 25.00, minQty: 1000},
+            {code: 'FG001', name: 'فيشة كهرباء بلاستيك تام', category: 'تامة الصنع', unit: 'قطعة', openingQty: 400, openingCost: 45.00, minQty: 200}
         ];
         let productionOrders = JSON.parse(localStorage.getItem('ilock_prod_orders')) || [];
         let movesData = JSON.parse(localStorage.getItem('ilock_moves')) || [];
         let physicalCounts = JSON.parse(localStorage.getItem('ilock_physical_counts')) || {};
         let inventoryMeta = JSON.parse(localStorage.getItem('ilock_inv_meta')) || {date: new Date().toISOString().split('T')[0], committee: 'لجنة جرد الموقع'};
+
+        // التأكد من صحة هيكل بيانات الأصناف ووجود خانات أول المدة
+        itemsData = itemsData.map(i => ({
+            code: i.code || '',
+            name: i.name || '',
+            category: i.category || 'خام أساسي',
+            unit: i.unit || 'قطعة',
+            openingQty: i.openingQty !== undefined ? Number(i.openingQty) : 0,
+            openingCost: i.openingCost !== undefined ? Number(i.openingCost) : 0,
+            minQty: i.minQty !== undefined ? Number(i.minQty) : 0
+        }));
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -278,14 +290,18 @@
             updateSelectOptions();
             document.getElementById('displayInvDate').innerText = inventoryMeta.date;
             document.getElementById('displayInvComm').innerText = inventoryMeta.committee;
+            document.getElementById('inventoryDate').value = inventoryMeta.date;
+            document.getElementById('inventoryCommittee').value = inventoryMeta.committee;
         }
 
-        // حساب متوسط التكلفة المرجح: يشمل الرصيد الافتتاحي وحركات الإضافة ويخصم منها المرتجعات
         function getItemAvgCost(code) {
-            let totalCost = 0, totalQty = 0;
+            let item = itemsData.find(i => i.code === code);
+            let totalCost = item ? (item.openingQty * item.openingCost) : 0;
+            let totalQty = item ? item.openingQty : 0;
+
             movesData.forEach(m => {
                 if(m.code === code) {
-                    if(m.type === 'رصيد افتتاحي' || m.type === 'إضافة') {
+                    if(m.type === 'إضافة') {
                         totalCost += (m.qty * (m.unitCost || 0));
                         totalQty += m.qty;
                     } else if(m.type === 'مرتجع مورد') {
@@ -294,19 +310,22 @@
                     }
                 }
             });
-            return totalQty > 0 ? (totalCost / totalQty) : 0;
+            return totalQty > 0 ? (totalCost / totalQty) : (item ? item.openingCost : 0);
         }
 
-        // حساب الأرصدة (وارد/افتتاحي ناقص منصرف/مرتجع)
         function getItemBalances(code) {
-            let inbound = 0, outbound = 0;
+            let item = itemsData.find(i => i.code === code);
+            let opening = item ? item.openingQty : 0;
+            let inbound = opening;
+            let outbound = 0;
+
             movesData.forEach(m => {
                 if(m.code === code) {
-                    if(m.type === 'رصيد افتتاحي' || m.type === 'إضافة') inbound += m.qty;
+                    if(m.type === 'إضافة') inbound += m.qty;
                     if(m.type === 'صرف' || m.type === 'مرتجع مورد') outbound += m.qty;
                 }
             });
-            return { inbound, outbound, balance: inbound - outbound };
+            return { opening, inbound: inbound - opening, outbound, balance: inbound - outbound };
         }
 
         function renderLandingStats() {
@@ -352,7 +371,7 @@
         function toggleMoveFields() {
             const type = document.getElementById('moveType').value;
             document.getElementById('divSupplier').style.display = (type === 'إضافة' || type === 'مرتجع مورد') ? 'block' : 'none';
-            document.getElementById('divCost').style.display = (type === 'رصيد افتتاحي' || type === 'إضافة' || type === 'مرتجع مورد') ? 'block' : 'none';
+            document.getElementById('divCost').style.display = (type === 'إضافة' || type === 'مرتجع مورد') ? 'block' : 'none';
             document.getElementById('divCenter').style.display = type === 'صرف' ? 'block' : 'none';
         }
 
@@ -360,7 +379,16 @@
             const tbody = document.getElementById('itemsTableBody');
             tbody.innerHTML = '';
             itemsData.forEach((item, index) => {
-                tbody.innerHTML += `<tr><td>${item.code}</td><td>${item.name}</td><td>${item.category}</td><td>${item.unit}</td><td><b>${item.minQty || 0}</b></td><td><button class="btn-danger" onclick="deleteItem(${index})">حذف</button></td></tr>`;
+                tbody.innerHTML += `<tr>
+                    <td>${item.code}</td>
+                    <td>${item.name}</td>
+                    <td>${item.category}</td>
+                    <td>${item.unit}</td>
+                    <td><b>${item.openingQty}</b></td>
+                    <td>${item.openingCost.toFixed(2)} ج.م</td>
+                    <td><b>${item.minQty}</b></td>
+                    <td><button class="btn-danger" onclick="deleteItem(${index})">حذف</button></td>
+                </tr>`;
             });
             saveData();
         }
@@ -370,9 +398,12 @@
             const name = document.getElementById('itemName').value.trim();
             const category = document.getElementById('itemCategory').value;
             const unit = document.getElementById('itemUnit').value.trim();
+            const openingQty = parseFloat(document.getElementById('itemOpeningQty').value) || 0;
+            const openingCost = parseFloat(document.getElementById('itemOpeningCost').value) || 0;
             const minQty = parseFloat(document.getElementById('itemMinQty').value) || 0;
+
             if(!code || !name) { alert('أدخل الكود واسم الصنف'); return; }
-            itemsData.push({code, name, category, unit: unit || 'قطعة', minQty});
+            itemsData.push({code, name, category, unit: unit || 'قطعة', openingQty, openingCost, minQty});
             refreshAllViews();
         }
 
@@ -405,7 +436,7 @@
             tbody.innerHTML = '';
             movesData.forEach((m, index) => {
                 const item = itemsData.find(i => i.code === m.code);
-                let details = (m.type === 'إضافة' || m.type === 'مرتجع مورد') ? `المورد: ${m.supplier || '-'} | التكلفة: ${m.unitCost || 0} ج.م` : (m.type === 'رصيد افتتاحي' ? `تكلفة الوحدة: ${m.unitCost || 0} ج.م` : `-`);
+                let details = (m.type === 'إضافة' || m.type === 'مرتجع مورد') ? `المورد: ${m.supplier || '-'} | التكلفة: ${m.unitCost || 0} ج.م` : `-`;
                 let centerOrNote = m.type === 'صرف' ? `المركز: ${m.costCenter || '-'}` : (m.note || '-');
                 tbody.innerHTML += `<tr><td>${m.date}</td><td>${m.code} - ${item ? item.name : ''}</td><td><b>${m.type}</b></td><td><b>${m.qty}</b></td><td>${details}</td><td>${centerOrNote}</td><td><button class="btn-danger" onclick="deleteMove(${index})">حذف</button></td></tr>`;
             });
@@ -421,6 +452,7 @@
             const supplier = document.getElementById('moveSupplier').value.trim();
             const unitCost = parseFloat(document.getElementById('moveUnitCost').value) || 0;
             const costCenter = document.getElementById('moveCenter').value.trim();
+
             if(isNaN(qty) || qty <= 0) { alert('أدخل كمية صحيحة'); return; }
             movesData.push({date, code, type, qty, supplier, unitCost, costCenter, note});
             refreshAllViews();
@@ -435,7 +467,7 @@
             inventoryMeta = {date, committee: committee || 'لجنة الموقع'};
             saveData();
             refreshAllViews();
-            alert('تم تثبيت جلسة الجرد بنجاح');
+            alert('تم تثبيت جلسة وتاريخ الجرد بنجاح');
         }
 
         function renderInventory() {
@@ -465,7 +497,6 @@
         function updatePhysical(code, val) {
             physicalCounts[code] = parseFloat(val) || 0;
             saveData();
-            renderInventory();
             renderLandingStats();
         }
 
@@ -482,6 +513,7 @@
                         <td>${item.code}</td>
                         <td>${item.name}</td>
                         <td>${item.category}</td>
+                        <td>${data.opening}</td>
                         <td>${data.inbound}</td>
                         <td>${data.outbound}</td>
                         <td><b>${data.balance}</b></td>
@@ -499,9 +531,9 @@
             });
 
             document.getElementById('advisorOutput').innerHTML = `
-                <b>1. تقييم رأس المال العامل (Working Capital):</b> يبلغ إجمالي الأموال المجمدة في مخزون شركة إي لوك حالياً نحو <b>${totalVal.toFixed(2)} جنيه مصري</b>، بعد احتساب الأرصدة الافتتاحية والوارد والمرتجعات.<br><br>
-                <b>2. ضبط دورة المستندات التكاليفية:</b> تم إدراج "رصيد أول المدة" و"مرتجع المورد" كحركات أساسية مستقلة تضمن عدم تلوث تكلفة الشراء الجديدة للموردين وتوفير دقة تامة في حساب متوسط التكلفة المرجح.<br><br>
-                <b>3. جلسات الجرد المؤرخ:</b> جرد المخزون مؤرخ ومعتمد لتسهيل المراجعة الرقابية وقياس فروق العجز والزيادة المحاسبية بدقة زمنية.
+                <b>1. هيكلة رصيد أول المدة المحاسبي:</b> تم فصل رصيد أول المدة وتكلفته ليصبح جزءاً أساسياً وثابتاً في بطاقة الصنف، مما يمنع تكرار الخطأ أو ضياع البيانات أثناء الحركة اليومية.<br><br>
+                <b>2. تقييم رأس المال العامل:</b> إجمالي قيمة المخزون الحالي يحسب بدقة عبر <b>متوسط التكلفة المرجح (Weighted Average)</b> مع دمج رصيد البداية والوارد التشغيلي.<br><br>
+                <b>3. الرقابة والمطابقة:</b> تضمن هذه الطريقة تطابقاً كاملاً بين الأرصدة الدفترية وجلسات الجرد الفعلي المؤرخ.
             `;
         }
 
