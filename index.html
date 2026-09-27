@@ -9,7 +9,7 @@
         header { background-color: #1A365D; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .logo { font-size: 20px; font-weight: bold; }
         .sub-logo { font-size: 11px; color: #A0AEC0; }
-        nav { background-color: #2A4365; padding: 8px 10px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+        nav { background-color: #2A4365; padding: 10px 15px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-start; }
         nav button { background-color: #EDF2F7; border: none; padding: 7px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #2D3748; transition: 0.2s; font-size: 12px; }
         nav button.active, nav button:hover { background-color: #3182CE; color: white; }
         .container { max-width: 1250px; margin: 20px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
@@ -18,11 +18,10 @@
         input, select { width: 100%; padding: 8px; border: 1px solid #CBD5E0; border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; font-size: 13px; }
         button.btn-primary { background-color: #3182CE; color: white; border: none; padding: 9px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
         button.btn-primary:hover { background-color: #2B6CB0; }
-        button.btn-secondary { background-color: #4A5568; color: white; border: none; padding: 9px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
         th, td { border: 1px solid #E2E8F0; padding: 8px; text-align: center; font-size: 12px; }
         th { background-color: #EDF2F7; color: #2D3748; }
-        .btn-danger { background-color: #E53E3E; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .btn-danger { background-color: #E53E3E; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .card-box { background: #F7FAFC; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #E2E8F0; }
@@ -58,10 +57,10 @@
         <button onclick="switchTab('items')">الأصناف والحد الأدنى</button>
         <button onclick="switchTab('production')">أوامر الإنتاج (BOM)</button>
         <button onclick="switchTab('moves')">سجل الحركات والتكلفة</button>
-        <button onclick="switchTab('inventory')">الجرد والانحراف المالي</button>
+        <button onclick="switchTab('inventory')">الجرد المؤرخ والانحراف</button>
         <button onclick="switchTab('costAnalysis')">تحليل التكاليف ورأس المال العامل</button>
         <button onclick="switchTab('advisor')">تقارير المحاسبة الإدارية (AI)</button>
-        <button onclick="switchTab('data')">البيانات</button>
+        <button onclick="switchTab('data')">إدارة البيانات</button>
     </nav>
 
     <div class="container">
@@ -70,11 +69,11 @@
         <div id="landing" class="tab-content active">
             <div class="landing-hero">
                 <h1>مرحباً بك في نظام الرقابة الإدارية والتكاليف - إي لوك</h1>
-                <p>متابعة حركة المخزون، تقييم الأصول المتداولة، مراقبة تكلفة الإنتاج الفعلية مقابل المعيارية، وكشف الانحرافات اللحظية.</p>
+                <p>متابعة حركة المخزون، رصيد أول المدة، تقييم الأصول المتداولة، مراقبة تكلفة الإنتاج، وكشف انحرافات الجرد المؤرخ.</p>
             </div>
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-title">إجمالي إيرادات/استثمارات المخزون</div>
+                    <div class="kpi-title">إجمالي استثمارات المخزون</div>
                     <div class="kpi-value" id="kpiTotalInventoryValue">0 ج.م</div>
                 </div>
                 <div class="kpi-card alert">
@@ -149,16 +148,19 @@
 
         <!-- 3. الحركات -->
         <div id="moves" class="tab-content">
-            <h2>سجل حركات المخزن (الوارد والصرف ومراكز التكلفة)</h2>
+            <h2>سجل الحركات المخزنية (رصيد افتتاحي، وارد، صرف، مرتجع مورد)</h2>
             <div class="card-box">
                 <h3>إذن حركة مخزنية جديدة</h3>
-                <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr auto; gap: 8px; align-items: end;">
+                <div style="display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr 1.2fr 1.2fr auto; gap: 6px; align-items: end;">
+                    <div><label>تاريخ الحركة</label><input type="date" id="moveDate"></div>
                     <div><label>الصنف</label><select id="moveItemSelect"></select></div>
                     <div>
                         <label>نوع الحركة</label>
                         <select id="moveType" onchange="toggleMoveFields()">
-                            <option value="إضافة">إضافة (وارد)</option>
-                            <option value="صرف">صرف (منصرف للإنتاج)</option>
+                            <option value="رصيد افتتاحي">رصيد افتتاحي</option>
+                            <option value="إضافة">إضافة (وارد شراء)</option>
+                            <option value="صرف">صرف (للإنتاج)</option>
+                            <option value="مرتجع مورد">مرتجع مورد</option>
                         </select>
                     </div>
                     <div><label>الكمية</label><input type="number" id="moveQty" placeholder="0"></div>
@@ -171,15 +173,23 @@
             </div>
             <table>
                 <thead>
-                    <tr><th>التاريخ</th><th>الصنف</th><th>النوع</th><th>الكمية</th><th>التكلفة / المورد</th><th>مركز التكلفة</th><th>البيان</th><th>إجراء</th></tr>
+                    <tr><th>التاريخ</th><th>الصنف</th><th>النوع</th><th>الكمية</th><th>التكلفة / المورد</th><th>مركز التكلفة / الملاحظات</th><th>إجراء</th></tr>
                 </thead>
                 <tbody id="movesTableBody"></tbody>
             </table>
         </div>
 
-        <!-- 4. الجرد والانحراف المالي -->
+        <!-- 4. الجرد المؤرخ والانحراف المالي -->
         <div id="inventory" class="tab-content">
-            <h2>الجرد الفعلي وتقييم فروق العجز والزيادة (محاسبة مالية)</h2>
+            <h2>الجرد الفعلي المؤرخ وتقييم فروق العجز والزيادة</h2>
+            <div class="card-box">
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 10px; align-items: end;">
+                    <div><label>تاريخ الجرد الفعلي</label><input type="date" id="inventoryDate"></div>
+                    <div><label>لجنة الجرد / ملاحظات</label><input type="text" id="inventoryCommittee" placeholder="لجنة الجرد الشهري"></div>
+                    <div><button class="btn-primary" onclick="saveInventorySessionDate()">تثبيت تاريخ الجرد</button></div>
+                </div>
+                <p style="margin-top: 10px; font-size: 12px; color: #4A5568;">تاريخ الجرد المُعتمد حالياً: <b id="displayInvDate">-</b> | اللجنة: <b id="displayInvComm">-</b></p>
+            </div>
             <table>
                 <thead>
                     <tr><th>الكود</th><th>الصنف</th><th>التصنيف</th><th>الرصيد الدفتري</th><th>الرصيد الفعلي</th><th>انحراف الكمية</th><th>متوسط التكلفة</th><th>إجمالي قيمة الانحراف المالي</th></tr>
@@ -192,11 +202,11 @@
         <div id="costAnalysis" class="tab-content">
             <h2>نموذج تحليل التكاليف ورأس المال العامل (محاسبة التكاليف والإدارية)</h2>
             <div class="card-box">
-                <p>يوضح هذا الجدول تقييم الأرصدة الحالية للمخزون باستخدام طريقة <b>متوسط التكلفة المرجح (Weighted Average Cost)</b>، وحساب رأس المال العامل المعطل في المخازن لمساعدة الإدارة في اتخاذ قرارات الترشيد.</p>
+                <p>يوضح هذا الجدول تقييم الأرصدة الحالية للمخزون باستخدام طريقة <b>متوسط التكلفة المرجح (Weighted Average Cost)</b> متضمنةً الرصيد الافتتاحي وحركات الوارد والصرف والمرتجعات.</p>
             </div>
             <table>
                 <thead>
-                    <tr><th>الكود</th><th>الصنف</th><th>التصنيف</th><th>إجمالي الوارد</th><th>إجمالي المنصرف</th><th>الرصيد الحالي</th><th>متوسط تكلفة الوحدة</th><th>إجمالي قيمة المخزون (الأصل المتداول)</th></tr>
+                    <tr><th>الكود</th><th>الصنف</th><th>التصنيف</th><th>إجمالي الوارد/الافتتاحي</th><th>إجمالي المنصرف/المرتجع</th><th>الرصيد الحالي</th><th>متوسط تكلفة الوحدة</th><th>إجمالي قيمة المخزون (الأصل المتداول)</th></tr>
                 </thead>
                 <tbody id="costAnalysisTableBody"></tbody>
             </table>
@@ -213,13 +223,19 @@
 
         <!-- 7. البيانات -->
         <div id="data" class="tab-content">
-            <h2>إدارة البيانات</h2>
-            <button class="btn-danger" onclick="resetData()">مسح كافة البيانات وإعادة الضبط</button>
+            <h2>إدارة البيانات والنسخ الاحتياطي</h2>
+            <div class="card-box">
+                <p>من هنا يمكنك مسح كافة البيانات المسجلة محلياً وبدء دورة عمل جديدة:</p>
+                <button class="btn-danger" onclick="resetData()">مسح كافة البيانات وإعادة الضبط</button>
+            </div>
         </div>
 
     </div>
 
     <script>
+        document.getElementById('moveDate').valueAsDate = new Date();
+        document.getElementById('inventoryDate').valueAsDate = new Date();
+
         setInterval(() => {
             document.getElementById('liveClock').innerText = new Date().toLocaleString('ar-EG');
         }, 1000);
@@ -231,6 +247,7 @@
         let productionOrders = JSON.parse(localStorage.getItem('ilock_prod_orders')) || [];
         let movesData = JSON.parse(localStorage.getItem('ilock_moves')) || [];
         let physicalCounts = JSON.parse(localStorage.getItem('ilock_physical_counts')) || {};
+        let inventoryMeta = JSON.parse(localStorage.getItem('ilock_inv_meta')) || {date: new Date().toISOString().split('T')[0], committee: 'لجنة جرد الموقع'};
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -247,6 +264,7 @@
             localStorage.setItem('ilock_prod_orders', JSON.stringify(productionOrders));
             localStorage.setItem('ilock_moves', JSON.stringify(movesData));
             localStorage.setItem('ilock_physical_counts', JSON.stringify(physicalCounts));
+            localStorage.setItem('ilock_inv_meta', JSON.stringify(inventoryMeta));
         }
 
         function refreshAllViews() {
@@ -258,18 +276,37 @@
             renderCostAnalysis();
             renderAdvisor();
             updateSelectOptions();
+            document.getElementById('displayInvDate').innerText = inventoryMeta.date;
+            document.getElementById('displayInvComm').innerText = inventoryMeta.committee;
         }
 
-        // حساب متوسط التكلفة لكل صنف بناءً على حركات الوارد
+        // حساب متوسط التكلفة المرجح: يشمل الرصيد الافتتاحي وحركات الإضافة ويخصم منها المرتجعات
         function getItemAvgCost(code) {
             let totalCost = 0, totalQty = 0;
             movesData.forEach(m => {
-                if(m.code === code && m.type === 'إضافة') {
-                    totalCost += (m.qty * (m.unitCost || 0));
-                    totalQty += m.qty;
+                if(m.code === code) {
+                    if(m.type === 'رصيد افتتاحي' || m.type === 'إضافة') {
+                        totalCost += (m.qty * (m.unitCost || 0));
+                        totalQty += m.qty;
+                    } else if(m.type === 'مرتجع مورد') {
+                        totalCost -= (m.qty * (m.unitCost || 0));
+                        totalQty -= m.qty;
+                    }
                 }
             });
             return totalQty > 0 ? (totalCost / totalQty) : 0;
+        }
+
+        // حساب الأرصدة (وارد/افتتاحي ناقص منصرف/مرتجع)
+        function getItemBalances(code) {
+            let inbound = 0, outbound = 0;
+            movesData.forEach(m => {
+                if(m.code === code) {
+                    if(m.type === 'رصيد افتتاحي' || m.type === 'إضافة') inbound += m.qty;
+                    if(m.type === 'صرف' || m.type === 'مرتجع مورد') outbound += m.qty;
+                }
+            });
+            return { inbound, outbound, balance: inbound - outbound };
         }
 
         function renderLandingStats() {
@@ -280,21 +317,14 @@
             let totalVarianceVal = 0;
 
             itemsData.forEach(item => {
-                let inbound = 0, outbound = 0;
-                movesData.forEach(m => {
-                    if(m.code === item.code) {
-                        if(m.type === 'إضافة') inbound += m.qty;
-                        if(m.type === 'صرف') outbound += m.qty;
-                    }
-                });
-                let balance = inbound - outbound;
-                if(balance <= (item.minQty || 0)) lowStockCount++;
+                let data = getItemBalances(item.code);
+                if(data.balance <= (item.minQty || 0)) lowStockCount++;
 
                 let avgCost = getItemAvgCost(item.code);
-                totalInvVal += (balance * avgCost);
+                totalInvVal += (data.balance * avgCost);
 
-                let physical = physicalCounts[item.code] !== undefined ? physicalCounts[item.code] : balance;
-                let variance = physical - balance;
+                let physical = physicalCounts[item.code] !== undefined ? physicalCounts[item.code] : data.balance;
+                let variance = physical - data.balance;
                 totalVarianceVal += (variance * avgCost);
             });
 
@@ -305,7 +335,7 @@
             document.getElementById('landingAlertsContent').innerHTML = `
                 * إجمالي الأموال المستثمرة في المخزون (رأس المال العامل): <b>${totalInvVal.toFixed(2)} جنيه</b>.<br>
                 * عدد الأصناف التي كسرت حد الأمان وتتطلب طلب توريد عاجل: <b style="color:${lowStockCount > 0 ? '#E53E3E':'green'}">${lowStockCount} صنف</b>.<br>
-                * صافي فروق الجرد المالي (عجز/زيادة): <b>${totalVarianceVal.toFixed(2)} جنيه</b>.
+                * صافي فروق الجرد المالي المؤرخ (عجز/زيادة): <b>${totalVarianceVal.toFixed(2)} جنيه</b>.
             `;
         }
 
@@ -321,8 +351,8 @@
 
         function toggleMoveFields() {
             const type = document.getElementById('moveType').value;
-            document.getElementById('divSupplier').style.display = type === 'إضافة' ? 'block' : 'none';
-            document.getElementById('divCost').style.display = type === 'إضافة' ? 'block' : 'none';
+            document.getElementById('divSupplier').style.display = (type === 'إضافة' || type === 'مرتجع مورد') ? 'block' : 'none';
+            document.getElementById('divCost').style.display = (type === 'رصيد افتتاحي' || type === 'إضافة' || type === 'مرتجع مورد') ? 'block' : 'none';
             document.getElementById('divCenter').style.display = type === 'صرف' ? 'block' : 'none';
         }
 
@@ -375,13 +405,15 @@
             tbody.innerHTML = '';
             movesData.forEach((m, index) => {
                 const item = itemsData.find(i => i.code === m.code);
-                let details = m.type === 'إضافة' ? `المورد: ${m.supplier || '-'} | التكلفة: ${m.unitCost || 0} ج.م` : `المركز: ${m.costCenter || '-'}`;
-                tbody.innerHTML += `<tr><td>${m.date}</td><td>${m.code} - ${item ? item.name : ''}</td><td>${m.type}</td><td><b>${m.qty}</b></td><td>${details}</td><td>${m.costCenter || '-'}</td><td>${m.note || '-'}</td><td><button class="btn-danger" onclick="deleteMove(${index})">حذف</button></td></tr>`;
+                let details = (m.type === 'إضافة' || m.type === 'مرتجع مورد') ? `المورد: ${m.supplier || '-'} | التكلفة: ${m.unitCost || 0} ج.م` : (m.type === 'رصيد افتتاحي' ? `تكلفة الوحدة: ${m.unitCost || 0} ج.م` : `-`);
+                let centerOrNote = m.type === 'صرف' ? `المركز: ${m.costCenter || '-'}` : (m.note || '-');
+                tbody.innerHTML += `<tr><td>${m.date}</td><td>${m.code} - ${item ? item.name : ''}</td><td><b>${m.type}</b></td><td><b>${m.qty}</b></td><td>${details}</td><td>${centerOrNote}</td><td><button class="btn-danger" onclick="deleteMove(${index})">حذف</button></td></tr>`;
             });
             saveData();
         }
 
         function addMove() {
+            const date = document.getElementById('moveDate').value || new Date().toISOString().split('T')[0];
             const code = document.getElementById('moveItemSelect').value;
             const type = document.getElementById('moveType').value;
             const qty = parseFloat(document.getElementById('moveQty').value);
@@ -390,27 +422,29 @@
             const unitCost = parseFloat(document.getElementById('moveUnitCost').value) || 0;
             const costCenter = document.getElementById('moveCenter').value.trim();
             if(isNaN(qty) || qty <= 0) { alert('أدخل كمية صحيحة'); return; }
-            const date = new Date().toISOString().split('T')[0];
             movesData.push({date, code, type, qty, supplier, unitCost, costCenter, note});
             refreshAllViews();
         }
 
         function deleteMove(index) { movesData.splice(index, 1); refreshAllViews(); }
 
+        function saveInventorySessionDate() {
+            const date = document.getElementById('inventoryDate').value;
+            const committee = document.getElementById('inventoryCommittee').value.trim();
+            if(!date) { alert('حدد تاريخ الجرد'); return; }
+            inventoryMeta = {date, committee: committee || 'لجنة الموقع'};
+            saveData();
+            refreshAllViews();
+            alert('تم تثبيت جلسة الجرد بنجاح');
+        }
+
         function renderInventory() {
             const tbody = document.getElementById('inventoryTableBody');
             tbody.innerHTML = '';
             itemsData.forEach(item => {
-                let inbound = 0, outbound = 0;
-                movesData.forEach(m => {
-                    if(m.code === item.code) {
-                        if(m.type === 'إضافة') inbound += m.qty;
-                        if(m.type === 'صرف') outbound += m.qty;
-                    }
-                });
-                let bookBalance = inbound - outbound;
-                let physical = physicalCounts[item.code] !== undefined ? physicalCounts[item.code] : bookBalance;
-                let variance = physical - bookBalance;
+                let data = getItemBalances(item.code);
+                let physical = physicalCounts[item.code] !== undefined ? physicalCounts[item.code] : data.balance;
+                let variance = physical - data.balance;
                 let avgCost = getItemAvgCost(item.code);
                 let varianceVal = variance * avgCost;
 
@@ -419,7 +453,7 @@
                         <td>${item.code}</td>
                         <td>${item.name}</td>
                         <td>${item.category}</td>
-                        <td>${bookBalance}</td>
+                        <td>${data.balance}</td>
                         <td><input type="number" value="${physical}" onchange="updatePhysical('${item.code}', this.value)" style="width:80px; text-align:center;"></td>
                         <td><b>${variance}</b></td>
                         <td>${avgCost.toFixed(2)} ج.م</td>
@@ -439,25 +473,18 @@
             const tbody = document.getElementById('costAnalysisTableBody');
             tbody.innerHTML = '';
             itemsData.forEach(item => {
-                let inbound = 0, outbound = 0;
-                movesData.forEach(m => {
-                    if(m.code === item.code) {
-                        if(m.type === 'إضافة') inbound += m.qty;
-                        if(m.type === 'صرف') outbound += m.qty;
-                    }
-                });
-                let balance = inbound - outbound;
+                let data = getItemBalances(item.code);
                 let avgCost = getItemAvgCost(item.code);
-                let totalVal = balance * avgCost;
+                let totalVal = data.balance * avgCost;
 
                 tbody.innerHTML += `
                     <tr>
                         <td>${item.code}</td>
                         <td>${item.name}</td>
                         <td>${item.category}</td>
-                        <td>${inbound}</td>
-                        <td>${outbound}</td>
-                        <td><b>${balance}</b></td>
+                        <td>${data.inbound}</td>
+                        <td>${data.outbound}</td>
+                        <td><b>${data.balance}</b></td>
                         <td>${avgCost.toFixed(2)} ج.م</td>
                         <td><b>${totalVal.toFixed(2)} ج.م</b></td>
                     </tr>`;
@@ -467,20 +494,14 @@
         function renderAdvisor() {
             let totalVal = 0;
             itemsData.forEach(item => {
-                let inbound = 0, outbound = 0;
-                movesData.forEach(m => {
-                    if(m.code === item.code) {
-                        if(m.type === 'إضافة') inbound += m.qty;
-                        if(m.type === 'صرف') outbound += m.qty;
-                    }
-                });
-                totalVal += (inbound - outbound) * getItemAvgCost(item.code);
+                let data = getItemBalances(item.code);
+                totalVal += data.balance * getItemAvgCost(item.code);
             });
 
             document.getElementById('advisorOutput').innerHTML = `
-                <b>1. تقييم رأس المال العامل (Working Capital):</b> يبلغ إجمالي الأموال المجمدة في مخزون شركة إي لوك حالياً نحو <b>${totalVal.toFixed(2)} جنيه مصري</b>. يُنصح بمتابعة معدل دوران المخزون (Inventory Turnover) لضمان عدم تكدس الخامات الأساسية.<br><br>
-                <b>2. الرقابة على التكاليف الصناعية:</b> تم اعتماد نموذج تسعير يعتمد على "متوسط التكلفة المرجح" لكل إذن توريد وارد، مما يضمن دقة تحميل أوامر الإنتاج بالقيم الحقيقية عند الصرف لمراكز التكلفة.<br><br>
-                <b>3. تقييم الانحرافات والرقابة الداخلية:</b> الفروق بين الرصيد الدفتري والفعلية تؤثر مباشرة على قائمة الدخل كأرباح أو خسائر فروق جرد، ويجب مراجعة أسباب أي عجز مع أمين العهدة وخطوط الإنتاج فوراً.
+                <b>1. تقييم رأس المال العامل (Working Capital):</b> يبلغ إجمالي الأموال المجمدة في مخزون شركة إي لوك حالياً نحو <b>${totalVal.toFixed(2)} جنيه مصري</b>، بعد احتساب الأرصدة الافتتاحية والوارد والمرتجعات.<br><br>
+                <b>2. ضبط دورة المستندات التكاليفية:</b> تم إدراج "رصيد أول المدة" و"مرتجع المورد" كحركات أساسية مستقلة تضمن عدم تلوث تكلفة الشراء الجديدة للموردين وتوفير دقة تامة في حساب متوسط التكلفة المرجح.<br><br>
+                <b>3. جلسات الجرد المؤرخ:</b> جرد المخزون مؤرخ ومعتمد لتسهيل المراجعة الرقابية وقياس فروق العجز والزيادة المحاسبية بدقة زمنية.
             `;
         }
 
