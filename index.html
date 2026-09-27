@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iLock | النظام المتكامل لإدارة المخازن والإنتاج</title>
+    <title>iLock | النظام المتكامل لإدارة المخازن والإنتاج والتكاليف</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; color: #333; }
         header { background-color: #1A365D; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -27,7 +27,6 @@
         .tab-content.active { display: block; }
         .card-box { background: #F7FAFC; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #E2E8F0; }
         
-        /* تصميم الواجهة الأولى التفاعلية الحديثة */
         .landing-hero { background: linear-gradient(135deg, #1A365D 0%, #2B6CB0 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .landing-hero h1 { margin: 0 0 10px 0; font-size: 24px; }
         .landing-hero p { margin: 0; color: #E2E8F0; font-size: 14px; }
@@ -36,25 +35,20 @@
         .kpi-card:hover { transform: translateY(-3px); }
         .kpi-card.alert { border-right-color: #E53E3E; }
         .kpi-title { font-size: 13px; color: #718096; margin-bottom: 8px; font-weight: bold; }
-        .kpi-value { font-size: 24px; font-weight: bold; color: #2D3748; }
-        .quick-nav-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 20px; }
-        .quick-btn { background: white; border: 1px solid #CBD5E0; padding: 15px; border-radius: 6px; text-align: center; cursor: pointer; font-weight: bold; color: #2B6CB0; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: 0.2s; }
-        .quick-btn:hover { background: #3182CE; color: white; border-color: #3182CE; }
+        .kpi-value { font-size: 22px; font-weight: bold; color: #2D3748; }
         
         .advisor-box { background: #fffaf0; border: 1px solid #feebc8; padding: 15px; border-radius: 6px; margin-top: 15px; line-height: 1.6; font-size: 13px; }
         .advisor-box h3 { color: #c05621; margin-top: 0; }
-        .filter-section { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 10px; align-items: end; background: #EDF2F7; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
         .badge-danger { background: #FED7D7; color: #9B2C2C; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
         .badge-success { background: #C6F6D5; color: #22543D; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
-        .badge-warning { background: #FEFCBF; color: #744210; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
     </style>
 </head>
 <body>
 
     <header>
         <div>
-            <div class="logo">iLock | نظام الإدارة المتكامل للمصانع (ERP & MES)</div>
-            <div class="sub-logo">شركة إي لوك للصناعة البلاستيكية - لوحة التحكم التنفيذية</div>
+            <div class="logo">iLock | نظام المحاسبة الإدارية وتكاليف المصانع</div>
+            <div class="sub-logo">شركة إي لوك للصناعة البلاستيكية - وحدة الرقابة المالية والتخزينية</div>
         </div>
         <div id="liveClock" style="font-size: 12px; color: #E2E8F0;"></div>
     </header>
@@ -62,351 +56,178 @@
     <nav>
         <button onclick="switchTab('landing')" class="active">الواجهة الرئيسية</button>
         <button onclick="switchTab('items')">الأصناف والحد الأدنى</button>
-        <button onclick="switchTab('families')">العائلات والمجموعات</button>
         <button onclick="switchTab('production')">أوامر الإنتاج (BOM)</button>
         <button onclick="switchTab('moves')">سجل الحركات والتكلفة</button>
-        <button onclick="switchTab('inventory')">الجرد والانحراف</button>
-        <button onclick="switchTab('analysis')">تحليل المخزون والسيولة</button>
-        <button onclick="switchTab('advisor')">المستشار الذكي (AI)</button>
-        <button onclick="switchTab('data')">البيانات والملفات</button>
+        <button onclick="switchTab('inventory')">الجرد والانحراف المالي</button>
+        <button onclick="switchTab('costAnalysis')">تحليل التكاليف ورأس المال العامل</button>
+        <button onclick="switchTab('advisor')">تقارير المحاسبة الإدارية (AI)</button>
+        <button onclick="switchTab('data')">البيانات</button>
     </nav>
 
     <div class="container">
 
-        <!-- 0. الواجهة الأولى التفاعلية الحديثة (Landing Dashboard) -->
+        <!-- 0. الواجهة الرئيسية -->
         <div id="landing" class="tab-content active">
             <div class="landing-hero">
-                <h1>مرحباً بك في لوحة تحكم شركة إي لوك</h1>
-                <p>النظام الذكي الموحد لإدارة المخازن، مراقبة تكاليف خامات البلاستيك، أوامر الإنتاج، وكشف الانحرافات اللحظية.</p>
+                <h1>مرحباً بك في نظام الرقابة الإدارية والتكاليف - إي لوك</h1>
+                <p>متابعة حركة المخزون، تقييم الأصول المتداولة، مراقبة تكلفة الإنتاج الفعلية مقابل المعيارية، وكشف الانحرافات اللحظية.</p>
             </div>
-
-            <!-- مؤشرات الأداء الحية (KPI Cards) -->
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-title">إجمالي الأصناف المعرفة</div>
-                    <div class="kpi-value" id="kpiItemsCount">0</div>
+                    <div class="kpi-title">إجمالي إيرادات/استثمارات المخزون</div>
+                    <div class="kpi-value" id="kpiTotalInventoryValue">0 ج.م</div>
                 </div>
                 <div class="kpi-card alert">
-                    <div class="kpi-title">أصناف تحت حد الأمان (خطر)</div>
+                    <div class="kpi-title">أصناف تجاوزت حد الأمان</div>
                     <div class="kpi-value" id="kpiLowStock" style="color: #E53E3E;">0</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-title">أوامر الإنتاج النشطة</div>
+                    <div class="kpi-title">أوامر الإنتاج الفعالة</div>
                     <div class="kpi-value" id="kpiOrdersCount">0</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-title">إجمالي حركات المخزن</div>
-                    <div class="kpi-value" id="kpiMovesCount">0</div>
+                    <div class="kpi-title">إجمالي فروق الجرد المالي</div>
+                    <div class="kpi-value" id="kpiTotalVarianceVal">0 ج.م</div>
                 </div>
             </div>
-
             <div class="card-box">
-                <h3>تنبيهات النظام الذكية وحالة الموقع</h3>
-                <div id="landingAlertsContent">جاري فحص مؤشرات الأداء...</div>
-            </div>
-
-            <h3>التنقل السريع لأقسام النظام</h3>
-            <div class="quick-nav-grid">
-                <div class="quick-btn" onclick="switchTab('items')">📦 الأصناف والحد الأدنى</div>
-                <div class="quick-btn" onclick="switchTab('production')">⚙️ أوامر الإنتاج (BOM)</div>
-                <div class="quick-btn" onclick="switchTab('moves')">📝 تسجيل الحركات (وارد/صادر)</div>
-                <div class="quick-btn" onclick="switchTab('inventory')">🔍 الجرد الفعلي والانحراف</div>
-                <div class="quick-btn" onclick="switchTab('analysis')">📊 تحليل المخزون والسيولة</div>
-                <div class="quick-btn" onclick="switchTab('advisor')">🤖 المستشار الذكي (AI)</div>
+                <h3>مؤشرات الرقابة الإدارية الفورية</h3>
+                <div id="landingAlertsContent">جاري التحليل...</div>
             </div>
         </div>
 
-        <!-- 1. الأصناف والحد الأدنى -->
+        <!-- 1. الأصناف -->
         <div id="items" class="tab-content">
-            <h2>إدارة الأصناف ومعايير الحد الأدنى للطلب (Reorder Point)</h2>
+            <h2>إدارة الأصناف ومعايير حد إعادة الطلب (Reorder Point)</h2>
             <div class="card-box">
-                <h3>إضافة صنف جديد وحد الأمان</h3>
+                <h3>تسجيل صنف جديد</h3>
                 <div style="display: grid; grid-template-columns: 1fr 2fr 1.2fr 0.8fr 1fr auto; gap: 10px; align-items: end;">
-                    <div>
-                        <label>كود الصنف</label>
-                        <input type="text" id="itemCode" placeholder="RM004">
-                    </div>
-                    <div>
-                        <label>اسم الصنف ووصفه</label>
-                        <input type="text" id="itemName" placeholder="حبيبات بولي بروبيلين">
-                    </div>
+                    <div><label>كود الصنف</label><input type="text" id="itemCode" placeholder="RM001"></div>
+                    <div><label>اسم الصنف</label><input type="text" id="itemName" placeholder="حبيبات بولي بروبيلين"></div>
                     <div>
                         <label>التصنيف</label>
                         <select id="itemCategory">
                             <option value="خام أساسي">خام أساسي</option>
                             <option value="تامة الصنع">تامة الصنع</option>
                             <option value="خام فرز ثاني">خام فرز ثاني</option>
-                            <option value="فرز ثاني معاد تصنيعه">فرز ثاني معاد تصنيعه</option>
-                            <option value="هالك (للبيع خرده)">هالك (للبيع خرده)</option>
+                            <option value="هالك (خرده)">هالك (خرده)</option>
                         </select>
                     </div>
-                    <div>
-                        <label>الوحدة</label>
-                        <input type="text" id="itemUnit" placeholder="كجم">
-                    </div>
-                    <div>
-                        <label>الحد الأدنى للطلب</label>
-                        <input type="number" id="itemMinQty" placeholder="500">
-                    </div>
-                    <div>
-                        <button class="btn-primary" onclick="addItem()">إضافة</button>
-                    </div>
+                    <div><label>الوحدة</label><input type="text" id="itemUnit" placeholder="كجم"></div>
+                    <div><label>حد الطلب (Min)</label><input type="number" id="itemMinQty" placeholder="500"></div>
+                    <div><button class="btn-primary" onclick="addItem()">إضافة</button></div>
                 </div>
             </div>
-            <h3>قائمة الأصناف المعرفة بالمصنع</h3>
             <table>
                 <thead>
-                    <tr>
-                        <th>الكود</th>
-                        <th>اسم الصنف</th>
-                        <th>التصنيف</th>
-                        <th>الوحدة</th>
-                        <th>الحد الأدنى للطلب</th>
-                        <th>الإجراءات</th>
-                    </tr>
+                    <tr><th>الكود</th><th>اسم الصنف</th><th>التصنيف</th><th>الوحدة</th><th>حد الطلب الآمن</th><th>إجراء</th></tr>
                 </thead>
                 <tbody id="itemsTableBody"></tbody>
             </table>
         </div>
 
-        <!-- 2. العائلات -->
-        <div id="families" class="tab-content">
-            <h2>عائلات ومجموعات الأصناف</h2>
-            <div class="card-box">
-                <h3>ربط صنف بعائلة تصنيعية</h3>
-                <div style="display: grid; grid-template-columns: 2fr 2fr auto; gap: 10px; align-items: end;">
-                    <div>
-                        <label>اختر الصنف</label>
-                        <select id="famItemSelect"></select>
-                    </div>
-                    <div>
-                        <label>اسم العائلة</label>
-                        <input type="text" id="famName" placeholder="مجموعة حبيبات البلاستيك">
-                    </div>
-                    <div>
-                        <button class="btn-primary" onclick="addFamily()">حفظ التصنيف</button>
-                    </div>
-                </div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>الكود</th>
-                        <th>الصنف</th>
-                        <th>العائلة التابع لها</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="familiesTableBody"></tbody>
-            </table>
-        </div>
-
-        <!-- 3. أوامر الإنتاج (BOM) -->
+        <!-- 2. أوامر الإنتاج -->
         <div id="production" class="tab-content">
-            <h2>أوامر الإنتاج وقائمة المواد المعيارية (BOM & Work Orders)</h2>
+            <h2>أوامر الإنتاج وقائمة المواد المعيارية (BOM)</h2>
             <div class="card-box">
-                <h3>فتح أمر إنتاج تشغيلي جديد</h3>
+                <h3>إصدار أمر إنتاج تشغيلي</h3>
                 <div style="display: grid; grid-template-columns: 1.5fr 2fr 1fr 1fr auto; gap: 10px; align-items: end;">
-                    <div>
-                        <label>رقم أمر الإنتاج</label>
-                        <input type="text" id="ordNo" placeholder="WO-2026-001">
-                    </div>
-                    <div>
-                        <label>المنتج التام المستهدف</label>
-                        <select id="ordItemSelect"></select>
-                    </div>
-                    <div>
-                        <label>الكمية المستهدفة</label>
-                        <input type="number" id="ordTargetQty" placeholder="5000">
-                    </div>
-                    <div>
-                        <label>ماكينة / خط الإنتاج</label>
-                        <input type="text" id="ordMachine" placeholder="ماكينة حقن رقم 3">
-                    </div>
-                    <div>
-                        <button class="btn-primary" onclick="addProductionOrder()">إصدار الأمر</button>
-                    </div>
+                    <div><label>رقم الأمر</label><input type="text" id="ordNo" placeholder="WO-001"></div>
+                    <div><label>المنتج التام المستهدف</label><select id="ordItemSelect"></select></div>
+                    <div><label>الكمية المستهدفة</label><input type="number" id="ordTargetQty" placeholder="1000"></div>
+                    <div><label>خط الإنتاج / الماكينة</label><input type="text" id="ordMachine" placeholder="ماكينة حقن 1"></div>
+                    <div><button class="btn-primary" onclick="addProductionOrder()">إصدار</button></div>
                 </div>
             </div>
-            <h3>أوامر الإنتاج النشطة والمسجلة</h3>
             <table>
                 <thead>
-                    <tr>
-                        <th>رقم الأمر</th>
-                        <th>المنتج المستهدف</th>
-                        <th>الكمية المستهدفة</th>
-                        <th>الخط التشغيلي</th>
-                        <th>الحالة</th>
-                        <th>الإجراءات</th>
-                    </tr>
+                    <tr><th>رقم الأمر</th><th>المنتج</th><th>الكمية المستهدفة</th><th>خط الإنتاج</th><th>الحالة</th><th>إجراء</th></tr>
                 </thead>
                 <tbody id="productionTableBody"></tbody>
             </table>
         </div>
 
-        <!-- 4. سجل الحركات والتكلفة -->
+        <!-- 3. الحركات -->
         <div id="moves" class="tab-content">
-            <h2>سجل حركات المخزن (إضافة وصرف مع مراكز التكلفة والموردين)</h2>
+            <h2>سجل حركات المخزن (الوارد والصرف ومراكز التكلفة)</h2>
             <div class="card-box">
-                <h3>تسجيل إذن حركة جديد</h3>
+                <h3>إذن حركة مخزنية جديدة</h3>
                 <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr auto; gap: 8px; align-items: end;">
-                    <div>
-                        <label>الصنف</label>
-                        <select id="moveItemSelect"></select>
-                    </div>
+                    <div><label>الصنف</label><select id="moveItemSelect"></select></div>
                     <div>
                         <label>نوع الحركة</label>
                         <select id="moveType" onchange="toggleMoveFields()">
                             <option value="إضافة">إضافة (وارد)</option>
-                            <option value="صرف">صرف (منصرف)</option>
+                            <option value="صرف">صرف (منصرف للإنتاج)</option>
                         </select>
                     </div>
-                    <div>
-                        <label>الكمية</label>
-                        <input type="number" id="moveQty" placeholder="0">
-                    </div>
-                    <div id="divSupplier">
-                        <label>المورد (للوارد)</label>
-                        <input type="text" id="moveSupplier" placeholder="اسم المورد / الفاتورة">
-                    </div>
-                    <div id="divCost" style="display:none;">
-                        <label>تكلفة الوحدة (جنيه)</label>
-                        <input type="number" id="moveUnitCost" placeholder="0.00">
-                    </div>
-                    <div id="divCenter">
-                        <label>مركز التكلفة / المستلم</label>
-                        <input type="text" id="moveCenter" placeholder="خط إنتاج / صيانة">
-                    </div>
-                    <div>
-                        <label>البيان</label>
-                        <input type="text" id="moveNote" placeholder="ملاحظات">
-                    </div>
-                    <div>
-                        <button class="btn-primary" onclick="addMove()">تسجيل</button>
-                    </div>
+                    <div><label>الكمية</label><input type="number" id="moveQty" placeholder="0"></div>
+                    <div id="divSupplier"><label>المورد</label><input type="text" id="moveSupplier" placeholder="اسم المورد"></div>
+                    <div id="divCost"><label>تكلفة الوحدة (ج.م)</label><input type="number" id="moveUnitCost" placeholder="0.00"></div>
+                    <div id="divCenter" style="display:none;"><label>مركز التكلفة</label><input type="text" id="moveCenter" placeholder="ماكينة / قسم"></div>
+                    <div><label>البيان</label><input type="text" id="moveNote" placeholder="ملاحظات"></div>
+                    <div><button class="btn-primary" onclick="addMove()">تسجيل</button></div>
                 </div>
             </div>
-
-            <!-- الفلاتر -->
-            <div class="filter-section">
-                <div>
-                    <label>من تاريخ</label>
-                    <input type="date" id="filterDateFrom">
-                </div>
-                <div>
-                    <label>إلى تاريخ</label>
-                    <input type="date" id="filterDateTo">
-                </div>
-                <div>
-                    <button class="btn-primary" onclick="renderMoves()">تطبيق الفلتر</button>
-                </div>
-                <div>
-                    <button class="btn-secondary" onclick="resetFilters()">إلغاء</button>
-                </div>
-            </div>
-
             <table>
                 <thead>
-                    <tr>
-                        <th>التاريخ</th>
-                        <th>الصنف</th>
-                        <th>النوع</th>
-                        <th>الكمية</th>
-                        <th>التكلفة/المورد</th>
-                        <th>مركز التكلفة</th>
-                        <th>البيان</th>
-                        <th>إجراء</th>
-                    </tr>
+                    <tr><th>التاريخ</th><th>الصنف</th><th>النوع</th><th>الكمية</th><th>التكلفة / المورد</th><th>مركز التكلفة</th><th>البيان</th><th>إجراء</th></tr>
                 </thead>
                 <tbody id="movesTableBody"></tbody>
             </table>
         </div>
 
-        <!-- 5. الجرد والانحراف -->
+        <!-- 4. الجرد والانحراف المالي -->
         <div id="inventory" class="tab-content">
-            <h2>الجرد الفعلي والانحرافات المحاسبية</h2>
-            <p>أدخل الرصيد الفعلي للموقع، وسيقوم النظام بمقارنته مع الدفتري وإظهار مؤشرات العجز والزيادة لحظياً.</p>
+            <h2>الجرد الفعلي وتقييم فروق العجز والزيادة (محاسبة مالية)</h2>
             <table>
                 <thead>
-                    <tr>
-                        <th>الكود</th>
-                        <th>الصنف</th>
-                        <th>التصنيف</th>
-                        <th>الرصيد الدفتري</th>
-                        <th>الرصيد الفعلي (قابل للتعديل)</th>
-                        <th>انحراف الكمية</th>
-                        <th>التقييم الرقابى</th>
-                    </tr>
+                    <tr><th>الكود</th><th>الصنف</th><th>التصنيف</th><th>الرصيد الدفتري</th><th>الرصيد الفعلي</th><th>انحراف الكمية</th><th>متوسط التكلفة</th><th>إجمالي قيمة الانحراف المالي</th></tr>
                 </thead>
                 <tbody id="inventoryTableBody"></tbody>
             </table>
         </div>
 
-        <!-- 6. تحليل المخزون والسيولة -->
-        <div id="analysis" class="tab-content">
-            <h2>تحليل المخزون ومؤشرات الأداء ورأس المال العامل</h2>
+        <!-- 5. تحليل التكاليف ورأس المال العامل -->
+        <div id="costAnalysis" class="tab-content">
+            <h2>نموذج تحليل التكاليف ورأس المال العامل (محاسبة التكاليف والإدارية)</h2>
+            <div class="card-box">
+                <p>يوضح هذا الجدول تقييم الأرصدة الحالية للمخزون باستخدام طريقة <b>متوسط التكلفة المرجح (Weighted Average Cost)</b>، وحساب رأس المال العامل المعطل في المخازن لمساعدة الإدارة في اتخاذ قرارات الترشيد.</p>
+            </div>
             <table>
                 <thead>
-                    <tr>
-                        <th>الكود</th>
-                        <th>الصنف</th>
-                        <th>التصنيف</th>
-                        <th>الوارد</th>
-                        <th>المنصرف</th>
-                        <th>الرصيد الحالي</th>
-                        <th>متوسط التكلفة</th>
-                        <th>إجمالي قيمة المخزون</th>
-                        <th>مؤشر السيولة والحركة</th>
-                    </tr>
+                    <tr><th>الكود</th><th>الصنف</th><th>التصنيف</th><th>إجمالي الوارد</th><th>إجمالي المنصرف</th><th>الرصيد الحالي</th><th>متوسط تكلفة الوحدة</th><th>إجمالي قيمة المخزون (الأصل المتداول)</th></tr>
                 </thead>
-                <tbody id="analysisTableBody"></tbody>
+                <tbody id="costAnalysisTableBody"></tbody>
             </table>
         </div>
 
-        <!-- 7. المستشار الذكي (AI) -->
+        <!-- 6. تقارير المحاسبة الإدارية -->
         <div id="advisor" class="tab-content">
-            <h2>المستشار الذكي ووكيل النظم والمحاسبة (AI Advisor)</h2>
+            <h2>لوحة تقارير المحاسبة الإدارية واتخاذ القرار (Management Accounting)</h2>
             <div class="advisor-box">
-                <h3>تقرير التحليل الشامل والإنذارات الاستراتيجية لإي لوك</h3>
-                <div id="advisorOutput">جاري معالجة الفحص الاستراتيجي...</div>
+                <h3>التحليل الاستراتيجي لتكلفة المخزون وكفاءة التشغيل</h3>
+                <div id="advisorOutput">جاري استخراج مؤشرات الأداء المالي والإداري...</div>
             </div>
         </div>
 
-        <!-- 8. البيانات والملفات -->
+        <!-- 7. البيانات -->
         <div id="data" class="tab-content">
-            <h2>إدارة البيانات والملفات</h2>
-            <div class="card-box">
-                <h3>استيراد أصناف من ملف CSV</h3>
-                <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom: 10px;">
-                <br>
-                <button class="btn-primary" onclick="importCSV()">رفع واستيراد</button>
-            </div>
-            <div class="card-box">
-                <h3>تحميل قالب الاستيراد</h3>
-                <button class="btn-primary" onclick="downloadCSVTemplate()">تحميل القالب</button>
-            </div>
-            <div class="card-box">
-                <h3>إعادة تعيين النظام</h3>
-                <button class="btn-danger" onclick="resetData()">مسح كافة البيانات والبدء من جديد</button>
-            </div>
+            <h2>إدارة البيانات</h2>
+            <button class="btn-danger" onclick="resetData()">مسح كافة البيانات وإعادة الضبط</button>
         </div>
 
     </div>
 
     <script>
-        // تحديث الوقت الحي في الترويسة
         setInterval(() => {
-            const now = new Date();
-            document.getElementById('liveClock').innerText = now.toLocaleString('ar-EG');
+            document.getElementById('liveClock').innerText = new Date().toLocaleString('ar-EG');
         }, 1000);
 
         let itemsData = JSON.parse(localStorage.getItem('ilock_items')) || [
             {code: 'RM001', name: 'حبيبات بولي بروبيلين PP', category: 'خام أساسي', unit: 'كجم', minQty: 1000},
-            {code: 'FG001', name: 'فيشة كهرباء بلاستيك تام', category: 'تامة الصنع', unit: 'قطعة', minQty: 200},
-            {code: 'SCR01', name: 'هالك بولي بروبيلين مكسر', category: 'هالك (للبيع خرده)', unit: 'كجم', minQty: 50}
+            {code: 'FG001', name: 'فيشة كهرباء بلاستيك تام', category: 'تامة الصنع', unit: 'قطعة', minQty: 200}
         ];
-
-        let familiesData = JSON.parse(localStorage.getItem('ilock_families')) || [];
         let productionOrders = JSON.parse(localStorage.getItem('ilock_prod_orders')) || [];
         let movesData = JSON.parse(localStorage.getItem('ilock_moves')) || [];
         let physicalCounts = JSON.parse(localStorage.getItem('ilock_physical_counts')) || {};
@@ -415,20 +236,14 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            
-            // تفعيل الزر المناسب في شريط التنقل العلوي
-            const navButtons = document.querySelectorAll('nav button');
-            navButtons.forEach(btn => {
-                if(btn.getAttribute('onclick').includes(tabId)) {
-                    btn.classList.add('active');
-                }
+            document.querySelectorAll('nav button').forEach(btn => {
+                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
             });
             refreshAllViews();
         }
 
         function saveData() {
             localStorage.setItem('ilock_items', JSON.stringify(itemsData));
-            localStorage.setItem('ilock_families', JSON.stringify(familiesData));
             localStorage.setItem('ilock_prod_orders', JSON.stringify(productionOrders));
             localStorage.setItem('ilock_moves', JSON.stringify(movesData));
             localStorage.setItem('ilock_physical_counts', JSON.stringify(physicalCounts));
@@ -437,21 +252,33 @@
         function refreshAllViews() {
             renderLandingStats();
             renderItems();
-            renderFamilies();
             renderProductionOrders();
             renderMoves();
             renderInventory();
-            renderAnalysis();
+            renderCostAnalysis();
             renderAdvisor();
             updateSelectOptions();
         }
 
-        function renderLandingStats() {
-            document.getElementById('kpiItemsCount').innerText = itemsData.length;
-            document.getElementById('kpiOrdersCount').innerText = productionOrders.length;
-            document.getElementById('kpiMovesCount').innerText = movesData.length;
+        // حساب متوسط التكلفة لكل صنف بناءً على حركات الوارد
+        function getItemAvgCost(code) {
+            let totalCost = 0, totalQty = 0;
+            movesData.forEach(m => {
+                if(m.code === code && m.type === 'إضافة') {
+                    totalCost += (m.qty * (m.unitCost || 0));
+                    totalQty += m.qty;
+                }
+            });
+            return totalQty > 0 ? (totalCost / totalQty) : 0;
+        }
 
+        function renderLandingStats() {
+            document.getElementById('kpiOrdersCount').innerText = productionOrders.length;
+            
+            let totalInvVal = 0;
             let lowStockCount = 0;
+            let totalVarianceVal = 0;
+
             itemsData.forEach(item => {
                 let inbound = 0, outbound = 0;
                 movesData.forEach(m => {
@@ -461,63 +288,49 @@
                     }
                 });
                 let balance = inbound - outbound;
-                if(balance <= (item.minQty || 0)) {
-                    lowStockCount++;
-                }
-            });
-            document.getElementById('kpiLowStock').innerText = lowStockCount;
+                if(balance <= (item.minQty || 0)) lowStockCount++;
 
-            let alertHtml = "<ul>";
-            if(lowStockCount > 0) {
-                alertHtml += `<li><span style="color:#E53E3E; font-weight:bold;">تنبيه تشغيلي حرج:</span> يوجد عدد (${lowStockCount}) صنف وصل أو انخفض دون حد الطلب والأمان الموصى به! يرجى مراجعة صفحة الأصناف وإصدار أمر شراء فوري.</li>`;
-            } else {
-                alertHtml += `<li><span style="color:green; font-weight:bold;">حالة المخزون مستقرة:</span> لا توجد أي أصناف متجاوزة لحد الانخفاض الأدنى حالياً.</li>`;
-            }
-            alertHtml += `<li><b>جاهزية النظام:</b> قاعدة بيانات المتصفح (LocalStorage) تعمل بكفاءة، وجميع فترات التشغيل ومراكز التكلفة مربوطة بدقة.</li>`;
-            alertHtml += "</ul>";
-            document.getElementById('landingAlertsContent').innerHTML = alertHtml;
+                let avgCost = getItemAvgCost(item.code);
+                totalInvVal += (balance * avgCost);
+
+                let physical = physicalCounts[item.code] !== undefined ? physicalCounts[item.code] : balance;
+                let variance = physical - balance;
+                totalVarianceVal += (variance * avgCost);
+            });
+
+            document.getElementById('kpiTotalInventoryValue').innerText = totalInvVal.toFixed(2) + ' ج.م';
+            document.getElementById('kpiLowStock').innerText = lowStockCount;
+            document.getElementById('kpiTotalVarianceVal').innerText = totalVarianceVal.toFixed(2) + ' ج.م';
+
+            document.getElementById('landingAlertsContent').innerHTML = `
+                * إجمالي الأموال المستثمرة في المخزون (رأس المال العامل): <b>${totalInvVal.toFixed(2)} جنيه</b>.<br>
+                * عدد الأصناف التي كسرت حد الأمان وتتطلب طلب توريد عاجل: <b style="color:${lowStockCount > 0 ? '#E53E3E':'green'}">${lowStockCount} صنف</b>.<br>
+                * صافي فروق الجرد المالي (عجز/زيادة): <b>${totalVarianceVal.toFixed(2)} جنيه</b>.
+            `;
         }
 
         function updateSelectOptions() {
             let itemOpts = '', fgOpts = '';
             itemsData.forEach(i => {
-                itemOpts += `<option value="${i.code}">${i.code} - ${i.name} (${i.category})</option>`;
-                if(i.category === 'تامة الصنع') {
-                    fgOpts += `<option value="${i.code}">${i.code} - ${i.name}</option>`;
-                }
+                itemOpts += `<option value="${i.code}">${i.code} - ${i.name}</option>`;
+                if(i.category === 'تامة الصنع') fgOpts += `<option value="${i.code}">${i.code} - ${i.name}</option>`;
             });
-            document.getElementById('famItemSelect').innerHTML = itemOpts;
             document.getElementById('moveItemSelect').innerHTML = itemOpts;
             document.getElementById('ordItemSelect').innerHTML = fgOpts || itemOpts;
         }
 
         function toggleMoveFields() {
             const type = document.getElementById('moveType').value;
-            if(type === 'إضافة') {
-                document.getElementById('divSupplier').style.display = 'block';
-                document.getElementById('divCost').style.display = 'block';
-                document.getElementById('divCenter').style.display = 'none';
-            } else {
-                document.getElementById('divSupplier').style.display = 'none';
-                document.getElementById('divCost').style.display = 'none';
-                document.getElementById('divCenter').style.display = 'block';
-            }
+            document.getElementById('divSupplier').style.display = type === 'إضافة' ? 'block' : 'none';
+            document.getElementById('divCost').style.display = type === 'إضافة' ? 'block' : 'none';
+            document.getElementById('divCenter').style.display = type === 'صرف' ? 'block' : 'none';
         }
 
         function renderItems() {
             const tbody = document.getElementById('itemsTableBody');
             tbody.innerHTML = '';
             itemsData.forEach((item, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.code}</td>
-                        <td>${item.name}</td>
-                        <td>${item.category}</td>
-                        <td>${item.unit}</td>
-                        <td><b>${item.minQty || 0}</b></td>
-                        <td><button class="btn-danger" onclick="deleteItem(${index})">حذف</button></td>
-                    </tr>
-                `;
+                tbody.innerHTML += `<tr><td>${item.code}</td><td>${item.name}</td><td>${item.category}</td><td>${item.unit}</td><td><b>${item.minQty || 0}</b></td><td><button class="btn-danger" onclick="deleteItem(${index})">حذف</button></td></tr>`;
             });
             saveData();
         }
@@ -530,63 +343,17 @@
             const minQty = parseFloat(document.getElementById('itemMinQty').value) || 0;
             if(!code || !name) { alert('أدخل الكود واسم الصنف'); return; }
             itemsData.push({code, name, category, unit: unit || 'قطعة', minQty});
-            document.getElementById('itemCode').value = '';
-            document.getElementById('itemName').value = '';
-            document.getElementById('itemMinQty').value = '';
             refreshAllViews();
         }
 
-        function deleteItem(index) {
-            itemsData.splice(index, 1);
-            refreshAllViews();
-        }
-
-        function renderFamilies() {
-            const tbody = document.getElementById('familiesTableBody');
-            tbody.innerHTML = '';
-            familiesData.forEach((fam, index) => {
-                const item = itemsData.find(i => i.code === fam.code);
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${fam.code}</td>
-                        <td>${item ? item.name : 'غير محدد'}</td>
-                        <td>${fam.familyName}</td>
-                        <td><button class="btn-danger" onclick="deleteFamily(${index})">حذف</button></td>
-                    </tr>
-                `;
-            });
-            saveData();
-        }
-
-        function addFamily() {
-            const code = document.getElementById('famItemSelect').value;
-            const familyName = document.getElementById('famName').value.trim();
-            if(!familyName) { alert('أدخل اسم العائلة'); return; }
-            familiesData.push({code, familyName});
-            document.getElementById('famName').value = '';
-            refreshAllViews();
-        }
-
-        function deleteFamily(index) {
-            familiesData.splice(index, 1);
-            refreshAllViews();
-        }
+        function deleteItem(index) { itemsData.splice(index, 1); refreshAllViews(); }
 
         function renderProductionOrders() {
             const tbody = document.getElementById('productionTableBody');
             tbody.innerHTML = '';
             productionOrders.forEach((ord, index) => {
                 const item = itemsData.find(i => i.code === ord.code);
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${ord.ordNo}</td>
-                        <td>${item ? item.name : ord.code}</td>
-                        <td>${ord.targetQty}</td>
-                        <td>${ord.machine}</td>
-                        <td><span class="badge-success">${ord.status}</span></td>
-                        <td><button class="btn-danger" onclick="deleteProductionOrder(${index})">حذف</button></td>
-                    </tr>
-                `;
+                tbody.innerHTML += `<tr><td>${ord.ordNo}</td><td>${item ? item.name : ord.code}</td><td>${ord.targetQty}</td><td>${ord.machine}</td><td><span class="badge-success">${ord.status}</span></td><td><button class="btn-danger" onclick="deleteProductionOrder(${index})">حذف</button></td></tr>`;
             });
             saveData();
         }
@@ -596,52 +363,22 @@
             const code = document.getElementById('ordItemSelect').value;
             const targetQty = parseFloat(document.getElementById('ordTargetQty').value);
             const machine = document.getElementById('ordMachine').value.trim();
-            if(!ordNo || isNaN(targetQty)) { alert('أدخل رقم الأمر والكمية المستهدفة'); return; }
+            if(!ordNo || isNaN(targetQty)) { alert('أدخل بيانات أمر الإنتاج'); return; }
             productionOrders.push({ordNo, code, targetQty, machine: machine || 'خط عام', status: 'نشط'});
-            document.getElementById('ordNo').value = '';
-            document.getElementById('ordTargetQty').value = '';
-            document.getElementById('ordMachine').value = '';
             refreshAllViews();
         }
 
-        function deleteProductionOrder(index) {
-            productionOrders.splice(index, 1);
-            refreshAllViews();
-        }
+        function deleteProductionOrder(index) { productionOrders.splice(index, 1); refreshAllViews(); }
 
         function renderMoves() {
             const tbody = document.getElementById('movesTableBody');
             tbody.innerHTML = '';
-            const dateFrom = document.getElementById('filterDateFrom').value;
-            const dateTo = document.getElementById('filterDateTo').value;
-
             movesData.forEach((m, index) => {
-                if (dateFrom && m.date < dateFrom) return;
-                if (dateTo && m.date > dateTo) return;
-
                 const item = itemsData.find(i => i.code === m.code);
-                let details = m.type === 'إضافة' ? `المورد: ${m.supplier || 'غير محدد'} | التكلفة: ${m.unitCost || 0} ج` : `المركز: ${m.costCenter || 'خط عام'}`;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${m.date}</td>
-                        <td>${m.code} - ${item ? item.name : ''}</td>
-                        <td>${m.type}</td>
-                        <td><b>${m.qty}</b></td>
-                        <td>${details}</td>
-                        <td>${m.costCenter || '-'}</td>
-                        <td>${m.note || '-'}</td>
-                        <td><button class="btn-danger" onclick="deleteMove(${index})">حذف</button></td>
-                    </tr>
-                `;
+                let details = m.type === 'إضافة' ? `المورد: ${m.supplier || '-'} | التكلفة: ${m.unitCost || 0} ج.م` : `المركز: ${m.costCenter || '-'}`;
+                tbody.innerHTML += `<tr><td>${m.date}</td><td>${m.code} - ${item ? item.name : ''}</td><td>${m.type}</td><td><b>${m.qty}</b></td><td>${details}</td><td>${m.costCenter || '-'}</td><td>${m.note || '-'}</td><td><button class="btn-danger" onclick="deleteMove(${index})">حذف</button></td></tr>`;
             });
             saveData();
-        }
-
-        function resetFilters() {
-            document.getElementById('filterDateFrom').value = '';
-            document.getElementById('filterDateTo').value = '';
-            renderMoves();
         }
 
         function addMove() {
@@ -652,29 +389,13 @@
             const supplier = document.getElementById('moveSupplier').value.trim();
             const unitCost = parseFloat(document.getElementById('moveUnitCost').value) || 0;
             const costCenter = document.getElementById('moveCenter').value.trim();
-
             if(isNaN(qty) || qty <= 0) { alert('أدخل كمية صحيحة'); return; }
-            const date = new Date().toISOString().slice(0,10);
-            movesData.push({code, type, qty, note, supplier, unitCost, costCenter, date});
-            
-            document.getElementById('moveQty').value = '';
-            document.getElementById('moveNote').value = '';
-            document.getElementById('moveSupplier').value = '';
-            document.getElementById('moveUnitCost').value = '';
-            document.getElementById('moveCenter').value = '';
+            const date = new Date().toISOString().split('T')[0];
+            movesData.push({date, code, type, qty, supplier, unitCost, costCenter, note});
             refreshAllViews();
         }
 
-        function deleteMove(index) {
-            movesData.splice(index, 1);
-            refreshAllViews();
-        }
-
-        function updatePhysicalCount(code, val) {
-            physicalCounts[code] = parseFloat(val) || 0;
-            saveData();
-            renderInventory();
-        }
+        function deleteMove(index) { movesData.splice(index, 1); refreshAllViews(); }
 
         function renderInventory() {
             const tbody = document.getElementById('inventoryTableBody');
@@ -688,66 +409,46 @@
                     }
                 });
                 let bookBalance = inbound - outbound;
-                if (physicalCounts[item.code] === undefined) {
-                    physicalCounts[item.code] = bookBalance;
-                }
-                let physicalBalance = physicalCounts[item.code];
-                let variance = physicalBalance - bookBalance;
-
-                let evaluationBadge = '';
-                if (variance === 0) {
-                    evaluationBadge = '<span class="badge-success">مطابق تماماً</span>';
-                } else if (variance < 0) {
-                    evaluationBadge = `<span class="badge-danger">عجز مخزني (${variance})</span>`;
-                } else {
-                    evaluationBadge = `<span class="badge-warning">زيادة مخزنية (+${variance})</span>`;
-                }
+                let physical = physicalCounts[item.code] !== undefined ? physicalCounts[item.code] : bookBalance;
+                let variance = physical - bookBalance;
+                let avgCost = getItemAvgCost(item.code);
+                let varianceVal = variance * avgCost;
 
                 tbody.innerHTML += `
                     <tr>
                         <td>${item.code}</td>
                         <td>${item.name}</td>
                         <td>${item.category}</td>
-                        <td><b>${bookBalance}</b></td>
-                        <td>
-                            <input type="number" value="${physicalBalance}" style="margin:0; text-align:center;" 
-                            onchange="updatePhysicalCount('${item.code}', this.value)">
-                        </td>
+                        <td>${bookBalance}</td>
+                        <td><input type="number" value="${physical}" onchange="updatePhysical('${item.code}', this.value)" style="width:80px; text-align:center;"></td>
                         <td><b>${variance}</b></td>
-                        <td>${evaluationBadge}</td>
-                    </tr>
-                `;
+                        <td>${avgCost.toFixed(2)} ج.م</td>
+                        <td><b style="color:${varianceVal < 0 ? '#E53E3E':'inherit'}">${varianceVal.toFixed(2)} ج.م</b></td>
+                    </tr>`;
             });
-            saveData();
         }
 
-        function renderAnalysis() {
-            const tbody = document.getElementById('analysisTableBody');
+        function updatePhysical(code, val) {
+            physicalCounts[code] = parseFloat(val) || 0;
+            saveData();
+            renderInventory();
+            renderLandingStats();
+        }
+
+        function renderCostAnalysis() {
+            const tbody = document.getElementById('costAnalysisTableBody');
             tbody.innerHTML = '';
             itemsData.forEach(item => {
-                let inbound = 0, outbound = 0, totalCostVal = 0, totalInQtyForCost = 0;
+                let inbound = 0, outbound = 0;
                 movesData.forEach(m => {
                     if(m.code === item.code) {
-                        if(m.type === 'إضافة') {
-                            inbound += m.qty;
-                            if(m.unitCost) {
-                                totalCostVal += (m.qty * m.unitCost);
-                                totalInQtyForCost += m.qty;
-                            }
-                        }
+                        if(m.type === 'إضافة') inbound += m.qty;
                         if(m.type === 'صرف') outbound += m.qty;
                     }
                 });
                 let balance = inbound - outbound;
-                let avgCost = totalInQtyForCost > 0 ? (totalCostVal / totalInQtyForCost) : 0;
-                let totalValuation = balance * avgCost;
-
-                let statusBadge = '<span class="badge-success">حركة متوازنة</span>';
-                if(balance <= (item.minQty || 0)) {
-                    statusBadge = '<span class="badge-danger">تحت الحد الأدنى (خطر)</span>';
-                } else if(balance === 0 && inbound > 0) {
-                    statusBadge = '<span class="badge-warning">صنف راكد</span>';
-                }
+                let avgCost = getItemAvgCost(item.code);
+                let totalVal = balance * avgCost;
 
                 tbody.innerHTML += `
                     <tr>
@@ -757,76 +458,34 @@
                         <td>${inbound}</td>
                         <td>${outbound}</td>
                         <td><b>${balance}</b></td>
-                        <td>${avgCost.toFixed(2)} ج</td>
-                        <td><b>${totalValuation.toFixed(2)} ج</b></td>
-                        <td>${statusBadge}</td>
-                    </tr>
-                `;
+                        <td>${avgCost.toFixed(2)} ج.م</td>
+                        <td><b>${totalVal.toFixed(2)} ج.م</b></td>
+                    </tr>`;
             });
         }
 
         function renderAdvisor() {
-            let lowCount = 0;
-            itemsData.forEach(i => {
+            let totalVal = 0;
+            itemsData.forEach(item => {
                 let inbound = 0, outbound = 0;
                 movesData.forEach(m => {
-                    if(m.code === i.code) {
+                    if(m.code === item.code) {
                         if(m.type === 'إضافة') inbound += m.qty;
                         if(m.type === 'صرف') outbound += m.qty;
                     }
                 });
-                if((inbound - outbound) <= (i.minQty || 0)) lowCount++;
+                totalVal += (inbound - outbound) * getItemAvgCost(item.code);
             });
 
-            let html = `<ul>`;
-            html += `<li><b>تقرير أمان التشغيل في شركة إي لوك:</b> تم دمج واجهة الاستقبال التنفيذية ومحرك مراقبة أوامر الإنتاج بنجاح كامل.</li>`;
-            html += `<li><b>فحص حد الطلب:</b> تم رصد عدد <b>${lowCount}</b> صنف وصل إلى منطقة الخطر الأدنى ويتطلب تدخلاً عاجلاً لإصدار طلبات الشراء.</li>`;
-            html += `<li><b>الرقابة على الأداء:</b> الواجهة الرئيسية توفر مؤشرات حية (KPIs) تتيح للمحاسب والإدارة متابعة نبض المصنع من نظرة واحدة.</li>`;
-            html += `<li><span style="color:#c05621; font-weight:bold;">التوصية الحتمية:</span> اعتمد هذه الواجهة كشاشة رئيسية للمتابعة الميدانية اليومية في المصنع.</li>`;
-            html += `</ul>`;
-            document.getElementById('advisorOutput').innerHTML = html;
-        }
-
-        function downloadCSVTemplate() {
-            const csvContent = "data:text/csv;charset=utf-8,\uFEFFكود الصنف,اسم الصنف,التصنيف,الوحدة,الحد الأدنى\nRM002,حبيبات بلاستيك إضافية,خام أساسي,كجم,500";
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "ilock_items_template.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function importCSV() {
-            const fileInput = document.getElementById('csvFileInput');
-            if (fileInput.files.length === 0) { alert('اختر ملف CSV أولاً'); return; }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const lines = e.target.result.split('\n');
-                let count = 0;
-                for (let i = 1; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (line) {
-                        const cols = line.split(',');
-                        if (cols.length >= 2) {
-                            const code = cols[0].trim().replace(/"/g, '');
-                            const name = cols[1].trim().replace(/"/g, '');
-                            const category = cols[2] ? cols[2].trim().replace(/"/g, '') : 'خام أساسي';
-                            const unit = cols[3] ? cols[3].trim().replace(/"/g, '') : 'قطعة';
-                            const minQty = cols[4] ? parseFloat(cols[4]) : 100;
-                            if (code && name) { itemsData.push({code, name, category, unit, minQty}); count++; }
-                        }
-                    }
-                }
-                refreshAllViews();
-                alert(`تم استيراد ${count} صنف بنجاح!`);
-            };
-            reader.readAsText(fileInput.files[0]);
+            document.getElementById('advisorOutput').innerHTML = `
+                <b>1. تقييم رأس المال العامل (Working Capital):</b> يبلغ إجمالي الأموال المجمدة في مخزون شركة إي لوك حالياً نحو <b>${totalVal.toFixed(2)} جنيه مصري</b>. يُنصح بمتابعة معدل دوران المخزون (Inventory Turnover) لضمان عدم تكدس الخامات الأساسية.<br><br>
+                <b>2. الرقابة على التكاليف الصناعية:</b> تم اعتماد نموذج تسعير يعتمد على "متوسط التكلفة المرجح" لكل إذن توريد وارد، مما يضمن دقة تحميل أوامر الإنتاج بالقيم الحقيقية عند الصرف لمراكز التكلفة.<br><br>
+                <b>3. تقييم الانحرافات والرقابة الداخلية:</b> الفروق بين الرصيد الدفتري والفعلية تؤثر مباشرة على قائمة الدخل كأرباح أو خسائر فروق جرد، ويجب مراجعة أسباب أي عجز مع أمين العهدة وخطوط الإنتاج فوراً.
+            `;
         }
 
         function resetData() {
-            if(confirm('هل تريد حقاً مسح كل البيانات والبدء من نقطة الصفر؟')) {
+            if(confirm('هل أنت متأكد من مسح كافة البيانات؟')) {
                 localStorage.clear();
                 location.reload();
             }
