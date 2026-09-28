@@ -3,548 +3,720 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iLock | النظام المتكامل لإدارة المخازن والإنتاج والتكاليف</title>
+    <title>iLock - نظام الإدارة المتكامل لمخازن مصنع الحقن</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; color: #333; }
-        header { background-color: #1A365D; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .logo { font-size: 20px; font-weight: bold; }
-        .sub-logo { font-size: 11px; color: #A0AEC0; }
-        nav { background-color: #2A4365; padding: 10px 15px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-start; }
-        nav button { background-color: #EDF2F7; border: none; padding: 7px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #2D3748; transition: 0.2s; font-size: 12px; }
-        nav button.active, nav button:hover { background-color: #3182CE; color: white; }
-        .container { max-width: 1250px; margin: 20px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
-        h2 { border-bottom: 2px solid #E2E8F0; padding-bottom: 10px; color: #2B6CB0; margin-top: 0; font-size: 18px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #CBD5E0; border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; font-size: 13px; }
-        button.btn-primary { background-color: #3182CE; color: white; border: none; padding: 9px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        button.btn-primary:hover { background-color: #2B6CB0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
-        th, td { border: 1px solid #E2E8F0; padding: 8px; text-align: center; font-size: 12px; }
-        th { background-color: #EDF2F7; color: #2D3748; }
-        .btn-danger { background-color: #E53E3E; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .card-box { background: #F7FAFC; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #E2E8F0; }
-        
-        .landing-hero { background: linear-gradient(135deg, #1A365D 0%, #2B6CB0 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .landing-hero h1 { margin: 0 0 10px 0; font-size: 24px; }
-        .landing-hero p { margin: 0; color: #E2E8F0; font-size: 14px; }
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .kpi-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-right: 5px solid #3182CE; transition: transform 0.2s; }
-        .kpi-card:hover { transform: translateY(-3px); }
-        .kpi-card.alert { border-right-color: #E53E3E; }
-        .kpi-title { font-size: 13px; color: #718096; margin-bottom: 8px; font-weight: bold; }
-        .kpi-value { font-size: 22px; font-weight: bold; color: #2D3748; }
-        
-        .advisor-box { background: #fffaf0; border: 1px solid #feebc8; padding: 15px; border-radius: 6px; margin-top: 15px; line-height: 1.6; font-size: 13px; }
-        .advisor-box h3 { color: #c05621; margin-top: 0; }
-        .badge-success { background: #C6F6D5; color: #22543D; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        :root {
+            --primary-color: #090d16;
+            --secondary-color: #1d4ed8;
+            --accent-green: #047857;
+            --accent-amber: #b45309;
+            --accent-rose: #b91c1c;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #cbd5e1;
+            --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --radius-main: 10px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1e293b 100%);
+            color: white;
+            padding: 24px 32px;
+            border-radius: var(--radius-main);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-subtle);
+            border-bottom: 4px solid var(--secondary-color);
+        }
+
+        .header-branding .brand-title {
+            font-size: 2em;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .header-branding .brand-subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin: 4px 0 0 0;
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .header-meta {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 10px 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+            font-size: 0.9em;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        nav {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: var(--radius-main);
+            box-shadow: var(--shadow-subtle);
+            flex-wrap: wrap;
+            border: 1px solid var(--border-color);
+        }
+
+        nav button {
+            background: transparent;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        nav button.active, nav button:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--card-bg);
+            padding: 26px;
+            border-radius: var(--radius-main);
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .kpi-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: var(--radius-main);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-subtle);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; width: 4px; height: 100%;
+            background: var(--secondary-color);
+        }
+        .kpi-card.accent::before { background: var(--accent-green); }
+        .kpi-card.warning::before { background: var(--accent-amber); }
+        .kpi-card.danger::before { background: var(--accent-rose); }
+
+        .kpi-title { font-size: 0.8em; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .kpi-value { font-size: 1.5em; font-weight: 900; margin-top: 8px; color: var(--primary-color); }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        th {
+            background-color: #e2e8f0;
+            color: var(--primary-color);
+            font-weight: 800;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        tr:hover td { background-color: #f8fafc; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group { margin-bottom: 14px; }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 700;
+            font-size: 0.85em;
+            color: var(--text-main);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 0.9em;
+            background-color: #ffffff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+
+        button.btn-save {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        button.btn-save:hover { opacity: 0.9; }
+
+        .filter-bar {
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: var(--radius-main);
+            border: 1px solid var(--border-color);
+            margin-bottom: 18px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.75em;
+            display: inline-block;
+        }
+        .badge-alert { background: #fee2e2; color: var(--accent-rose); }
+        .badge-safe { background: #dcfce7; color: var(--accent-green); }
+        .badge-nrv { background: #fef3c7; color: var(--accent-amber); }
     </style>
 </head>
 <body>
 
     <header>
-        <div>
-            <div class="logo">iLock | نظام المحاسبة الإدارية وتكاليف المصانع</div>
-            <div class="sub-logo">شركة إي لوك للصناعة البلاستيكية - وحدة الرقابة المالية والتخزينية</div>
+        <div class="header-branding">
+            <h1 class="brand-title">iLock</h1>
+            <p class="brand-subtitle">نظام إدارة المخزون والمحاسبة الإدارية - مصنع الحقن</p>
         </div>
-        <div id="liveClock" style="font-size: 12px; color: #E2E8F0;"></div>
+        <div class="header-meta">
+            <span>التاريخ: <strong id="current-date"></strong></span>
+        </div>
     </header>
 
     <nav>
-        <button onclick="switchTab('landing')" class="active">الواجهة الرئيسية</button>
-        <button onclick="switchTab('items')">الأصناف ورصيد أول المدة</button>
-        <button onclick="switchTab('production')">أوامر الإنتاج (BOM)</button>
-        <button onclick="switchTab('moves')">سجل الحركات والتكلفة</button>
-        <button onclick="switchTab('inventory')">الجرد المؤرخ والانحراف</button>
-        <button onclick="switchTab('costAnalysis')">تحليل التكاليف ورأس المال العامل</button>
-        <button onclick="switchTab('advisor')">تقارير المحاسبة الإدارية (AI)</button>
-        <button onclick="switchTab('data')">إدارة البيانات</button>
+        <button class="tab-btn active" onclick="switchTab(event, 'dashboard')">لوحة القيادة والمؤشرات</button>
+        <button class="tab-btn" onclick="switchTab(event, 'balances')">أرصدة وتقييم المخزون (IAS 2)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'families')">عائلات الأصناف</button>
+        <button class="tab-btn" onclick="switchTab(event, 'items')">دليل الأصناف</button>
+        <button class="tab-btn" onclick="switchTab(event, 'transactions')">حركات المخزن (وارد/صرْف/هالك)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'inventory')">الجرد العيني والانحرافات</button>
     </nav>
 
-    <div class="container">
-
-        <!-- 0. الواجهة الرئيسية -->
-        <div id="landing" class="tab-content active">
-            <div class="landing-hero">
-                <h1>مرحباً بك في نظام الرقابة الإدارية والتكاليف - إي لوك</h1>
-                <p>متابعة حركة المخزون، رصيد أول المدة، تقييم الأصول المتداولة، مراقبة تكلفة الإنتاج، وكشف انحرافات الجرد المؤرخ.</p>
+    <!-- لوحة القيادة -->
+    <div id="dashboard" class="tab-content active">
+        <h3 style="margin-top:0; color:var(--primary-color);">الملخص التنفيذي لرأس المال العامل</h3>
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">عائلات الأصناف</div>
+                <div class="kpi-value" id="kpi-families">0</div>
             </div>
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-title">إجمالي استثمارات المخزون</div>
-                    <div class="kpi-value" id="kpiTotalInventoryValue">0 ج.م</div>
-                </div>
-                <div class="kpi-card alert">
-                    <div class="kpi-title">أصناف تجاوزت حد الأمان</div>
-                    <div class="kpi-value" id="kpiLowStock" style="color: #E53E3E;">0</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-title">أوامر الإنتاج الفعالة</div>
-                    <div class="kpi-value" id="kpiOrdersCount">0</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-title">إجمالي فروق الجرد المالي</div>
-                    <div class="kpi-value" id="kpiTotalVarianceVal">0 ج.م</div>
-                </div>
+            <div class="kpi-card accent">
+                <div class="kpi-title">إجمالي قيمة المخزون الدفتري</div>
+                <div class="kpi-value" id="kpi-stock-value">0 ج.م</div>
             </div>
-            <div class="card-box">
-                <h3>مؤشرات الرقابة الإدارية الفورية</h3>
-                <div id="landingAlertsContent">جاري التحليل...</div>
+            <div class="kpi-card warning">
+                <div class="kpi-title">مخصص هبوط القيمة (IAS 2)</div>
+                <div class="kpi-value" id="kpi-nrv-loss">0 ج.م</div>
+            </div>
+            <div class="kpi-card danger">
+                <div class="kpi-title">أصناف حرجة (تحت حد الأمان)</div>
+                <div class="kpi-value" id="kpi-alerts">0</div>
             </div>
         </div>
 
-        <!-- 1. الأصناف ورصيد أول المدة -->
-        <div id="items" class="tab-content">
-            <h2>إدارة الأصناف، رصيد أول المدة، ومعايير حد إعادة الطلب</h2>
-            <div class="card-box">
-                <h3>تسجيل صنف جديد وتحديد رصيد أول المدة وتكوسته</h3>
-                <div style="display: grid; grid-template-columns: 1fr 2fr 1.2fr 0.8fr 1fr 1fr 1fr auto; gap: 8px; align-items: end;">
-                    <div><label>كود الصنف</label><input type="text" id="itemCode" placeholder="RM001"></div>
-                    <div><label>اسم الصنف</label><input type="text" id="itemName" placeholder="حبيبات بولي بروبيلين"></div>
-                    <div>
-                        <label>التصنيف</label>
-                        <select id="itemCategory">
-                            <option value="خام أساسي">خام أساسي</option>
-                            <option value="تامة الصنع">تامة الصنع</option>
-                            <option value="خام فرز ثاني">خام فرز ثاني</option>
-                            <option value="هالك (خرده)">هالك (خرده)</option>
-                        </select>
-                    </div>
-                    <div><label>الوحدة</label><input type="text" id="itemUnit" placeholder="كجم"></div>
-                    <div><label>رصيد أول المدة</label><input type="number" id="itemOpeningQty" placeholder="0"></div>
-                    <div><label>تكلفة الوحدة (ج.م)</label><input type="number" id="itemOpeningCost" placeholder="0.00"></div>
-                    <div><label>حد الطلب (Min)</label><input type="number" id="itemMinQty" placeholder="500"></div>
-                    <div><button class="btn-primary" onclick="addItem()">إضافة</button></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+            <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid var(--border-color);">
+                <h4 style="margin-top:0; color:var(--primary-color);">التنبيهات العاجلة للأصناف الحرجة</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الكود</th>
+                                <th>الصنف</th>
+                                <th>الرصيد</th>
+                                <th>حد الأمان</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashAlertsTable">
+                            <tr><td colspan="4" style="color:var(--text-muted);">لا توجد تنبيهات.</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+            <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid var(--border-color);">
+                <h4 style="margin-top:0; color:var(--primary-color);">آخر الحركات المخزنية المسجلة</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>الحركة</th>
+                                <th>الصنف</th>
+                                <th>القيمة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashTransTable">
+                            <tr><td colspan="4" style="color:var(--text-muted);">لا توجد حركات مسجلة.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- تقرير أرصدة وتقييم المخزون -->
+    <div id="balances" class="tab-content">
+        <h3 style="margin-top:0; color:var(--primary-color);">تقرير التقييم المعياري للمخزون (IAS 2)</h3>
+        <div class="filter-bar">
+            <select id="filterBalanceFamily" onchange="renderBalancesReport()" style="max-width:250px;">
+                <option value="">-- كل العائلات --</option>
+            </select>
+            <input type="text" id="searchBalanceText" placeholder="بحث بالاسم أو الكود..." onkeyup="renderBalancesReport()" style="max-width:280px;">
+        </div>
+        <div class="table-container">
             <table>
                 <thead>
-                    <tr><th>الكود</th><th>اسم الصنف</th><th>التصنيف</th><th>الوحدة</th><th>رصيد أول المدة</th><th>تكلفة الوحدة الافتتاحية</th><th>حد الطلب الآمن</th><th>إجراء</th></tr>
+                    <tr>
+                        <th>الكود</th>
+                        <th>اسم الصنف</th>
+                        <th>العائلة</th>
+                        <th>الرصيد الحالي</th>
+                        <th>تكلفة الوحدة المرجحة</th>
+                        <th>القيمة السوقية NRV</th>
+                        <th>القيمة الإجمالية المعيارية</th>
+                        <th>حالة المعيار</th>
+                    </tr>
                 </thead>
-                <tbody id="itemsTableBody"></tbody>
+                <tbody id="balancesTableBody">
+                    <tr><td colspan="8" style="color:var(--text-muted);">لا توجد أصناف.</td></tr>
+                </tbody>
             </table>
         </div>
+    </div>
 
-        <!-- 2. أوامر الإنتاج -->
-        <div id="production" class="tab-content">
-            <h2>أوامر الإنتاج وقائمة المواد المعيارية (BOM)</h2>
-            <div class="card-box">
-                <h3>إصدار أمر إنتاج تشغيلي</h3>
-                <div style="display: grid; grid-template-columns: 1.5fr 2fr 1fr 1fr auto; gap: 10px; align-items: end;">
-                    <div><label>رقم الأمر</label><input type="text" id="ordNo" placeholder="WO-001"></div>
-                    <div><label>المنتج التام المستهدف</label><select id="ordItemSelect"></select></div>
-                    <div><label>الكمية المستهدفة</label><input type="number" id="ordTargetQty" placeholder="1000"></div>
-                    <div><label>خط الإنتاج / الماكينة</label><input type="text" id="ordMachine" placeholder="ماكينة حقن 1"></div>
-                    <div><button class="btn-primary" onclick="addProductionOrder()">إصدار</button></div>
-                </div>
+    <!-- عائلات الأصناف -->
+    <div id="families" class="tab-content">
+        <h3 style="margin-top:0; color:var(--primary-color);">إدارة عائلات الأصناف (خام، صبغات، منتج تام، هالك)</h3>
+        <div class="form-group" style="max-width:400px; margin-bottom:20px;">
+            <label>اسم العائلة:</label>
+            <input type="text" id="familyNameInput" placeholder="مثال: حبيبات بكر / أصباغ حقن">
+            <label style="margin-top:10px;">السياسة المحاسبية والتخزينية:</label>
+            <input type="text" id="familyDescInput" placeholder="مثال: المتوسط المرجح بالتكلفة الفعلية">
+            <button class="btn-save" style="margin-top:12px;" onclick="addFamily()">حفظ العائلة</button>
+        </div>
+        <div class="table-container">
+            <table id="familiesTable">
+                <thead>
+                    <tr>
+                        <th>كود العائلة</th>
+                        <th>اسم العائلة</th>
+                        <th>السياسة التخزينية</th>
+                        <th>عدد الأصناف</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- دليل الأصناف -->
+    <div id="items" class="tab-content">
+        <h3 style="margin-top:0; color:var(--primary-color);">تعريف الأصناف وتحديد حدود الأمان والتكلفة</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>العائلة المخزنية:</label>
+                <select id="itemFamilySelect"><option value="">-- اختر --</option></select>
             </div>
+            <div class="form-group">
+                <label>اسم الصنف:</label>
+                <input type="text" id="itemNameInput" placeholder="اسم الصنف">
+            </div>
+            <div class="form-group">
+                <label>حد الأمان (Reorder Point):</label>
+                <input type="number" id="itemMinInput" value="0">
+            </div>
+            <div class="form-group">
+                <label>التكلفة التأسيسية للوحدة (ج.م):</label>
+                <input type="number" id="itemCostInput" value="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>القيمة السوقية NRV (ج.م):</label>
+                <input type="number" id="itemNrvInput" value="0" step="0.01">
+            </div>
+        </div>
+        <button class="btn-save" onclick="addItem()">إضافة الصنف</button>
+        <div class="table-container" style="margin-top:20px;">
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>الكود</th>
+                        <th>الصنف</th>
+                        <th>العائلة</th>
+                        <th>حد الأمان</th>
+                        <th>التكلفة المرجحة</th>
+                        <th>الرصيد</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- الحركات المخزنية -->
+    <div id="transactions" class="tab-content">
+        <h3 style="margin-top:0; color:var(--primary-color);">تسجيل حركات المخزن (وارد، صادر تشغيل، هالك مصنع)</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>نوع الحركة:</label>
+                <select id="transType">
+                    <option value="IN">وارد مخزن (شراء/توريد)</option>
+                    <option value="OUT">صادر تشغيل (أوامر إنتاج مصنع الحقن)</option>
+                    <option value="SCRAP">هالك/عادم إنتاجي (Sprues & Waste)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>اختر الصنف:</label>
+                <select id="transItemSelect"><option value="">-- اختر الصنف --</option></select>
+            </div>
+            <div class="form-group">
+                <label>الكمية:</label>
+                <input type="number" id="transQtyInput" min="1" value="1">
+            </div>
+            <div class="form-group">
+                <label>تكلفة الوحدة (للشحنات الواردة فقط):</label>
+                <input type="number" id="transCostInput" value="0" step="0.01">
+            </div>
+        </div>
+        <button class="btn-save" onclick="executeTransaction()">ترحيل وتسجيل الحركة</button>
+        <div class="table-container" style="margin-top:25px;">
+            <table id="transTable">
+                <thead>
+                    <tr>
+                        <th>رقم الحركة</th>
+                        <th>التاريخ</th>
+                        <th>النوع</th>
+                        <th>الصنف</th>
+                        <th>الكمية</th>
+                        <th>القيمة الإجمالية</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- الجرد الفعلي -->
+    <div id="inventory" class="tab-content">
+        <h3 style="margin-top:0; color:var(--primary-color);">شاشة الجرد الفعلي ومقارنة الانحرافات العينية</h3>
+        <div class="filter-bar">
+            <select id="filterInventoryFamily" onchange="renderInventory()" style="max-width:250px;">
+                <option value="">-- كل العائلات --</option>
+            </select>
+        </div>
+        <div class="table-container">
             <table>
                 <thead>
-                    <tr><th>رقم الأمر</th><th>المنتج</th><th>الكمية المستهدفة</th><th>خط الإنتاج</th><th>الحالة</th><th>إجراء</th></tr>
+                    <tr>
+                        <th>الكود</th>
+                        <th>الصنف</th>
+                        <th>العائلة</th>
+                        <th>الرصيد الدفتري</th>
+                        <th>الرصيد الفعلي (الجرد)</th>
+                        <th>الانحراف (عيني وقيمي)</th>
+                    </tr>
                 </thead>
-                <tbody id="productionTableBody"></tbody>
+                <tbody id="inventoryTableBody">
+                    <tr><td colspan="6" style="color:var(--text-muted);">لا توجد أصناف.</td></tr>
+                </tbody>
             </table>
         </div>
-
-        <!-- 3. الحركات -->
-        <div id="moves" class="tab-content">
-            <h2>سجل الحركات المخزنية التشغيلية (وارد شراء، صرف للإنتاج، مرتجع مورد)</h2>
-            <div class="card-box">
-                <h3>إذن حركة مخزنية جديدة</h3>
-                <div style="display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1.2fr 1.2fr 1.2fr auto; gap: 6px; align-items: end;">
-                    <div><label>تاريخ الحركة</label><input type="date" id="moveDate"></div>
-                    <div><label>الصنف</label><select id="moveItemSelect"></select></div>
-                    <div>
-                        <label>نوع الحركة</label>
-                        <select id="moveType" onchange="toggleMoveFields()">
-                            <option value="إضافة">إضافة (وارد شراء)</option>
-                            <option value="صرف">صرف (للإنتاج)</option>
-                            <option value="مرتجع مورد">مرتجع مورد</option>
-                        </select>
-                    </div>
-                    <div><label>الكمية</label><input type="number" id="moveQty" placeholder="0"></div>
-                    <div id="divSupplier"><label>المورد</label><input type="text" id="moveSupplier" placeholder="اسم المورد"></div>
-                    <div id="divCost"><label>تكلفة الوحدة (ج.م)</label><input type="number" id="moveUnitCost" placeholder="0.00"></div>
-                    <div id="divCenter" style="display:none;"><label>مركز التكلفة</label><input type="text" id="moveCenter" placeholder="ماكينة / قسم"></div>
-                    <div><label>البيان</label><input type="text" id="moveNote" placeholder="ملاحظات"></div>
-                    <div><button class="btn-primary" onclick="addMove()">تسجيل</button></div>
-                </div>
-            </div>
-            <table>
-                <thead>
-                    <tr><th>التاريخ</th><th>الصنف</th><th>النوع</th><th>الكمية</th><th>التكلفة / المورد</th><th>مركز التكلفة / الملاحظات</th><th>إجراء</th></tr>
-                </thead>
-                <tbody id="movesTableBody"></tbody>
-            </table>
-        </div>
-
-        <!-- 4. الجرد المؤرخ والانحراف المالي -->
-        <div id="inventory" class="tab-content">
-            <h2>الجرد الفعلي المؤرخ وتقييم فروق العجز والزيادة</h2>
-            <div class="card-box">
-                <h3>تثبيت بيانات لجنة وجلسة الجرد</h3>
-                <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 10px; align-items: end;">
-                    <div><label>تاريخ الجرد الفعلي</label><input type="date" id="inventoryDate"></div>
-                    <div><label>لجنة الجرد / ملاحظات</label><input type="text" id="inventoryCommittee" placeholder="لجنة الجرد الشهري"></div>
-                    <div><button class="btn-primary" onclick="saveInventorySessionDate()">تثبيت التاريخ واللجنة</button></div>
-                </div>
-                <p style="margin-top: 10px; font-size: 12px; color: #4A5568;">تاريخ الجرد المُعتمد: <b id="displayInvDate">-</b> | لجنة الجرد: <b id="displayInvComm">-</b></p>
-            </div>
-            <table>
-                <thead>
-                    <tr><th>الكود</th><th>الصنف</th><th>التصنيف</th><th>الرصيد الدفتري</th><th>الرصيد الفعلي</th><th>انحراف الكمية</th><th>متوسط التكلفة</th><th>إجمالي قيمة الانحراف المالي</th></tr>
-                </thead>
-                <tbody id="inventoryTableBody"></tbody>
-            </table>
-        </div>
-
-        <!-- 5. تحليل التكاليف ورأس المال العامل -->
-        <div id="costAnalysis" class="tab-content">
-            <h2>نموذج تحليل التكاليف ورأس المال العامل (محاسبة التكاليف والإدارية)</h2>
-            <div class="card-box">
-                <p>يوضح هذا الجدول تقييم الأرصدة الحالية للمخزون باستخدام طريقة <b>متوسط التكلفة المرجح (Weighted Average Cost)</b> متضمنةً رصيد أول المدة الثابت وحركات الوارد والصرف والمرتجعات.</p>
-            </div>
-            <table>
-                <thead>
-                    <tr><th>الكود</th><th>الصنف</th><th>التصنيف</th><th>رصيد أول المدة</th><th>إجمالي الوارد</th><th>إجمالي المنصرف/المرتجع</th><th>الرصيد الحالي</th><th>متوسط تكلفة الوحدة</th><th>إجمالي قيمة المخزون</th></tr>
-                </thead>
-                <tbody id="costAnalysisTableBody"></tbody>
-            </table>
-        </div>
-
-        <!-- 6. تقارير المحاسبة الإدارية -->
-        <div id="advisor" class="tab-content">
-            <h2>لوحة تقارير المحاسبة الإدارية واتخاذ القرار (Management Accounting)</h2>
-            <div class="advisor-box">
-                <h3>التحليل الاستراتيجي لتكلفة المخزون وكفاءة التشغيل</h3>
-                <div id="advisorOutput">جاري استخراج مؤشرات الأداء المالي والإداري...</div>
-            </div>
-        </div>
-
-        <!-- 7. البيانات -->
-        <div id="data" class="tab-content">
-            <h2>إدارة البيانات والنسخ الاحتياطي</h2>
-            <div class="card-box">
-                <p>من هنا يمكنك مسح كافة البيانات المسجلة محلياً وبدء دورة عمل جديدة:</p>
-                <button class="btn-danger" onclick="resetData()">مسح كافة البيانات وإعادة الضبط</button>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        document.getElementById('moveDate').valueAsDate = new Date();
-        document.getElementById('inventoryDate').valueAsDate = new Date();
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('ar-EG');
 
-        setInterval(() => {
-            document.getElementById('liveClock').innerText = new Date().toLocaleString('ar-EG');
-        }, 1000);
-
-        let itemsData = JSON.parse(localStorage.getItem('ilock_items')) || [
-            {code: 'RM001', name: 'حبيبات بولي بروبيلين PP', category: 'خام أساسي', unit: 'كجم', openingQty: 5000, openingCost: 25.00, minQty: 1000},
-            {code: 'FG001', name: 'فيشة كهرباء بلاستيك تام', category: 'تامة الصنع', unit: 'قطعة', openingQty: 400, openingCost: 45.00, minQty: 200}
-        ];
-        let productionOrders = JSON.parse(localStorage.getItem('ilock_prod_orders')) || [];
-        let movesData = JSON.parse(localStorage.getItem('ilock_moves')) || [];
-        let physicalCounts = JSON.parse(localStorage.getItem('ilock_physical_counts')) || {};
-        let inventoryMeta = JSON.parse(localStorage.getItem('ilock_inv_meta')) || {date: new Date().toISOString().split('T')[0], committee: 'لجنة جرد الموقع'};
-
-        // التأكد من صحة هيكل بيانات الأصناف ووجود خانات أول المدة
-        itemsData = itemsData.map(i => ({
-            code: i.code || '',
-            name: i.name || '',
-            category: i.category || 'خام أساسي',
-            unit: i.unit || 'قطعة',
-            openingQty: i.openingQty !== undefined ? Number(i.openingQty) : 0,
-            openingCost: i.openingCost !== undefined ? Number(i.openingCost) : 0,
-            minQty: i.minQty !== undefined ? Number(i.minQty) : 0
-        }));
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.querySelectorAll('nav button').forEach(btn => {
-                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
-            });
-            refreshAllViews();
-        }
-
-        function saveData() {
-            localStorage.setItem('ilock_items', JSON.stringify(itemsData));
-            localStorage.setItem('ilock_prod_orders', JSON.stringify(productionOrders));
-            localStorage.setItem('ilock_moves', JSON.stringify(movesData));
-            localStorage.setItem('ilock_physical_counts', JSON.stringify(physicalCounts));
-            localStorage.setItem('ilock_inv_meta', JSON.stringify(inventoryMeta));
-        }
-
-        function refreshAllViews() {
-            renderLandingStats();
-            renderItems();
-            renderProductionOrders();
-            renderMoves();
-            renderInventory();
-            renderCostAnalysis();
-            renderAdvisor();
-            updateSelectOptions();
-            document.getElementById('displayInvDate').innerText = inventoryMeta.date;
-            document.getElementById('displayInvComm').innerText = inventoryMeta.committee;
-            document.getElementById('inventoryDate').value = inventoryMeta.date;
-            document.getElementById('inventoryCommittee').value = inventoryMeta.committee;
-        }
-
-        function getItemAvgCost(code) {
-            let item = itemsData.find(i => i.code === code);
-            let totalCost = item ? (item.openingQty * item.openingCost) : 0;
-            let totalQty = item ? item.openingQty : 0;
-
-            movesData.forEach(m => {
-                if(m.code === code) {
-                    if(m.type === 'إضافة') {
-                        totalCost += (m.qty * (m.unitCost || 0));
-                        totalQty += m.qty;
-                    } else if(m.type === 'مرتجع مورد') {
-                        totalCost -= (m.qty * (m.unitCost || 0));
-                        totalQty -= m.qty;
-                    }
-                }
-            });
-            return totalQty > 0 ? (totalCost / totalQty) : (item ? item.openingCost : 0);
-        }
-
-        function getItemBalances(code) {
-            let item = itemsData.find(i => i.code === code);
-            let opening = item ? item.openingQty : 0;
-            let inbound = opening;
-            let outbound = 0;
-
-            movesData.forEach(m => {
-                if(m.code === code) {
-                    if(m.type === 'إضافة') inbound += m.qty;
-                    if(m.type === 'صرف' || m.type === 'مرتجع مورد') outbound += m.qty;
-                }
-            });
-            return { opening, inbound: inbound - opening, outbound, balance: inbound - outbound };
-        }
-
-        function renderLandingStats() {
-            document.getElementById('kpiOrdersCount').innerText = productionOrders.length;
+        function switchTab(evt, tabName) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
             
-            let totalInvVal = 0;
-            let lowStockCount = 0;
-            let totalVarianceVal = 0;
-
-            itemsData.forEach(item => {
-                let data = getItemBalances(item.code);
-                if(data.balance <= (item.minQty || 0)) lowStockCount++;
-
-                let avgCost = getItemAvgCost(item.code);
-                totalInvVal += (data.balance * avgCost);
-
-                let physical = physicalCounts[item.code] !== undefined ? physicalCounts[item.code] : data.balance;
-                let variance = physical - data.balance;
-                totalVarianceVal += (variance * avgCost);
-            });
-
-            document.getElementById('kpiTotalInventoryValue').innerText = totalInvVal.toFixed(2) + ' ج.م';
-            document.getElementById('kpiLowStock').innerText = lowStockCount;
-            document.getElementById('kpiTotalVarianceVal').innerText = totalVarianceVal.toFixed(2) + ' ج.م';
-
-            document.getElementById('landingAlertsContent').innerHTML = `
-                * إجمالي الأموال المستثمرة في المخزون (رأس المال العامل): <b>${totalInvVal.toFixed(2)} جنيه</b>.<br>
-                * عدد الأصناف التي كسرت حد الأمان وتتطلب طلب توريد عاجل: <b style="color:${lowStockCount > 0 ? '#E53E3E':'green'}">${lowStockCount} صنف</b>.<br>
-                * صافي فروق الجرد المالي المؤرخ (عجز/زيادة): <b>${totalVarianceVal.toFixed(2)} جنيه</b>.
-            `;
+            if(tabName === 'dashboard') renderDashboard();
+            if(tabName === 'balances') renderBalancesReport();
+            if(tabName === 'inventory') renderInventory();
+            if(tabName === 'items' || tabName === 'transactions') populateDropdowns();
         }
 
-        function updateSelectOptions() {
-            let itemOpts = '', fgOpts = '';
-            itemsData.forEach(i => {
-                itemOpts += `<option value="${i.code}">${i.code} - ${i.name}</option>`;
-                if(i.category === 'تامة الصنع') fgOpts += `<option value="${i.code}">${i.code} - ${i.name}</option>`;
-            });
-            document.getElementById('moveItemSelect').innerHTML = itemOpts;
-            document.getElementById('ordItemSelect').innerHTML = fgOpts || itemOpts;
+        let dbFamilies = JSON.parse(localStorage.getItem('ilock_families_v2')) || [];
+        let dbItems = JSON.parse(localStorage.getItem('ilock_items_v2')) || [];
+        let dbTrans = JSON.parse(localStorage.getItem('ilock_trans_v2')) || [];
+
+        function initData() {
+            renderDashboard();
+            renderBalancesReport();
+            renderFamilies();
+            renderItems();
+            renderTransactions();
+            populateDropdowns();
         }
 
-        function toggleMoveFields() {
-            const type = document.getElementById('moveType').value;
-            document.getElementById('divSupplier').style.display = (type === 'إضافة' || type === 'مرتجع مورد') ? 'block' : 'none';
-            document.getElementById('divCost').style.display = (type === 'إضافة' || type === 'مرتجع مورد') ? 'block' : 'none';
-            document.getElementById('divCenter').style.display = type === 'صرف' ? 'block' : 'none';
-        }
-
-        function renderItems() {
-            const tbody = document.getElementById('itemsTableBody');
-            tbody.innerHTML = '';
-            itemsData.forEach((item, index) => {
-                tbody.innerHTML += `<tr>
-                    <td>${item.code}</td>
-                    <td>${item.name}</td>
-                    <td>${item.category}</td>
-                    <td>${item.unit}</td>
-                    <td><b>${item.openingQty}</b></td>
-                    <td>${item.openingCost.toFixed(2)} ج.م</td>
-                    <td><b>${item.minQty}</b></td>
-                    <td><button class="btn-danger" onclick="deleteItem(${index})">حذف</button></td>
-                </tr>`;
-            });
-            saveData();
+        function addFamily() {
+            const name = document.getElementById('familyNameInput').value.trim();
+            const desc = document.getElementById('familyDescInput').value.trim();
+            if(!name) { alert('أدخل اسم العائلة'); return; }
+            dbFamilies.push({ id: 'FAM-' + (dbFamilies.length + 1).toString().padStart(3, '0'), name, desc: desc || 'تخزين قياسي' });
+            localStorage.setItem('ilock_families_v2', JSON.stringify(dbFamilies));
+            document.getElementById('familyNameInput').value = '';
+            document.getElementById('familyDescInput').value = '';
+            initData();
         }
 
         function addItem() {
-            const code = document.getElementById('itemCode').value.trim();
-            const name = document.getElementById('itemName').value.trim();
-            const category = document.getElementById('itemCategory').value;
-            const unit = document.getElementById('itemUnit').value.trim();
-            const openingQty = parseFloat(document.getElementById('itemOpeningQty').value) || 0;
-            const openingCost = parseFloat(document.getElementById('itemOpeningCost').value) || 0;
-            const minQty = parseFloat(document.getElementById('itemMinQty').value) || 0;
+            const familyId = document.getElementById('itemFamilySelect').value;
+            const name = document.getElementById('itemNameInput').value.trim();
+            const minLimit = Number(document.getElementById('itemMinInput').value) || 0;
+            const unitCost = Number(document.getElementById('itemCostInput').value) || 0;
+            const nrv = Number(document.getElementById('itemNrvInput').value) || unitCost;
 
-            if(!code || !name) { alert('أدخل الكود واسم الصنف'); return; }
-            itemsData.push({code, name, category, unit: unit || 'قطعة', openingQty, openingCost, minQty});
-            refreshAllViews();
-        }
-
-        function deleteItem(index) { itemsData.splice(index, 1); refreshAllViews(); }
-
-        function renderProductionOrders() {
-            const tbody = document.getElementById('productionTableBody');
-            tbody.innerHTML = '';
-            productionOrders.forEach((ord, index) => {
-                const item = itemsData.find(i => i.code === ord.code);
-                tbody.innerHTML += `<tr><td>${ord.ordNo}</td><td>${item ? item.name : ord.code}</td><td>${ord.targetQty}</td><td>${ord.machine}</td><td><span class="badge-success">${ord.status}</span></td><td><button class="btn-danger" onclick="deleteProductionOrder(${index})">حذف</button></td></tr>`;
+            if(!name || !familyId) { alert('اختر العائلة واسم الصنف'); return; }
+            const fam = dbFamilies.find(f => f.id === familyId);
+            dbItems.push({
+                id: 'ITM-' + (dbItems.length + 1).toString().padStart(3, '0'),
+                name, familyId, familyName: fam ? fam.name : 'غير محدد',
+                minLimit, unitCost, nrv, balance: 0
             });
-            saveData();
+            localStorage.setItem('ilock_items_v2', JSON.stringify(dbItems));
+            document.getElementById('itemNameInput').value = '';
+            initData();
         }
 
-        function addProductionOrder() {
-            const ordNo = document.getElementById('ordNo').value.trim();
-            const code = document.getElementById('ordItemSelect').value;
-            const targetQty = parseFloat(document.getElementById('ordTargetQty').value);
-            const machine = document.getElementById('ordMachine').value.trim();
-            if(!ordNo || isNaN(targetQty)) { alert('أدخل بيانات أمر الإنتاج'); return; }
-            productionOrders.push({ordNo, code, targetQty, machine: machine || 'خط عام', status: 'نشط'});
-            refreshAllViews();
-        }
-
-        function deleteProductionOrder(index) { productionOrders.splice(index, 1); refreshAllViews(); }
-
-        function renderMoves() {
-            const tbody = document.getElementById('movesTableBody');
-            tbody.innerHTML = '';
-            movesData.forEach((m, index) => {
-                const item = itemsData.find(i => i.code === m.code);
-                let details = (m.type === 'إضافة' || m.type === 'مرتجع مورد') ? `المورد: ${m.supplier || '-'} | التكلفة: ${m.unitCost || 0} ج.م` : `-`;
-                let centerOrNote = m.type === 'صرف' ? `المركز: ${m.costCenter || '-'}` : (m.note || '-');
-                tbody.innerHTML += `<tr><td>${m.date}</td><td>${m.code} - ${item ? item.name : ''}</td><td><b>${m.type}</b></td><td><b>${m.qty}</b></td><td>${details}</td><td>${centerOrNote}</td><td><button class="btn-danger" onclick="deleteMove(${index})">حذف</button></td></tr>`;
+        function populateDropdowns() {
+            ['itemFamilySelect', 'filterItemFamily', 'filterInventoryFamily', 'filterBalanceFamily'].forEach((id, idx) => {
+                const sel = document.getElementById(id);
+                if(!sel) return;
+                const val = sel.value;
+                sel.innerHTML = idx === 0 ? '<option value="">-- اختر --</option>' : '<option value="">-- الكل --</option>';
+                dbFamilies.forEach(f => sel.innerHTML += `<option value="${f.id}">${f.name}</option>`);
+                sel.value = val;
             });
-            saveData();
+
+            const transSel = document.getElementById('transItemSelect');
+            if(transSel) {
+                const val = transSel.value;
+                transSel.innerHTML = '<option value="">-- اختر الصنف --</option>';
+                dbItems.forEach(i => transSel.innerHTML += `<option value="${i.id}">${i.name} (رصيد: ${i.balance})</option>`);
+                transSel.value = val;
+            }
         }
 
-        function addMove() {
-            const date = document.getElementById('moveDate').value || new Date().toISOString().split('T')[0];
-            const code = document.getElementById('moveItemSelect').value;
-            const type = document.getElementById('moveType').value;
-            const qty = parseFloat(document.getElementById('moveQty').value);
-            const note = document.getElementById('moveNote').value.trim();
-            const supplier = document.getElementById('moveSupplier').value.trim();
-            const unitCost = parseFloat(document.getElementById('moveUnitCost').value) || 0;
-            const costCenter = document.getElementById('moveCenter').value.trim();
+        function renderBalancesReport() {
+            const tbody = document.getElementById('balancesTableBody');
+            tbody.innerHTML = '';
+            const famId = document.getElementById('filterBalanceFamily').value;
+            const txt = document.getElementById('searchBalanceText').value.toLowerCase();
 
-            if(isNaN(qty) || qty <= 0) { alert('أدخل كمية صحيحة'); return; }
-            movesData.push({date, code, type, qty, supplier, unitCost, costCenter, note});
-            refreshAllViews();
+            let list = dbItems.filter(i => (famId === "" || i.familyId === famId) && (i.name.toLowerCase().includes(txt) || i.id.toLowerCase().includes(txt)));
+
+            list.forEach(i => {
+                let evalVal = i.balance * Math.min(i.unitCost, i.nrv);
+                let isNRV = i.nrv < i.unitCost;
+                let isCrit = i.balance <= i.minLimit;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${i.id}</td>
+                        <td><strong>${i.name}</strong></td>
+                        <td>${i.familyName}</td>
+                        <td><strong>${i.balance}</strong></td>
+                        <td>${i.unitCost.toLocaleString()} ج.م</td>
+                        <td>${i.nrv.toLocaleString()} ج.م</td>
+                        <td><strong>${evalVal.toLocaleString()} ج.م</strong></td>
+                        <td>
+                            ${isNRV ? '<span class="badge badge-nrv">هبوط قيمى</span>' : '<span class="badge badge-safe">بالتكلفة</span>'}
+                            ${isCrit ? '<br><span class="badge badge-alert" style="margin-top:2px;">حرج عيني</span>' : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+            if(list.length === 0) tbody.innerHTML = '<tr><td colspan="8" style="color:var(--text-muted);">لا توجد بيانات مطابقة.</td></tr>';
         }
 
-        function deleteMove(index) { movesData.splice(index, 1); refreshAllViews(); }
+        function renderDashboard() {
+            document.getElementById('kpi-families').innerText = dbFamilies.length;
+            let totalVal = 0, nrvLoss = 0;
+            dbItems.forEach(i => {
+                totalVal += i.balance * Math.min(i.unitCost, i.nrv);
+                if(i.nrv < i.unitCost) nrvLoss += (i.unitCost - i.nrv) * i.balance;
+            });
+            document.getElementById('kpi-stock-value').innerText = totalVal.toLocaleString() + ' ج.م';
+            document.getElementById('kpi-nrv-loss').innerText = nrvLoss.toLocaleString() + ' ج.م';
 
-        function saveInventorySessionDate() {
-            const date = document.getElementById('inventoryDate').value;
-            const committee = document.getElementById('inventoryCommittee').value.trim();
-            if(!date) { alert('حدد تاريخ الجرد'); return; }
-            inventoryMeta = {date, committee: committee || 'لجنة الموقع'};
-            saveData();
-            refreshAllViews();
-            alert('تم تثبيت جلسة وتاريخ الجرد بنجاح');
+            let critical = dbItems.filter(i => i.balance <= i.minLimit);
+            document.getElementById('kpi-alerts').innerText = critical.length;
+
+            let alertsTbody = document.getElementById('dashAlertsTable');
+            alertsTbody.innerHTML = critical.map(i => `<tr><td>${i.id}</td><td>${i.name}</td><td><strong>${i.balance}</strong></td><td>${i.minLimit}</td></tr>`).join('') || '<tr><td colspan="4" style="color:var(--text-muted);">لا توجد تنبيهات. المخزون آمن.</td></tr>';
+
+            let transTbody = document.getElementById('dashTransTable');
+            transTbody.innerHTML = dbTrans.slice(0, 5).map(t => `<tr><td>${t.date}</td><td>${t.type}</td><td>${t.itemName}</td><td>${t.totalVal.toLocaleString()} ج.م</td></tr>`).join('') || '<tr><td colspan="4" style="color:var(--text-muted);">لا توجد حركات حديثة.</td></tr>';
+        }
+
+        function renderFamilies() {
+            const tbody = document.querySelector('#familiesTable tbody');
+            tbody.innerHTML = dbFamilies.map(f => `<tr><td>${f.id}</td><td>${f.name}</td><td>${f.desc}</td><td>${dbItems.filter(i => i.familyId === f.id).length}</td></tr>`).join('') || '<tr><td colspan="4" style="color:var(--text-muted);">لا توجد عائلات مسجلة.</td></tr>';
+        }
+
+        function renderItems() {
+            const tbody = document.querySelector('#itemsTable tbody');
+            tbody.innerHTML = dbItems.map(i => `<tr><td>${i.id}</td><td>${i.name}</td><td>${i.familyName}</td><td>${i.minLimit}</td><td>${i.unitCost.toLocaleString()} ج.م</td><td>${i.balance}</td></tr>`).join('') || '<tr><td colspan="6" style="color:var(--text-muted);">لا توجد أصناف.</td></tr>';
+        }
+
+        function executeTransaction() {
+            const type = document.getElementById('transType').value;
+            const itemId = document.getElementById('transItemSelect').value;
+            const qty = Number(document.getElementById('transQtyInput').value);
+            const cost = Number(document.getElementById('transCostInput').value);
+
+            if(!itemId || !qty || qty <= 0) { alert('تأكد من اختيار الصنف والكمية'); return; }
+            let item = dbItems.find(i => i.id === itemId);
+            if(!item) return;
+
+            if((type === 'OUT' || type === 'SCRAP') && item.balance < qty) {
+                alert('خطأ: الرصيد الحالي غير كافٍ لإتمام الصرف أو تسجيل الهالك!');
+                return;
+            }
+
+            if(type === 'IN' && cost > 0) {
+                item.unitCost = item.balance > 0 ? ((item.balance * item.unitCost) + (qty * cost)) / (item.balance + qty) : cost;
+                item.balance += qty;
+            } else if(type === 'OUT') {
+                item.balance -= qty;
+            } else if(type === 'SCRAP') {
+                item.balance -= qty; // تسجيل الهالك كعادم مصنع
+            }
+
+            let typeText = type === 'IN' ? 'وارد مخزن' : (type === 'OUT' ? 'صادر تشغيل' : 'هالك مصنع');
+            dbTrans.unshift({
+                id: 'TRX-' + (dbTrans.length + 1).toString().padStart(4, '0'),
+                date: new Date().toLocaleString('ar-EG'),
+                type: typeText,
+                itemName: item.name,
+                qty,
+                totalVal: qty * item.unitCost
+            });
+
+            localStorage.setItem('ilock_items_v2', JSON.stringify(dbItems));
+            localStorage.setItem('ilock_trans_v2', JSON.stringify(dbTrans));
+            initData();
+            alert('تم تسجيل الحركة بنجاح.');
+        }
+
+        function renderTransactions() {
+            const tbody = document.querySelector('#transTable tbody');
+            tbody.innerHTML = dbTrans.map(t => `<tr><td>${t.id}</td><td>${t.date}</td><td><strong>${t.type}</strong></td><td>${t.itemName}</td><td>${t.qty}</td><td>${t.totalVal.toLocaleString()} ج.م</td></tr>`).join('') || '<tr><td colspan="6" style="color:var(--text-muted);">لا توجد حركات مسجلة.</td></tr>';
         }
 
         function renderInventory() {
             const tbody = document.getElementById('inventoryTableBody');
             tbody.innerHTML = '';
-            itemsData.forEach(item => {
-                let data = getItemBalances(item.code);
-                let physical = physicalCounts[item.code] !== undefined ? physicalCounts[item.code] : data.balance;
-                let variance = physical - data.balance;
-                let avgCost = getItemAvgCost(item.code);
-                let varianceVal = variance * avgCost;
+            let famId = document.getElementById('filterInventoryFamily').value;
+            let list = dbItems.filter(i => famId === "" || i.familyId === famId);
 
+            list.forEach(i => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${item.code}</td>
-                        <td>${item.name}</td>
-                        <td>${item.category}</td>
-                        <td>${data.balance}</td>
-                        <td><input type="number" value="${physical}" onchange="updatePhysical('${item.code}', this.value)" style="width:80px; text-align:center;"></td>
-                        <td><b>${variance}</b></td>
-                        <td>${avgCost.toFixed(2)} ج.م</td>
-                        <td><b style="color:${varianceVal < 0 ? '#E53E3E':'inherit'}">${varianceVal.toFixed(2)} ج.م</b></td>
-                    </tr>`;
+                        <td>${i.id}</td>
+                        <td>${i.name}</td>
+                        <td>${i.familyName}</td>
+                        <td><strong>${i.balance}</strong></td>
+                        <td><input type="number" id="phys_${i.id}" value="${i.balance}" style="width:100px; text-align:center;" oninput="calcVar('${i.id}', ${i.balance}, ${i.unitCost})"></td>
+                        <td id="var_cell_${i.id}" style="color:var(--accent-green); font-weight:bold;">مطابق (0)</td>
+                    </tr>
+                `;
             });
+            if(list.length === 0) tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-muted);">لا توجد أصناف لجردها.</td></tr>';
         }
 
-        function updatePhysical(code, val) {
-            physicalCounts[code] = parseFloat(val) || 0;
-            saveData();
-            renderLandingStats();
+        function calcVar(id, book, cost) {
+            let val = document.getElementById(`phys_${id}`).value;
+            let cell = document.getElementById(`var_cell_${id}`);
+            if(val === "") { cell.innerText = "-"; return; }
+            let diff = Number(val) - book;
+            let fin = diff * cost;
+            if(diff === 0) { cell.innerText = "مطابق (0)"; cell.style.color = "var(--accent-green)"; }
+            else if(diff > 0) { cell.innerText = `زيادة (+${diff}) [${fin.toLocaleString()} ج.م]`; cell.style.color = "var(--secondary-color)"; }
+            else { cell.innerText = `عجز (${diff}) [${fin.toLocaleString()} ج.م]`; cell.style.color = "var(--accent-rose)"; }
         }
 
-        function renderCostAnalysis() {
-            const tbody = document.getElementById('costAnalysisTableBody');
-            tbody.innerHTML = '';
-            itemsData.forEach(item => {
-                let data = getItemBalances(item.code);
-                let avgCost = getItemAvgCost(item.code);
-                let totalVal = data.balance * avgCost;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.code}</td>
-                        <td>${item.name}</td>
-                        <td>${item.category}</td>
-                        <td>${data.opening}</td>
-                        <td>${data.inbound}</td>
-                        <td>${data.outbound}</td>
-                        <td><b>${data.balance}</b></td>
-                        <td>${avgCost.toFixed(2)} ج.م</td>
-                        <td><b>${totalVal.toFixed(2)} ج.م</b></td>
-                    </tr>`;
-            });
-        }
-
-        function renderAdvisor() {
-            let totalVal = 0;
-            itemsData.forEach(item => {
-                let data = getItemBalances(item.code);
-                totalVal += data.balance * getItemAvgCost(item.code);
-            });
-
-            document.getElementById('advisorOutput').innerHTML = `
-                <b>1. هيكلة رصيد أول المدة المحاسبي:</b> تم فصل رصيد أول المدة وتكلفته ليصبح جزءاً أساسياً وثابتاً في بطاقة الصنف، مما يمنع تكرار الخطأ أو ضياع البيانات أثناء الحركة اليومية.<br><br>
-                <b>2. تقييم رأس المال العامل:</b> إجمالي قيمة المخزون الحالي يحسب بدقة عبر <b>متوسط التكلفة المرجح (Weighted Average)</b> مع دمج رصيد البداية والوارد التشغيلي.<br><br>
-                <b>3. الرقابة والمطابقة:</b> تضمن هذه الطريقة تطابقاً كاملاً بين الأرصدة الدفترية وجلسات الجرد الفعلي المؤرخ.
-            `;
-        }
-
-        function resetData() {
-            if(confirm('هل أنت متأكد من مسح كافة البيانات؟')) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        refreshAllViews();
+        window.onload = initData;
     </script>
 </body>
 </html>
