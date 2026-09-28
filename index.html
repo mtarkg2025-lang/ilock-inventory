@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iLock - نظام الإدارة المتكامل لمخازن مصنع الحقن</title>
+    <title>iLock - النظام المتكامل لإدارة المخزون والإنتاج (مصنع الحقن)</title>
     <style>
         :root {
             --primary-color: #090d16;
@@ -16,8 +16,7 @@
             --text-main: #0f172a;
             --text-muted: #475569;
             --border-color: #cbd5e1;
-            --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             --radius-main: 10px;
         }
 
@@ -38,31 +37,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--shadow-subtle);
             border-bottom: 4px solid var(--secondary-color);
         }
 
-        .header-branding .brand-title {
-            font-size: 2em;
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            margin: 0;
-            color: #ffffff;
-        }
-
-        .header-branding .brand-subtitle {
-            font-size: 1.1em;
-            opacity: 0.9;
-            margin: 4px 0 0 0;
-            color: #60a5fa;
-            font-weight: 600;
-        }
+        .brand-title { font-size: 2em; font-weight: 900; margin: 0; color: #fff; }
+        .brand-subtitle { font-size: 1.05em; opacity: 0.9; margin: 4px 0 0 0; color: #60a5fa; font-weight: 600; }
 
         .header-meta {
             background: rgba(255, 255, 255, 0.08);
             padding: 10px 16px;
             border-radius: 8px;
-            backdrop-filter: blur(4px);
             font-size: 0.9em;
             border: 1px solid rgba(255, 255, 255, 0.12);
         }
@@ -82,13 +66,13 @@
         nav button {
             background: transparent;
             border: none;
-            padding: 10px 16px;
+            padding: 10px 14px;
             cursor: pointer;
             font-weight: 700;
             color: var(--text-muted);
             border-radius: 6px;
             transition: all 0.2s ease;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
         nav button.active, nav button:hover {
@@ -103,17 +87,9 @@
             border-radius: var(--radius-main);
             box-shadow: var(--shadow-subtle);
             border: 1px solid var(--border-color);
-            animation: fadeIn 0.25s ease-in-out;
         }
 
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .tab-content.active { display: block; }
 
         .kpi-grid {
             display: grid;
@@ -127,17 +103,10 @@
             padding: 20px;
             border-radius: var(--radius-main);
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-subtle);
             position: relative;
             overflow: hidden;
         }
-
-        .kpi-card::before {
-            content: '';
-            position: absolute;
-            top: 0; right: 0; width: 4px; height: 100%;
-            background: var(--secondary-color);
-        }
+        .kpi-card::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: var(--secondary-color); }
         .kpi-card.accent::before { background: var(--accent-green); }
         .kpi-card.warning::before { background: var(--accent-amber); }
         .kpi-card.danger::before { background: var(--accent-rose); }
@@ -153,30 +122,10 @@
             margin-top: 15px;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            white-space: nowrap;
-        }
-
-        th, td {
-            padding: 12px 14px;
-            text-align: center;
-            font-size: 0.9em;
-        }
-
-        th {
-            background-color: #e2e8f0;
-            color: var(--primary-color);
-            font-weight: 800;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        td {
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-
+        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+        th, td { padding: 12px 14px; text-align: center; font-size: 0.9em; }
+        th { background-color: #e2e8f0; color: var(--primary-color); font-weight: 800; border-bottom: 2px solid var(--border-color); }
+        td { border-bottom: 1px solid var(--border-color); color: var(--text-main); }
         tr:hover td { background-color: #f8fafc; }
 
         .form-row {
@@ -187,100 +136,62 @@
         }
 
         .form-group { margin-bottom: 14px; }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 700;
-            font-size: 0.85em;
-            color: var(--text-main);
+        label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.85em; }
+        input, select {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border-color);
+            border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 0.9em; background: #fff;
         }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 0.9em;
-            background-color: #ffffff;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
-        }
+        input:focus, select:focus { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1); }
 
         button.btn-save {
-            background: var(--accent-green);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.9em;
+            background: var(--accent-green); color: white; border: none;
+            padding: 10px 20px; cursor: pointer; border-radius: 6px; font-weight: 700; font-size: 0.9em;
         }
-
         button.btn-save:hover { opacity: 0.9; }
 
         .filter-bar {
-            background: #f8fafc;
-            padding: 14px;
-            border-radius: var(--radius-main);
-            border: 1px solid var(--border-color);
-            margin-bottom: 18px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
+            background: #f8fafc; padding: 14px; border-radius: var(--radius-main);
+            border: 1px solid var(--border-color); margin-bottom: 18px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
         }
 
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 0.75em;
-            display: inline-block;
-        }
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: 700; font-size: 0.75em; display: inline-block; }
         .badge-alert { background: #fee2e2; color: var(--accent-rose); }
         .badge-safe { background: #dcfce7; color: var(--accent-green); }
         .badge-nrv { background: #fef3c7; color: var(--accent-amber); }
+        .badge-type { background: #e0f2fe; color: var(--secondary-color); }
     </style>
 </head>
 <body>
 
     <header>
         <div class="header-branding">
-            <h1 class="brand-title">iLock</h1>
-            <p class="brand-subtitle">نظام إدارة المخزون والمحاسبة الإدارية - مصنع الحقن</p>
+            <h1 class="brand-title">iLock - مصنع إي لوك</h1>
+            <p class="brand-subtitle">نظام الإدارة المتكامل (المخزون، الجرد، التقييم المعياري، وإدارة الهالك)</p>
         </div>
         <div class="header-meta">
-            <span>التاريخ: <strong id="current-date"></strong></span>
+            <span>التاريخ التشغيلي: <strong id="current-date"></strong></span>
         </div>
     </header>
 
     <nav>
-        <button class="tab-btn active" onclick="switchTab(event, 'dashboard')">لوحة القيادة والمؤشرات</button>
+        <button class="tab-btn active" onclick="switchTab(event, 'dashboard')">لوحة القيادة</button>
         <button class="tab-btn" onclick="switchTab(event, 'balances')">أرصدة وتقييم المخزون (IAS 2)</button>
         <button class="tab-btn" onclick="switchTab(event, 'families')">عائلات الأصناف</button>
-        <button class="tab-btn" onclick="switchTab(event, 'items')">دليل الأصناف</button>
-        <button class="tab-btn" onclick="switchTab(event, 'transactions')">حركات المخزن (وارد/صرْف/هالك)</button>
-        <button class="tab-btn" onclick="switchTab(event, 'inventory')">الجرد العيني والانحرافات</button>
+        <button class="tab-btn" onclick="switchTab(event, 'items')">دليل الأصناف (خام/تام + الوحدة)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'transactions')">حركات المخزن وأوامر التشغيل والهالك</button>
+        <button class="tab-btn" onclick="switchTab(event, 'inventory')">الجرد الفعلي والفروق العينية</button>
     </nav>
 
-    <!-- لوحة القيادة -->
+    <!-- 1. لوحة القيادة -->
     <div id="dashboard" class="tab-content active">
-        <h3 style="margin-top:0; color:var(--primary-color);">الملخص التنفيذي لرأس المال العامل</h3>
+        <h3 style="margin-top:0; color:var(--primary-color);">الملخص التنفيذي للموقع</h3>
         <div class="kpi-grid">
             <div class="kpi-card">
-                <div class="kpi-title">عائلات الأصناف</div>
-                <div class="kpi-value" id="kpi-families">0</div>
+                <div class="kpi-title">إجمالي الأصناف المعرفة</div>
+                <div class="kpi-value" id="kpi-items-count">0</div>
             </div>
             <div class="kpi-card accent">
-                <div class="kpi-title">إجمالي قيمة المخزون الدفتري</div>
+                <div class="kpi-title">إجمالي القيمة الدفترية للمخزون</div>
                 <div class="kpi-value" id="kpi-stock-value">0 ج.م</div>
             </div>
             <div class="kpi-card warning">
@@ -288,54 +199,15 @@
                 <div class="kpi-value" id="kpi-nrv-loss">0 ج.م</div>
             </div>
             <div class="kpi-card danger">
-                <div class="kpi-title">أصناف حرجة (تحت حد الأمان)</div>
+                <div class="kpi-title">أصناف تحت حد الأمان</div>
                 <div class="kpi-value" id="kpi-alerts">0</div>
-            </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-            <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid var(--border-color);">
-                <h4 style="margin-top:0; color:var(--primary-color);">التنبيهات العاجلة للأصناف الحرجة</h4>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>الكود</th>
-                                <th>الصنف</th>
-                                <th>الرصيد</th>
-                                <th>حد الأمان</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dashAlertsTable">
-                            <tr><td colspan="4" style="color:var(--text-muted);">لا توجد تنبيهات.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid var(--border-color);">
-                <h4 style="margin-top:0; color:var(--primary-color);">آخر الحركات المخزنية المسجلة</h4>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>التاريخ</th>
-                                <th>الحركة</th>
-                                <th>الصنف</th>
-                                <th>القيمة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dashTransTable">
-                            <tr><td colspan="4" style="color:var(--text-muted);">لا توجد حركات مسجلة.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- تقرير أرصدة وتقييم المخزون -->
+    <!-- 2. تقييم المخزون المعياري -->
     <div id="balances" class="tab-content">
-        <h3 style="margin-top:0; color:var(--primary-color);">تقرير التقييم المعياري للمخزون (IAS 2)</h3>
+        <h3 style="margin-top:0; color:var(--primary-color);">تقرير الأرصدة وتقييم المعيار الدولي IAS 2</h3>
         <div class="filter-bar">
             <select id="filterBalanceFamily" onchange="renderBalancesReport()" style="max-width:250px;">
                 <option value="">-- كل العائلات --</option>
@@ -348,29 +220,30 @@
                     <tr>
                         <th>الكود</th>
                         <th>اسم الصنف</th>
-                        <th>العائلة</th>
+                        <th>التصنيف</th>
+                        <th>وحدة القياس</th>
                         <th>الرصيد الحالي</th>
                         <th>تكلفة الوحدة المرجحة</th>
                         <th>القيمة السوقية NRV</th>
-                        <th>القيمة الإجمالية المعيارية</th>
-                        <th>حالة المعيار</th>
+                        <th>القيمة الإجمالية الدفترية</th>
+                        <th>الحالة المحاسبية</th>
                     </tr>
                 </thead>
                 <tbody id="balancesTableBody">
-                    <tr><td colspan="8" style="color:var(--text-muted);">لا توجد أصناف.</td></tr>
+                    <tr><td colspan="9" style="color:var(--text-muted);">لا توجد أصناف مسجلة.</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- عائلات الأصناف -->
+    <!-- 3. عائلات الأصناف -->
     <div id="families" class="tab-content">
-        <h3 style="margin-top:0; color:var(--primary-color);">إدارة عائلات الأصناف (خام، صبغات، منتج تام، هالك)</h3>
+        <h3 style="margin-top:0; color:var(--primary-color);">إدارة عائلات الأصناف المخزنية</h3>
         <div class="form-group" style="max-width:400px; margin-bottom:20px;">
             <label>اسم العائلة:</label>
-            <input type="text" id="familyNameInput" placeholder="مثال: حبيبات بكر / أصباغ حقن">
-            <label style="margin-top:10px;">السياسة المحاسبية والتخزينية:</label>
-            <input type="text" id="familyDescInput" placeholder="مثال: المتوسط المرجح بالتكلفة الفعلية">
+            <input type="text" id="familyNameInput" placeholder="مثال: حبيبات بكر / منتجات تامة الحقن">
+            <label style="margin-top:10px;">السياسة التخزينية:</label>
+            <input type="text" id="familyDescInput" placeholder="مثال: المتوسط المرجح للتكلفة الفعلية">
             <button class="btn-save" style="margin-top:12px;" onclick="addFamily()">حفظ العائلة</button>
         </div>
         <div class="table-container">
@@ -379,8 +252,8 @@
                     <tr>
                         <th>كود العائلة</th>
                         <th>اسم العائلة</th>
-                        <th>السياسة التخزينية</th>
-                        <th>عدد الأصناف</th>
+                        <th>السياسة</th>
+                        <th>عدد الأصناف المرتبطة</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -388,17 +261,34 @@
         </div>
     </div>
 
-    <!-- دليل الأصناف -->
+    <!-- 4. دليل الأصناف (خام وتام مع وحدة القياس) -->
     <div id="items" class="tab-content">
-        <h3 style="margin-top:0; color:var(--primary-color);">تعريف الأصناف وتحديد حدود الأمان والتكلفة</h3>
+        <h3 style="margin-top:0; color:var(--primary-color);">دليل الأصناف (تصنيف دقيق + وحدة القياس الإلزامية)</h3>
         <div class="form-row">
             <div class="form-group">
                 <label>العائلة المخزنية:</label>
                 <select id="itemFamilySelect"><option value="">-- اختر --</option></select>
             </div>
             <div class="form-group">
+                <label>تصنيف الصنف:</label>
+                <select id="itemTypeSelect">
+                    <option value="خام">صنف خام (Raw Material)</option>
+                    <option value="تام">صنف تام (Finished Good)</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label>اسم الصنف:</label>
-                <input type="text" id="itemNameInput" placeholder="اسم الصنف">
+                <input type="text" id="itemNameInput" placeholder="اسم الصنف الدقيق">
+            </div>
+            <div class="form-group">
+                <label>وحدة القياس الأساسية:</label>
+                <select id="itemUnitSelect">
+                    <option value="كجم">كجم (Kilogram)</option>
+                    <option value="طن">طن (Ton)</option>
+                    <option value="قطعة">قطعة (Piece)</option>
+                    <option value="كرتونة">كرتونة (Carton)</option>
+                    <option value="شوال">شوال (Bag)</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>حد الأمان (Reorder Point):</label>
@@ -413,17 +303,19 @@
                 <input type="number" id="itemNrvInput" value="0" step="0.01">
             </div>
         </div>
-        <button class="btn-save" onclick="addItem()">إضافة الصنف</button>
+        <button class="btn-save" onclick="addItem()">تسجيل الصنف وإضافته للنظام</button>
         <div class="table-container" style="margin-top:20px;">
             <table id="itemsTable">
                 <thead>
                     <tr>
                         <th>الكود</th>
                         <th>الصنف</th>
+                        <th>التصنيف</th>
                         <th>العائلة</th>
+                        <th>وحدة القياس</th>
                         <th>حد الأمان</th>
                         <th>التكلفة المرجحة</th>
-                        <th>الرصيد</th>
+                        <th>الرصيد الحالي</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -431,16 +323,16 @@
         </div>
     </div>
 
-    <!-- الحركات المخزنية -->
+    <!-- 5. الحركات المخزنية والهالك -->
     <div id="transactions" class="tab-content">
-        <h3 style="margin-top:0; color:var(--primary-color);">تسجيل حركات المخزن (وارد، صادر تشغيل، هالك مصنع)</h3>
+        <h3 style="margin-top:0; color:var(--primary-color);">حركات المخزن (وارد شراء، صادر أوامر تشغيل، وهالك الإنتاج)</h3>
         <div class="form-row">
             <div class="form-group">
                 <label>نوع الحركة:</label>
                 <select id="transType">
-                    <option value="IN">وارد مخزن (شراء/توريد)</option>
+                    <option value="IN">وارد مخزن (شراء / توريد خامات)</option>
                     <option value="OUT">صادر تشغيل (أوامر إنتاج مصنع الحقن)</option>
-                    <option value="SCRAP">هالك/عادم إنتاجي (Sprues & Waste)</option>
+                    <option value="SCRAP">هالك / عادم إنتاجي (Sprues & Waste)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -456,14 +348,14 @@
                 <input type="number" id="transCostInput" value="0" step="0.01">
             </div>
         </div>
-        <button class="btn-save" onclick="executeTransaction()">ترحيل وتسجيل الحركة</button>
+        <button class="btn-save" onclick="executeTransaction()">اعتماد وترحيل الحركة</button>
         <div class="table-container" style="margin-top:25px;">
             <table id="transTable">
                 <thead>
                     <tr>
                         <th>رقم الحركة</th>
                         <th>التاريخ</th>
-                        <th>النوع</th>
+                        <th>نوع الحركة</th>
                         <th>الصنف</th>
                         <th>الكمية</th>
                         <th>القيمة الإجمالية</th>
@@ -474,9 +366,9 @@
         </div>
     </div>
 
-    <!-- الجرد الفعلي -->
+    <!-- 6. الجرد الفعلي والفروق -->
     <div id="inventory" class="tab-content">
-        <h3 style="margin-top:0; color:var(--primary-color);">شاشة الجرد الفعلي ومقارنة الانحرافات العينية</h3>
+        <h3 style="margin-top:0; color:var(--primary-color);">شاشة الجرد الفعلي والانحرافات (دفتري مقابل فعلي)</h3>
         <div class="filter-bar">
             <select id="filterInventoryFamily" onchange="renderInventory()" style="max-width:250px;">
                 <option value="">-- كل العائلات --</option>
@@ -488,14 +380,14 @@
                     <tr>
                         <th>الكود</th>
                         <th>الصنف</th>
-                        <th>العائلة</th>
+                        <th>التصنيف والوحدة</th>
                         <th>الرصيد الدفتري</th>
                         <th>الرصيد الفعلي (الجرد)</th>
                         <th>الانحراف (عيني وقيمي)</th>
                     </tr>
                 </thead>
                 <tbody id="inventoryTableBody">
-                    <tr><td colspan="6" style="color:var(--text-muted);">لا توجد أصناف.</td></tr>
+                    <tr><td colspan="6" style="color:var(--text-muted);">لا توجد أصناف لجردها.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -516,9 +408,9 @@
             if(tabName === 'items' || tabName === 'transactions') populateDropdowns();
         }
 
-        let dbFamilies = JSON.parse(localStorage.getItem('ilock_families_v2')) || [];
-        let dbItems = JSON.parse(localStorage.getItem('ilock_items_v2')) || [];
-        let dbTrans = JSON.parse(localStorage.getItem('ilock_trans_v2')) || [];
+        let dbFamilies = JSON.parse(localStorage.getItem('ilock_families_v3')) || [];
+        let dbItems = JSON.parse(localStorage.getItem('ilock_items_v3')) || [];
+        let dbTrans = JSON.parse(localStorage.getItem('ilock_trans_v3')) || [];
 
         function initData() {
             renderDashboard();
@@ -534,7 +426,7 @@
             const desc = document.getElementById('familyDescInput').value.trim();
             if(!name) { alert('أدخل اسم العائلة'); return; }
             dbFamilies.push({ id: 'FAM-' + (dbFamilies.length + 1).toString().padStart(3, '0'), name, desc: desc || 'تخزين قياسي' });
-            localStorage.setItem('ilock_families_v2', JSON.stringify(dbFamilies));
+            localStorage.setItem('ilock_families_v3', JSON.stringify(dbFamilies));
             document.getElementById('familyNameInput').value = '';
             document.getElementById('familyDescInput').value = '';
             initData();
@@ -542,25 +434,27 @@
 
         function addItem() {
             const familyId = document.getElementById('itemFamilySelect').value;
+            const typeName = document.getElementById('itemTypeSelect').value;
             const name = document.getElementById('itemNameInput').value.trim();
+            const unit = document.getElementById('itemUnitSelect').value;
             const minLimit = Number(document.getElementById('itemMinInput').value) || 0;
             const unitCost = Number(document.getElementById('itemCostInput').value) || 0;
             const nrv = Number(document.getElementById('itemNrvInput').value) || unitCost;
 
-            if(!name || !familyId) { alert('اختر العائلة واسم الصنف'); return; }
+            if(!name || !familyId) { alert('أدخل اسم الصنف واقترنه بعائلة مخزنية'); return; }
             const fam = dbFamilies.find(f => f.id === familyId);
             dbItems.push({
                 id: 'ITM-' + (dbItems.length + 1).toString().padStart(3, '0'),
                 name, familyId, familyName: fam ? fam.name : 'غير محدد',
-                minLimit, unitCost, nrv, balance: 0
+                typeName, unit, minLimit, unitCost, nrv, balance: 0
             });
-            localStorage.setItem('ilock_items_v2', JSON.stringify(dbItems));
+            localStorage.setItem('ilock_items_v3', JSON.stringify(dbItems));
             document.getElementById('itemNameInput').value = '';
             initData();
         }
 
         function populateDropdowns() {
-            ['itemFamilySelect', 'filterItemFamily', 'filterInventoryFamily', 'filterBalanceFamily'].forEach((id, idx) => {
+            ['itemFamilySelect', 'filterBalanceFamily', 'filterInventoryFamily'].forEach((id, idx) => {
                 const sel = document.getElementById(id);
                 if(!sel) return;
                 const val = sel.value;
@@ -573,7 +467,7 @@
             if(transSel) {
                 const val = transSel.value;
                 transSel.innerHTML = '<option value="">-- اختر الصنف --</option>';
-                dbItems.forEach(i => transSel.innerHTML += `<option value="${i.id}">${i.name} (رصيد: ${i.balance})</option>`);
+                dbItems.forEach(i => transSel.innerHTML += `<option value="${i.id}">${i.name} [${i.typeName}] (رصيد: ${i.balance} ${i.unit})</option>`);
                 transSel.value = val;
             }
         }
@@ -594,23 +488,24 @@
                     <tr>
                         <td>${i.id}</td>
                         <td><strong>${i.name}</strong></td>
-                        <td>${i.familyName}</td>
+                        <td><span class="badge badge-type">${i.typeName}</span></td>
+                        <td><strong>${i.unit}</strong></td>
                         <td><strong>${i.balance}</strong></td>
                         <td>${i.unitCost.toLocaleString()} ج.م</td>
                         <td>${i.nrv.toLocaleString()} ج.م</td>
                         <td><strong>${evalVal.toLocaleString()} ج.م</strong></td>
                         <td>
-                            ${isNRV ? '<span class="badge badge-nrv">هبوط قيمى</span>' : '<span class="badge badge-safe">بالتكلفة</span>'}
+                            ${isNRV ? '<span class="badge badge-nrv">هبوط قيمى (IAS 2)</span>' : '<span class="badge badge-safe">بالتكلفة التاريخية</span>'}
                             ${isCrit ? '<br><span class="badge badge-alert" style="margin-top:2px;">حرج عيني</span>' : ''}
                         </td>
                     </tr>
                 `;
             });
-            if(list.length === 0) tbody.innerHTML = '<tr><td colspan="8" style="color:var(--text-muted);">لا توجد بيانات مطابقة.</td></tr>';
+            if(list.length === 0) tbody.innerHTML = '<tr><td colspan="9" style="color:var(--text-muted);">لا توجد بيانات مطابقة.</td></tr>';
         }
 
         function renderDashboard() {
-            document.getElementById('kpi-families').innerText = dbFamilies.length;
+            document.getElementById('kpi-items-count').innerText = dbItems.length;
             let totalVal = 0, nrvLoss = 0;
             dbItems.forEach(i => {
                 totalVal += i.balance * Math.min(i.unitCost, i.nrv);
@@ -621,12 +516,6 @@
 
             let critical = dbItems.filter(i => i.balance <= i.minLimit);
             document.getElementById('kpi-alerts').innerText = critical.length;
-
-            let alertsTbody = document.getElementById('dashAlertsTable');
-            alertsTbody.innerHTML = critical.map(i => `<tr><td>${i.id}</td><td>${i.name}</td><td><strong>${i.balance}</strong></td><td>${i.minLimit}</td></tr>`).join('') || '<tr><td colspan="4" style="color:var(--text-muted);">لا توجد تنبيهات. المخزون آمن.</td></tr>';
-
-            let transTbody = document.getElementById('dashTransTable');
-            transTbody.innerHTML = dbTrans.slice(0, 5).map(t => `<tr><td>${t.date}</td><td>${t.type}</td><td>${t.itemName}</td><td>${t.totalVal.toLocaleString()} ج.م</td></tr>`).join('') || '<tr><td colspan="4" style="color:var(--text-muted);">لا توجد حركات حديثة.</td></tr>';
         }
 
         function renderFamilies() {
@@ -636,7 +525,7 @@
 
         function renderItems() {
             const tbody = document.querySelector('#itemsTable tbody');
-            tbody.innerHTML = dbItems.map(i => `<tr><td>${i.id}</td><td>${i.name}</td><td>${i.familyName}</td><td>${i.minLimit}</td><td>${i.unitCost.toLocaleString()} ج.م</td><td>${i.balance}</td></tr>`).join('') || '<tr><td colspan="6" style="color:var(--text-muted);">لا توجد أصناف.</td></tr>';
+            tbody.innerHTML = dbItems.map(i => `<tr><td>${i.id}</td><td>${i.name}</td><td><span class="badge badge-type">${i.typeName}</span></td><td>${i.familyName}</td><td><strong>${i.unit}</strong></td><td>${i.minLimit}</td><td>${i.unitCost.toLocaleString()} ج.م</td><td>${i.balance}</td></tr>`).join('') || '<tr><td colspan="8" style="color:var(--text-muted);">لا توجد أصناف.</td></tr>';
         }
 
         function executeTransaction() {
@@ -650,7 +539,7 @@
             if(!item) return;
 
             if((type === 'OUT' || type === 'SCRAP') && item.balance < qty) {
-                alert('خطأ: الرصيد الحالي غير كافٍ لإتمام الصرف أو تسجيل الهالك!');
+                alert('خطأ محاسبي: الرصيد الحالي غير كافٍ لإتمام الصرف أو تسجيل الهالك!');
                 return;
             }
 
@@ -660,23 +549,23 @@
             } else if(type === 'OUT') {
                 item.balance -= qty;
             } else if(type === 'SCRAP') {
-                item.balance -= qty; // تسجيل الهالك كعادم مصنع
+                item.balance -= qty; // استنزاف كمية الهالك من مخزن الخام أو التشغيل
             }
 
-            let typeText = type === 'IN' ? 'وارد مخزن' : (type === 'OUT' ? 'صادر تشغيل' : 'هالك مصنع');
+            let typeText = type === 'IN' ? 'وارد مخزن' : (type === 'OUT' ? 'صادر تشغيل' : 'هالك مصنع (Sprues)');
             dbTrans.unshift({
                 id: 'TRX-' + (dbTrans.length + 1).toString().padStart(4, '0'),
                 date: new Date().toLocaleString('ar-EG'),
                 type: typeText,
-                itemName: item.name,
+                itemName: item.name + ' (' + item.unit + ')',
                 qty,
                 totalVal: qty * item.unitCost
             });
 
-            localStorage.setItem('ilock_items_v2', JSON.stringify(dbItems));
-            localStorage.setItem('ilock_trans_v2', JSON.stringify(dbTrans));
+            localStorage.setItem('ilock_items_v3', JSON.stringify(dbItems));
+            localStorage.setItem('ilock_trans_v3', JSON.stringify(dbTrans));
             initData();
-            alert('تم تسجيل الحركة بنجاح.');
+            alert('تم اعتماد وحفظ الحركة وترحيل الأرصدة بنجاح.');
         }
 
         function renderTransactions() {
@@ -694,11 +583,11 @@
                 tbody.innerHTML += `
                     <tr>
                         <td>${i.id}</td>
-                        <td>${i.name}</td>
-                        <td>${i.familyName}</td>
+                        <td><strong>${i.name}</strong></td>
+                        <td><span class="badge badge-type">${i.typeName}</span> (${i.unit})</td>
                         <td><strong>${i.balance}</strong></td>
-                        <td><input type="number" id="phys_${i.id}" value="${i.balance}" style="width:100px; text-align:center;" oninput="calcVar('${i.id}', ${i.balance}, ${i.unitCost})"></td>
-                        <td id="var_cell_${i.id}" style="color:var(--accent-green); font-weight:bold;">مطابق (0)</td>
+                        <td><input type="number" id="phys_${i.id}" value="${i.balance}" style="width:110px; text-align:center;" oninput="calcVar('${i.id}', ${i.balance}, ${i.unitCost})"></td>
+                        <td id="var_cell_${i.id}" style="color:var(--accent-green); font-weight:bold;">مطابق دفترياً (0)</td>
                     </tr>
                 `;
             });
@@ -711,9 +600,9 @@
             if(val === "") { cell.innerText = "-"; return; }
             let diff = Number(val) - book;
             let fin = diff * cost;
-            if(diff === 0) { cell.innerText = "مطابق (0)"; cell.style.color = "var(--accent-green)"; }
-            else if(diff > 0) { cell.innerText = `زيادة (+${diff}) [${fin.toLocaleString()} ج.م]`; cell.style.color = "var(--secondary-color)"; }
-            else { cell.innerText = `عجز (${diff}) [${fin.toLocaleString()} ج.م]`; cell.style.color = "var(--accent-rose)"; }
+            if(diff === 0) { cell.innerText = "مطابق دفترياً (0)"; cell.style.color = "var(--accent-green)"; }
+            else if(diff > 0) { cell.innerText = `زيادة عينية (+${diff}) [${fin.toLocaleString()} ج.م]`; cell.style.color = "var(--secondary-color)"; }
+            else { cell.innerText = `عجز عيني (${diff}) [${fin.toLocaleString()} ج.م]`; cell.style.color = "var(--accent-rose)"; }
         }
 
         window.onload = initData;
