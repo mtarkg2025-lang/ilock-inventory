@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ilock_inventory_count_list" model="ir.ui.view">
+        <field name="name">ilock.inventory.count.list</field>
+        <field name="model">ilock.inventory.count</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/><field name="count_date"/><field name="warehouse_id"/><field name="location_id"/><field name="counter_id"/><field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_ilock_inventory_count_form" model="ir.ui.view">
+        <field name="name">ilock.inventory.count.form</field>
+        <field name="model">ilock.inventory.count</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start_count" type="object" string="Load Theoretical Stock" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_validate" type="object" string="Validate and Apply" class="btn-primary" invisible="state != 'counting'"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('validated', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,counting,validated,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group><group><field name="count_date"/><field name="warehouse_id"/></group><group><field name="location_id"/><field name="counter_id"/></group></group>
+                    <notebook><page string="Count Lines"><field name="line_ids" readonly="state in ('validated', 'cancelled')"><list editable="bottom"><field name="product_id" readonly="1"/><field name="location_id" readonly="1"/><field name="lot_id" readonly="1"/><field name="product_uom_id"/><field name="theoretical_qty"/><field name="counted_qty"/><field name="difference_qty" readonly="1"/></list></field></page><page string="Notes"><field name="note" placeholder="Count instructions or discrepancy reason..."/></page></notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_ilock_inventory_count" model="ir.actions.act_window">
+        <field name="name">Inventory Counts</field><field name="res_model">ilock.inventory.count</field><field name="view_mode">list,form</field>
+    </record>
+</odoo>
