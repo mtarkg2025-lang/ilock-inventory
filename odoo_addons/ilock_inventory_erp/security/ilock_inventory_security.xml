@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_ilock_inventory" model="ir.module.category">
+        <field name="name">I LOCK Inventory</field>
+        <field name="sequence">25</field>
+    </record>
+    <record id="group_ilock_inventory_user" model="res.groups">
+        <field name="name">I LOCK Inventory User</field>
+        <field name="category_id" ref="ilock_inventory_erp.module_category_ilock_inventory"/>
+        <field name="implied_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+    </record>
+    <record id="group_ilock_inventory_manager" model="res.groups">
+        <field name="name">I LOCK Inventory Manager</field>
+        <field name="category_id" ref="ilock_inventory_erp.module_category_ilock_inventory"/>
+        <field name="implied_ids" eval="[(4, ref('ilock_inventory_erp.group_ilock_inventory_user')), (4, ref('stock.group_stock_manager'))]"/>
+    </record>
+    <record id="seq_ilock_inventory_count" model="ir.sequence">
+        <field name="name">I LOCK Inventory Count</field>
+        <field name="code">ilock.inventory.count</field>
+        <field name="prefix">IC/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

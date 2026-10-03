@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ilock_inventory_root" name="I LOCK Controls" parent="stock.menu_stock_root" sequence="80" groups="ilock_inventory_erp.group_ilock_inventory_user"/>
+    <menuitem id="menu_ilock_inventory_count" name="Inventory Counts" parent="menu_ilock_inventory_root" action="action_ilock_inventory_count" sequence="10" groups="ilock_inventory_erp.group_ilock_inventory_user"/>
+</odoo>

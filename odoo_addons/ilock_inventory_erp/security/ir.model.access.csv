@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ilock_inventory_count_user,ilock.inventory.count.user,model_ilock_inventory_count,ilock_inventory_erp.group_ilock_inventory_user,1,1,1,0
+access_ilock_inventory_count_manager,ilock.inventory.count.manager,model_ilock_inventory_count,ilock_inventory_erp.group_ilock_inventory_manager,1,1,1,1
+access_ilock_inventory_count_line_user,ilock.inventory.count.line.user,model_ilock_inventory_count_line,ilock_inventory_erp.group_ilock_inventory_user,1,1,1,0
+access_ilock_inventory_count_line_manager,ilock.inventory.count.line.manager,model_ilock_inventory_count_line,ilock_inventory_erp.group_ilock_inventory_manager,1,1,1,1
