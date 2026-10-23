@@ -50,8 +50,8 @@ jobs:
           assert "S.rateAudit" in js and "invalidForPlan" in js, "Source-rate validation guard missing"
           assert "S.stockImportAudit" in js and "exportStockImportAudit" in js, "Stock reconciliation audit missing"
           assert "لم يُوزّع أي رصيد على مواقع متعددة بالتخمين" in js, "Ambiguous stock mapping guard missing"
-          for field in ["نسبة اللون", "نسبة المرتجع", "المعامل"]:
-              assert field in json.dumps(db["columns"], ensure_ascii=False), f"Source column missing: {field}"
+          for field in ["rawColor", "rawReturn", "rawFactor"]:
+              assert field in js, f"Source field preservation missing: {field}"
           print(f"Validated {len(db['items'])} master items, {len(db['columns'])} fields, {len(rates['rows'])} source-rate rows, and SHADOW control safeguards")
           PY
           node --check /tmp/shadow-inline.js
