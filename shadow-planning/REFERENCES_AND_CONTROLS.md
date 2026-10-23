@@ -12,7 +12,11 @@
    https://docs.oracle.com/cd/A60725_05/html/comnls/us/inv/roplan.htm
 4. **IFRS Foundation — IAS 2 Inventories (معيار المحاسبة الدولي رقم 2: المخزون).** يوضح نطاق تكلفة المخزون والقياس بالأقل من التكلفة وصافي القيمة القابلة للتحقق.  
    https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2023/issued/part-a/ias-2-inventories.pdf?bypass=on
-5. **ASCM — SCOR Practices (ممارسات سلسلة الإمداد).** دليل لاختيار الممارسات المناسبة بحسب الصناعة، مع التنبيه إلى أن ذكر الممارسة لا يغني عن بحث وتطبيق ملائمين.  
+5. **COSO — Internal Control—Integrated Framework (إطار الرقابة الداخلية المتكامل).** مرجع لتصميم بيئة الرقابة وتقييم المخاطر وأنشطة الرقابة والمعلومات والمتابعة.  
+   https://www.coso.org/internal-control
+6. **The Institute of Internal Auditors (IIA) — Three Lines Model (نموذج الخطوط الثلاثة).** يوضح توزيع الأدوار بين الإدارة التشغيلية وإدارة المخاطر/الامتثال والتدقيق الداخلي المستقل.  
+   https://www.theiia.org/en/content/position-papers/2020/the-iias-three-lines-model-an-update-of-the-three-lines-of-defense/
+7. **ASCM — SCOR Practices (ممارسات سلسلة الإمداد).** دليل لاختيار الممارسات المناسبة بحسب الصناعة، مع التنبيه إلى أن ذكر الممارسة لا يغني عن بحث وتطبيق ملائمين.  
    https://scor.ascm.org/practices/introduction
 
 ## 2) كيف تُترجم المراجع إلى قواعد SHADOW
