@@ -1,7 +1,9 @@
-name: Deploy SHADOW to GitHub Pages
+name: Validate SHADOW and deploy stable Pages
 
 on:
   push:
+    branches: ["main", "shadow-core-rebuild"]
+  pull_request:
     branches: ["main"]
   workflow_dispatch:
 
@@ -11,11 +13,53 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.event_name == 'pull_request' || github.ref != 'refs/heads/main' && github.ref || 'stable' }}"
   cancel-in-progress: true
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate bundled data, JavaScript, and SHADOW core safeguards
+        run: |
+          python - <<'PY'
+          import base64, gzip, json, pathlib, re
+          root = pathlib.Path(".")
+          def read_b64_gzip(path):
+              encoded = path.read_text().strip()
+              encoded += "=" * (-len(encoded) % 4)
+              return json.loads(gzip.decompress(base64.b64decode(encoded)))
+          db = read_b64_gzip(root / "shadow-planning/injection-database.json.gz.b64")
+          rates = read_b64_gzip(root / "shadow-planning/production-rates.json.gz.b64")
+          assert len(db["items"]) == 237, f"Unexpected item count: {len(db['items'])}"
+          assert len(db["columns"]) == 18, f"Unexpected item fields: {len(db['columns'])}"
+          assert len(rates["rows"]) == 257, f"Unexpected rates row count: {len(rates['rows'])}"
+          html = (root / "shadow-planning/index.html").read_text()
+          scripts = re.findall(r"<script>(.*?)</script>", html, re.S)
+          assert scripts, "Inline JavaScript block not found"
+          js = scripts[-1]
+          pathlib.Path("/tmp/shadow-inline.js").write_text(js)
+          worker = (root / "shadow-planning/worker.js").read_text()
+          pathlib.Path("/tmp/shadow-worker.js").write_text(worker.replace("export default {", "const SHADOW_WORKER = {", 1))
+          core_order = ['id="database"', 'id="plan"', 'id="needs"', 'id="stock"', 'id="brain"', 'id="quality"', 'id="controls"', 'id="agent"']
+          positions = [html.index(x) for x in core_order]
+          assert positions == sorted(positions), "SHADOW operational flow order regressed"
+          assert "function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){message(" in js, "Silent save failures must be visible"
+          assert "S.rateAudit" in js and "invalidForPlan" in js, "Source-rate validation guard missing"
+          assert "S.stockImportAudit" in js and "exportStockImportAudit" in js, "Stock reconciliation audit missing"
+          assert "لم يتم توزيع أي رصيد على مواقع متعددة بالتخمين" in js, "Ambiguous stock mapping guard missing"
+          for field in ["نسبة اللون", "نسبة المرتجع", "المعامل"]:
+              assert field in json.dumps(db["columns"], ensure_ascii=False), f"Source column missing: {field}"
+          print(f"Validated {len(db['items'])} master items, {len(db['columns'])} fields, {len(rates['rows'])} source-rate rows, and SHADOW control safeguards")
+          PY
+          node --check /tmp/shadow-inline.js
+          node --check /tmp/shadow-worker.js
+
   deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: validate
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -23,23 +67,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Validate bundled data and inline JavaScript
-        run: |
-          python - <<'PY'
-          import base64, gzip, json, pathlib, re
-          root = pathlib.Path(".")
-          db = json.loads(gzip.decompress(base64.b64decode((root / "shadow-planning/injection-database.json.gz.b64").read_text().strip())))
-          rates = json.loads(gzip.decompress(base64.b64decode((root / "shadow-planning/production-rates.json.gz.b64").read_text().strip())))
-          assert len(db["items"]) == 237, f"Unexpected item count: {len(db['items'])}"
-          assert len(db["columns"]) == 18, f"Unexpected item fields: {len(db['columns'])}"
-          assert len(rates["rows"]) == 257, f"Unexpected rates row count: {len(rates['rows'])}"
-          html = (root / "shadow-planning/index.html").read_text()
-          scripts = re.findall(r"<script>(.*?)</script>", html, re.S)
-          assert scripts, "Inline JavaScript block not found"
-          pathlib.Path("/tmp/shadow-inline.js").write_text(scripts[-1])
-          print(f"Validated {len(db['items'])} items, {len(db['columns'])} fields, {len(rates['rows'])} source-rate rows")
-          PY
-          node --check /tmp/shadow-inline.js
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload static site
