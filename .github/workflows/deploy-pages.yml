@@ -23,6 +23,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Validate bundled data and inline JavaScript
+        run: |
+          python - <<'PY'
+          import base64, gzip, json, pathlib, re
+          root = pathlib.Path(".")
+          db = json.loads(gzip.decompress(base64.b64decode((root / "shadow-planning/injection-database.json.gz.b64").read_text().strip())))
+          rates = json.loads(gzip.decompress(base64.b64decode((root / "shadow-planning/production-rates.json.gz.b64").read_text().strip())))
+          assert len(db["items"]) == 237, f"Unexpected item count: {len(db['items'])}"
+          assert len(db["columns"]) == 18, f"Unexpected item fields: {len(db['columns'])}"
+          assert len(rates["rows"]) == 257, f"Unexpected rates row count: {len(rates['rows'])}"
+          html = (root / "shadow-planning/index.html").read_text()
+          scripts = re.findall(r"<script>(.*?)</script>", html, re.S)
+          assert scripts, "Inline JavaScript block not found"
+          pathlib.Path("/tmp/shadow-inline.js").write_text(scripts[-1])
+          print(f"Validated {len(db['items'])} items, {len(db['columns'])} fields, {len(rates['rows'])} source-rate rows")
+          PY
+          node --check /tmp/shadow-inline.js
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload static site
