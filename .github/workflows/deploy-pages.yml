@@ -49,7 +49,7 @@ jobs:
           assert "function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){message(" in js, "Silent save failures must be visible"
           assert "S.rateAudit" in js and "invalidForPlan" in js, "Source-rate validation guard missing"
           assert "S.stockImportAudit" in js and "exportStockImportAudit" in js, "Stock reconciliation audit missing"
-          assert "لم يتم توزيع أي رصيد على مواقع متعددة بالتخمين" in js, "Ambiguous stock mapping guard missing"
+          assert "لم يُوزّع أي رصيد على مواقع متعددة بالتخمين" in js, "Ambiguous stock mapping guard missing"
           for field in ["نسبة اللون", "نسبة المرتجع", "المعامل"]:
               assert field in json.dumps(db["columns"], ensure_ascii=False), f"Source column missing: {field}"
           print(f"Validated {len(db['items'])} master items, {len(db['columns'])} fields, {len(rates['rows'])} source-rate rows, and SHADOW control safeguards")
