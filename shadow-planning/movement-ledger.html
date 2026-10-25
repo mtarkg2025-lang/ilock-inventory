@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SHADOW | سجل الحركات التجريبي</title>
+<style>
+:root{--navy:#10263e;--blue:#245b83;--teal:#0d7377;--bg:#f3f6f9;--line:#dbe3ea;--muted:#637381;--red:#a52b2b;--amber:#fff2cf}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#1d2b36;font-family:Tahoma,Arial,sans-serif}header{background:var(--navy);color:white;padding:18px max(14px,calc((100vw - 1300px)/2))}h1{font-size:22px;margin:0 0 8px}header p{font-size:12px;line-height:1.8;margin:0}main{max-width:1300px;margin:auto;padding:14px}.notice,.card{background:white;border:1px solid var(--line);border-radius:10px;padding:13px;margin-bottom:13px}.notice{background:#fff8df;border-color:#d8c37b;font-size:12px;line-height:1.9}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.field{display:flex;flex-direction:column;gap:5px;min-width:0}.field label{font-size:12px;color:var(--muted);font-weight:bold}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;min-width:0;border:1px solid #cbd6df;border-radius:7px;padding:9px;background:white}textarea{min-height:40px}button{border:0;border-radius:7px;padding:9px 12px;background:var(--navy);color:white;cursor:pointer;font-size:12px;font-weight:bold}.secondary{background:#e7eef4;color:var(--navy)}.approve{background:#17623b}.reject{background:var(--red)}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.kpi{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:11px;font-size:12px;color:var(--muted)}.kpi strong{display:block;font-size:21px;color:var(--navy);margin-top:5px}.table{overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:10px}table{border-collapse:collapse;width:100%;min-width:1100px;background:white}th,td{padding:8px;border-bottom:1px solid #e7edf1;text-align:right;font-size:12px;white-space:nowrap}th{background:#eaf0f5;color:#253e50;position:sticky;top:0}.muted{font-size:12px;line-height:1.8;color:var(--muted)}.pill{border-radius:20px;padding:4px 8px;font-size:11px;font-weight:bold;background:#fff2cf;color:#765300}.good{background:#e2f3e8;color:#17623b}.bad{background:#fde8e7;color:#9c2929}.status{font-size:12px;line-height:1.8;padding:10px;background:#e9f3fa;border-radius:8px;margin-top:10px}.danger{color:var(--red);font-weight:bold}.small{font-size:11px;color:var(--muted)}@media(max-width:800px){.grid,.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){main{padding:8px}.grid,.kpis{grid-template-columns:1fr}}@media print{button,.noprint{display:none!important}body{background:white}main{max-width:none;padding:0}.card,.notice{break-inside:avoid}}
+</style></head>
+<body><header><h1>SHADOW — سجل الحركات ومراجعة الرصيد</h1><p>نموذج تجريبي مستقل لتسجيل الحركات مع حالة اعتماد واضحة. لا يتصل حاليًا بدليل الأصناف أو أودو، ولا يغير أرصدة المصنع الرسمية.</p></header>
+<main>
+<div class="notice"><b>حدود مهمة قبل الاستخدام:</b> هذه نسخة تجريبية تحفظ البيانات في المتصفح والجهاز الحالي فقط (localStorage)، وليست قاعدة بيانات مركزية أو نظام صلاحيات آمنًا. لا تدخل بيانات سرية. لا تعتمد رصيدًا رسميًا إلا بعد مطابقة المستندات والمخزن والصنف واعتماد المسؤول وفق إجراء المصنع. الحركات المعتمدة لا تُحذف أو تُعدّل من هذه الشاشة؛ صحّحها بحركة عكسية موثقة.</div>
+<section class="card"><h2>1) تسجيل حركة جديدة</h2>
+<form id="moveForm"><div class="grid">
+<div class="field"><label for="date">تاريخ الحركة *</label><input id="date" type="date" required></div>
+<div class="field"><label for="type">نوع الحركة *</label><select id="type" required><option value="استلام">استلام</option><option value="صرف">صرف</option><option value="رصيد افتتاحي">رصيد افتتاحي</option><option value="تسوية زيادة">تسوية زيادة</option><option value="تسوية عجز">تسوية عجز</option><option value="مرتجع للمخزن">مرتجع للمخزن</option><option value="عكس حركة">عكس حركة</option></select></div>
+<div class="field"><label for="code">كود الصنف الرسمي *</label><input id="code" required maxlength="100" placeholder="اكتب الكود من المصدر المعتمد"></div>
+<div class="field"><label for="name">اسم الصنف كما بالمصدر *</label><input id="name" required maxlength="200" placeholder="لا تستخدم اسمًا تخمينيًا"></div>
+<div class="field"><label for="warehouse">المخزن/الموقع *</label><input id="warehouse" required maxlength="120" placeholder="الموقع الفعلي المحدد"></div>
+<div class="field"><label for="qty">الكمية الموجبة *</label><input id="qty" type="number" required min="0.000001" step="any" placeholder="الكمية دون إشارة سالبة"></div>
+<div class="field"><label for="unit">وحدة القياس *</label><input id="unit" required maxlength="40" placeholder="قطعة / كجم / عبوة"></div>
+<div class="field"><label for="doc">رقم المستند/المرجع *</label><input id="doc" required maxlength="120" placeholder="رقم إذن أو محضر؛ لا تكرر المرجع بلا سبب"></div>
+<div class="field"><label for="operator">منفذ/مسجل الحركة *</label><input id="operator" required maxlength="120"></div>
+<div class="field"><label for="reviewer">المراجع/المعتمد (إن وجد)</label><input id="reviewer" maxlength="120" placeholder="يُستكمل عند المراجعة"></div>
+<div class="field" style="grid-column:span 2"><label for="note">السبب/الملاحظات</label><input id="note" maxlength="500" placeholder="سبب التسوية أو مرجع الحركة العكسية أو تفاصيل مهمة"></div>
+</div><div class="toolbar"><button type="submit">حفظ كحركة معلقة للمراجعة</button><button type="reset" class="secondary">تفريغ الحقول</button></div></form><div id="formStatus" class="status" aria-live="polite">الحركة الجديدة تُحفظ معلقة ولا تؤثر في الرصيد حتى اعتمادها.</div></section>
+<section class="card"><h2>2) مؤشرات الرقابة</h2><div class="kpis" id="kpis"></div><div class="status" id="controlStatus"></div></section>
+<section class="card"><h2>3) سجل الحركات</h2><p class="muted">اعتماد الحركة هنا إجراء تجريبي محلي وليس إثبات هوية أو توقيعًا إلكترونيًا. راجع الكود والاسم والمخزن والوحدة والمستند قبل الاعتماد.</p>
+<div class="grid noprint">
+<div class="field"><label for="filterCode">تصفية بكود/اسم الصنف</label><input id="filterCode" placeholder="جزء من الكود أو الاسم"></div>
+<div class="field"><label for="filterWh">المخزن</label><input id="filterWh" placeholder="اسم المخزن"></div>
+<div class="field"><label for="filterState">حالة الاعتماد</label><select id="filterState"><option value="">كل الحالات</option><option>معلق</option><option>معتمد</option><option>مرفوض</option></select></div>
+<div class="field"><label for="filterType">نوع الحركة</label><select id="filterType"><option value="">كل الأنواع</option><option>استلام</option><option>صرف</option><option>رصيد افتتاحي</option><option>تسوية زيادة</option><option>تسوية عجز</option><option>مرتجع للمخزن</option><option>عكس حركة</option></select></div>
+</div><div class="toolbar noprint"><button id="exportMoves" class="secondary" type="button">تصدير سجل الحركات CSV</button><button id="exportBalances" class="secondary" type="button">تصدير الرصيد المحسوب CSV</button><button id="backup" class="secondary" type="button">تنزيل نسخة احتياطية JSON</button><button id="restore" class="secondary" type="button">استيراد نسخة احتياطية JSON</button><input id="restoreFile" type="file" accept=".json,application/json" hidden></div>
+<div class="table"><table><thead><tr><th>معرف الحركة</th><th>التاريخ</th><th>النوع</th><th>الكود</th><th>الصنف</th><th>المخزن</th><th>الكمية</th><th>الوحدة</th><th>المستند</th><th>المنفذ</th><th>المراجع</th><th>الحالة</th><th>السبب/الملاحظات</th><th class="noprint">الإجراء</th></tr></thead><tbody id="movesBody"></tbody></table></div><div id="movesStatus" class="status"></div></section>
+<section class="card"><h2>4) الرصيد حسب الصنف والمخزن</h2><p class="muted">الرصيد المحسوب = مجموع الحركات المعتمدة فقط. الاستلام والرصيد الافتتاحي والمرتجع والتسوية بالزيادة موجبة؛ الصرف والتسوية بالعجز سالبة. «عكس حركة» يتطلب تسجيل كمية موجبة مع توضيح معرف الحركة الأصلية في الملاحظات واختيار النوع المناسب لاستخدام نوع حركة عكسي محدد؛ راجع الرصيد بعد الاعتماد.</p><div class="table"><table><thead><tr><th>الكود</th><th>اسم الصنف</th><th>المخزن</th><th>الوحدة</th><th>رصيد معتمد</th><th>حركات معلقة</th><th>عدد الحركات المعتمدة</th><th>تحذير</th></tr></thead><tbody id="balancesBody"></tbody></table></div></section>
+</main>
+<script>
+(function(){
+'use strict';
+const KEY='shadow_movement_ledger_pilot_v1';
+const $=id=>document.getElementById(id);
+const norm=s=>String(s??'').trim().toLocaleLowerCase().replace(/[\sـ]+/g,'');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=new Date();$('date').value=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
+let moves=[];
+try{const parsed=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(parsed))moves=parsed.filter(validMove)}catch(e){moves=[]}
+function validMove(m){return m&&typeof m.id==='string'&&typeof m.code==='string'&&Number.isFinite(m.qty)&&m.qty>0&&['معلق','معتمد','مرفوض'].includes(m.state)}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(moves));return true}catch(e){alert('تعذر الحفظ المحلي. صدّر نسخة احتياطية وتحقق من مساحة المتصفح.');return false}}
+function signed(m){if(['استلام','رصيد افتتاحي','تسوية زيادة','مرتجع للمخزن'].includes(m.type))return m.qty;if(['صرف','تسوية عجز'].includes(m.type))return -m.qty;if(m.type==='عكس حركة')return m.reverseSign==='minus'?-m.qty:m.qty;return 0}
+function key(m){return [norm(m.code),norm(m.warehouse),norm(m.unit)].join('|')}
+function balanceRows(){const map=new Map();for(const m of moves){const k=key(m);if(!map.has(k))map.set(k,{code:m.code,name:m.name,warehouse:m.warehouse,unit:m.unit,balance:0,pending:0,count:0});const r=map.get(k);if(m.state==='معتمد'){r.balance+=signed(m);r.count++}else if(m.state==='معلق')r.pending++}return [...map.values()].sort((a,b)=>a.code.localeCompare(b.code,'ar'))}
+function download(name,text,type){const blob=new Blob(['\ufeff'+text],{type:type||'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+function csv(rows){return rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n')}
+function render(){const q=norm($('filterCode').value),wh=norm($('filterWh').value),st=$('filterState').value,ty=$('filterType').value;
+ const visible=moves.filter(m=>(!q||norm(m.code+' '+m.name).includes(q))&&(!wh||norm(m.warehouse).includes(wh))&&(!st||m.state===st)&&(!ty||m.type===ty)).slice().sort((a,b)=>b.created.localeCompare(a.created));
+ $('movesBody').innerHTML=visible.length?visible.map(m=>'<tr><td>'+esc(m.id)+'</td><td>'+esc(m.date)+'</td><td>'+esc(m.type)+'</td><td>'+esc(m.code)+'</td><td>'+esc(m.name)+'</td><td>'+esc(m.warehouse)+'</td><td>'+esc(m.qty)+'</td><td>'+esc(m.unit)+'</td><td>'+esc(m.doc)+'</td><td>'+esc(m.operator)+'</td><td>'+esc(m.reviewer||'—')+'</td><td><span class="pill '+(m.state==='معتمد'?'good':m.state==='مرفوض'?'bad':'')+'">'+esc(m.state)+'</span></td><td>'+esc(m.note||'—')+'</td><td class="noprint">'+(m.state==='معلق'?'<button class="approve" data-action="approve" data-id="'+esc(m.id)+'">اعتماد</button> <button class="reject" data-action="reject" data-id="'+esc(m.id)+'">رفض</button>':'—')+'</td></tr>').join(''):'<tr><td colspan="14">لا توجد حركات مطابقة.</td></tr>';
+ const rows=balanceRows();$('balancesBody').innerHTML=rows.length?rows.map(r=>'<tr><td>'+esc(r.code)+'</td><td>'+esc(r.name)+'</td><td>'+esc(r.warehouse)+'</td><td>'+esc(r.unit)+'</td><td>'+esc(r.balance)+'</td><td>'+r.pending+'</td><td>'+r.count+'</td><td>'+(r.balance<0?'<span class="danger">رصيد سالب — راجع الحركات</span>':r.pending?'<span class="pill">حركات معلقة</span>':'—')+'</td></tr>').join(''):'<tr><td colspan="8">لا توجد بيانات حركات بعد.</td></tr>';
+ const pending=moves.filter(m=>m.state==='معلق').length,approved=moves.filter(m=>m.state==='معتمد').length,rejected=moves.filter(m=>m.state==='مرفوض').length,negative=rows.filter(r=>r.balance<0).length;
+ $('kpis').innerHTML='<div class="kpi">إجمالي الحركات<strong>'+moves.length+'</strong></div><div class="kpi">حركات معلقة<strong>'+pending+'</strong></div><div class="kpi">حركات معتمدة<strong>'+approved+'</strong></div><div class="kpi">أرصدة سالبة<strong>'+negative+'</strong></div>';
+ $('controlStatus').innerHTML='مرفوضة: <b>'+rejected+'</b> — لا تدخل في الرصيد. الرصيد المعروض يجمع الحركات المعتمدة فقط، لكن لا يُعد رصيدًا رسميًا ما لم يُراجع دليل الصنف والمستندات والمخزن. '+(negative?'<span class="danger">يوجد '+negative+' مفتاح صنف/مخزن/وحدة برصيد سالب؛ أوقف الاعتماد اللاحق وحقق في السبب.</span>':'لا توجد أرصدة سالبة محسوبة حاليًا.');
+ $('movesStatus').textContent='المعروض '+visible.length+' من '+moves.length+' حركة. البيانات محفوظة محليًا في هذا المتصفح فقط.';
+}
+$('moveForm').addEventListener('submit',e=>{e.preventDefault();const m={id:'MV-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase(),date:$('date').value,type:$('type').value,code:$('code').value.trim(),name:$('name').value.trim(),warehouse:$('warehouse').value.trim(),qty:Number($('qty').value),unit:$('unit').value.trim(),doc:$('doc').value.trim(),operator:$('operator').value.trim(),reviewer:$('reviewer').value.trim(),note:$('note').value.trim(),state:'معلق',created:new Date().toISOString(),approvedAt:null};
+ if(!m.date||!m.code||!m.name||!m.warehouse||!m.unit||!m.doc||!m.operator||!Number.isFinite(m.qty)||m.qty<=0){$('formStatus').textContent='تعذر الحفظ: أكمل الحقول الإلزامية وتأكد أن الكمية رقم موجب.';return}
+ if(moves.some(x=>norm(x.doc)===norm(m.doc)&&norm(x.code)===norm(m.code)&&x.type===m.type&&key(x)===key(m))){if(!confirm('يوجد مستند/صنف/نوع/مخزن مطابق. هل راجعت احتمال تكرار الحركة؟'))return}
+ moves.push(m);if(persist()){$('formStatus').textContent='تم حفظ '+m.id+' بحالة معلقة؛ لم يؤثر في الرصيد.';$('moveForm').reset();$('date').value=m.date;render()}
+});
+$('movesBody').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const m=moves.find(x=>x.id===b.dataset.id);if(!m||m.state!=='معلق')return;
+ if(b.dataset.action==='approve'){const reviewer=prompt('اكتب اسم المراجع الذي نفّذ الاعتماد المحلي:');if(!reviewer||!reviewer.trim()){alert('أُلغي الاعتماد: يلزم تسجيل اسم المراجع.');return}if(!confirm('أكدت مراجعة الصنف والكود والمخزن والوحدة والمستند والكمية؟ هذا اعتماد تجريبي محلي فقط.'))return;m.state='معتمد';m.reviewer=reviewer.trim();m.approvedAt=new Date().toISOString()}
+ else{const why=prompt('سبب الرفض (إلزامي):');if(!why||!why.trim())return;m.state='مرفوض';m.note=(m.note?' | ':'')+'سبب الرفض: '+why.trim()}
+ persist();render();
+});
+['filterCode','filterWh','filterState','filterType'].forEach(id=>$(id).addEventListener('input',render));
+$('exportMoves').addEventListener('click',()=>download('SHADOW_Movement_Ledger.csv',csv([['معرف الحركة','التاريخ','النوع','الكود','الصنف','المخزن','الكمية','الوحدة','المستند','المنفذ','المراجع','الحالة','السبب','وقت الإنشاء','وقت الاعتماد'],...moves.map(m=>[m.id,m.date,m.type,m.code,m.name,m.warehouse,m.qty,m.unit,m.doc,m.operator,m.reviewer,m.state,m.note,m.created,m.approvedAt]) ])));
+$('exportBalances').addEventListener('click',()=>download('SHADOW_Approved_Balances.csv',csv([['الكود','الصنف','المخزن','الوحدة','الرصيد المعتمد','الحركات المعلقة','عدد الحركات المعتمدة'],...balanceRows().map(r=>[r.code,r.name,r.warehouse,r.unit,r.balance,r.pending,r.count]) ])));
+$('backup').addEventListener('click',()=>download('SHADOW_Ledger_Backup.json',JSON.stringify({schema:'shadow-ledger-pilot-v1',exportedAt:new Date().toISOString(),moves},null,2),'application/json'));
+$('restore').addEventListener('click',()=>$('restoreFile').click());
+$('restoreFile').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(obj.schema!=='shadow-ledger-pilot-v1'||!Array.isArray(obj.moves)||!obj.moves.every(validMove))throw Error('صيغة الملف غير معروفة أو يحتوي حركات غير صالحة.');if(!confirm('سيتم استبدال سجل هذا المتصفح بالنسخة المختارة. صدّر نسخة حالية أولًا. متابعة؟'))return;moves=obj.moves;persist();render();alert('تم استيراد النسخة محليًا. راجع السجل قبل أي اعتماد.')}catch(err){alert('فشل الاستيراد: '+err.message)}finally{$('restoreFile').value=''}});
+render();
+})();
+</script></body></html>
