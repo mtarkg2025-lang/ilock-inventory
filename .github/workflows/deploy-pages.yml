@@ -48,10 +48,12 @@ jobs:
           scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
           assert scripts, 'Movement ledger inline JavaScript missing'
           pathlib.Path('/tmp/shadow-ledger.js').write_text(scripts[-1])
-          for phrase in ['shadow_movement_ledger_pilot_v1', "m.state==='معتمد'", "m.state==='معلق'", 'تصدير سجل الحركات CSV', 'تنزيل نسخة احتياطية JSON', 'id="location"', "norm(m.location||'غير محدد')", "location:m.location||'غير محدد'"]:
+          for phrase in ['shadow_movement_ledger_pilot_v1', "m.state==='معتمد'", "m.state==='معلق'", 'تصدير سجل الحركات CSV', 'تنزيل نسخة احتياطية JSON', 'id="location"', "norm(m.location||'غير محدد')", "location:m.location||'غير محدد'", 'function resolveMasterItem(', 'loadMasterItems();', 'id="masterCodes"']:
               assert phrase in html, f'Movement ledger control missing: {phrase}'
           main = pathlib.Path('shadow-planning/index.html').read_text()
           assert 'movement-ledger.html' in main, 'Movement ledger navigation link missing'
+          assert 'id="movementIntegration"' in main and 'function renderLedgerIntegration' in main, 'Planning dashboard is not linked to movement ledger summary'
+          assert 'shadow_movement_ledger_pilot_v1' in main, 'Shared local ledger key missing from planning dashboard'
           assert 'موقع التخزين الداخلي' in html, 'Separate internal storage location field missing'
           assert "'رصيد افتتاحي':'تسوية عجز'" not in html, 'Opening-balance reversal must require manual policy review'
           print('Validated movement ledger, separate storage-location balances, correction policy, backup/export controls, and navigation')
