@@ -205,7 +205,7 @@ function renderLedgerIntegration(){
   const parsed=JSON.parse(raw);if(!Array.isArray(parsed))throw Error('صيغة السجل المحلي غير صحيحة');
   const valid=parsed.filter(m=>m&&typeof m==='object'&&['معلق','معتمد','مرفوض'].includes(m.state)&&typeof m.code==='string'&&typeof m.warehouse==='string'&&typeof m.unit==='string'&&Number.isFinite(Number(m.qty))&&Number(m.qty)>0);
   const approved=valid.filter(m=>m.state==='معتمد'),pending=valid.filter(m=>m.state==='معلق'),map=new Map();
-  const normKey=v=>String(v??'').trim().toLocaleLowerCase().replace(/[\\sـ]+/g,'');
+  const normKey=v=>String(v??'').trim().toLocaleLowerCase().replace(/[\sـ]+/g,'');
   for(const m of approved){const k=[normKey(m.code),normKey(m.warehouse),normKey(m.location||'غير محدد'),normKey(m.unit)].join('|');const sign=['صرف','تسوية عجز'].includes(m.type)?-1:['استلام','رصيد افتتاحي','تسوية زيادة','مرتجع للمخزن'].includes(m.type)?1:0;map.set(k,(map.get(k)||0)+sign*Number(m.qty))}
   const negative=[...map.values()].filter(v=>v<0).length;
   target.innerHTML='<div class="kpi">مصدر البيانات<strong>محلي / تجريبي</strong></div><div class="kpi">حركات معتمدة<strong>'+approved.length+'</strong></div><div class="kpi">حركات معلقة<strong>'+pending.length+'</strong></div><div class="kpi">مفاتيح رصيد سالبة<strong>'+negative+'</strong></div>';
