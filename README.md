@@ -8,7 +8,9 @@
 - **[معيار التشغيل والرقابة لمخزن الحقن](./INVENTORY_OPERATING_STANDARD_AR.md)**
 - **[مسار اختبار دخل من خدمات تنظيم المخزون دون رأس مال](./INCOME_PATH_ZERO_CAPITAL_AR.md)**
 
-## SHADOW Inventory Advisor — قاعدة المعرفة الاستشارية
+## SHADOW Inventory Advisor 1.1 — قاعدة المعرفة الاستشارية
+تم تركيب مبادئ وظيفية من الوثائق الرسمية لـ SAP وMicrosoft Dynamics 365 وOracle وOdoo وASCM SCOR وAIAG CQI-23 وIAS 2؛ هذا تلخيص للمبادئ لا نسخ للبرمجيات ولا ادعاء امتثال. البرومبت المركّب مضمّن في تعليمات الخادم وتضيف الواجهة ملفه إلى حزمة المعرفة.
+- **[البرومبت المركّب من مبادئ الأنظمة العالمية](./SHADOW_INVENTORY_ADVISOR/GLOBAL_SYSTEMS_SYNTHESIS_PROMPT_AR.md)**
 - **[تعليمات الوكيل الأساسية](./SHADOW_INVENTORY_ADVISOR/AGENT_SYSTEM_PROMPT_AR.md)**
 - **[الإطار العلمي والتشغيلي لإدارة المخزون](./SHADOW_INVENTORY_ADVISOR/KNOWLEDGE_FRAMEWORK_AR.md)**
 - **[كتيب قرارات المصنع وحالات الاستخدام](./SHADOW_INVENTORY_ADVISOR/DECISION_PLAYBOOK_AR.md)**
