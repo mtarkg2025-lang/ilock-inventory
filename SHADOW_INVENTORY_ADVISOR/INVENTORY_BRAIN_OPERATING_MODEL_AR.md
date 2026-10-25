@@ -121,3 +121,9 @@
 - IFRS IAS 2 Inventories: https://www.ifrs.org/issued-standards/list-of-standards/ias-2-inventories/
 - COSO Internal Control: https://www.coso.org/internal-control
 - IIA Three Lines Model: https://www.theiia.org/en/content/position-papers/2020/the-iias-three-lines-model-an-update-of-the-three-lines-of-defense/
+
+
+## 4.5 حوكمة المبادرات ونواة PMP / PMO
+كل تطوير مؤثر في SHADOW يمر عبر تعريف القيمة، المتطلبات ومعايير القبول، التصميم والمخاطر، البناء والفحوص، اختبار قبول المستخدم، تشغيل تجريبي وخطة رجوع، ثم قياس المنافع. تُراجع [نواة SHADOW PMP/PMO](./PMP_PMO_CORE_NOTE.md) و[خريطة مصادر المعرفة](./KNOWLEDGE_SOURCE_MAP_PMP_PMO_AR.md).
+
+تضيف وظيفة PMO الخفيفة: سجل متطلبات، سجل RAID، سجل قرارات، سجل تغييرات، متابعة المعالم، ومراجعة دورية للمؤشرات. لا تصبح هذه السجلات بيروقراطية؛ يجب أن تدعم قرارًا أو تحققًا أو أثرًا واضحًا. كل مصدر معرفي يتحول إلى قاعدة قابلة للتفسير واختبار قبول، أو يبقى مادة تثقيفية معلّمة بوضوح.
