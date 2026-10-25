@@ -40,6 +40,7 @@ jobs:
           print(f"Validated {len(db['items'])} items, {len(db['columns'])} fields, {len(rates['rows'])} source-rate rows")
           PY
           node --check /tmp/shadow-inline.js
+          node --check shadow-planning/worker.js
           python - <<'PY'
           import pathlib, re
           root = pathlib.Path('.')
