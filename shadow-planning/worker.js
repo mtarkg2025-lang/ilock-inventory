@@ -67,7 +67,7 @@ export default {
     const now = Date.now(), previous = RATE_LIMIT.get(ip) || { start: now, count: 0 };
     if (now - previous.start > 600000) { previous.start = now; previous.count = 0; }
     previous.count += 1; RATE_LIMIT.set(ip, previous);
-    if (RATE_LIMIT.size > 5000) for (const [key, value] of RATE_LIMIT) if (now - value.start > 600000) RATE_LIMIT.delete(key);
+    if (RATE_LIMIT.size > 5000) {\n      for (const [key, value] of RATE_LIMIT) if (now - value.start > 600000) RATE_LIMIT.delete(key);\n      // Best-effort per-isolate memory bound; configure Cloudflare edge rate limiting for a real global limit.\n      if (RATE_LIMIT.size > 5000) {\n        const oldest = [...RATE_LIMIT.entries()].sort((a, b) => a[1].start - b[1].start).slice(0, RATE_LIMIT.size - 5000);\n        for (const [key] of oldest) RATE_LIMIT.delete(key);\n      }\n    }
     if (previous.count > 20) return Response.json({ error: "Rate limit reached. Wait 10 minutes and try again." }, { status: 429, headers });
     let rawBody, payload;
     try { rawBody = await request.text(); if (new TextEncoder().encode(rawBody).length > 350000) return Response.json({ error: "Request too large." }, { status: 413, headers }); payload = JSON.parse(rawBody); } catch { return Response.json({ error: "Invalid or oversized JSON." }, { status: 400, headers }); }
