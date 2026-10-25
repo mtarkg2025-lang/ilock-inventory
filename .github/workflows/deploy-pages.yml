@@ -59,6 +59,18 @@ jobs:
           print('Validated movement ledger, separate storage-location balances, correction policy, backup/export controls, and navigation')
           PY
           node --check /tmp/shadow-ledger.js
+          python - <<'PY'
+          import pathlib, re
+          html = pathlib.Path('weight-receiving/index.html').read_text()
+          scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
+          assert scripts, 'Weight-receiving inline JavaScript missing'
+          pathlib.Path('/tmp/shadow-weight.js').write_text(scripts[-1])
+          for phrase in ['injection-database.json.gz.b64', 'shadow_movement_ledger_pilot_v1', 'sendApprovedReceiptToLedger', "meta.approval!=='معتمدة بشريًا'", "Number.isInteger(actual)", "state:'معلق'"]:
+              assert phrase in html, f'Weight-receiving integration guard missing: {phrase}'
+          assert 'href="../shadow-planning/movement-ledger.html"' in html, 'Weight-receiving navigation to ledger missing'
+          print('Validated weight-receiving item-master link and pending-only ledger transfer')
+          PY
+          node --check /tmp/shadow-weight.js
           node shadow-planning/tests/movement-ledger.test.cjs
           python - <<'PY'
           import pathlib, re
