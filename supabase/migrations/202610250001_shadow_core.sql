@@ -252,6 +252,42 @@ end $;
 drop trigger if exists shadow_document_lines_audit on public.shadow_document_lines;
 create trigger shadow_document_lines_audit after insert or update or delete on public.shadow_document_lines for each row execute function public.shadow_audit_line();
 
+create or replace function public.shadow_audit_generic()
+returns trigger language plpgsql security definer set search_path=public,auth
+as $
+declare oldj jsonb; newj jsonb; ent text;
+begin
+  if tg_op='INSERT' then oldj:=null; newj:=to_jsonb(new);
+  elsif tg_op='UPDATE' then oldj:=to_jsonb(old); newj:=to_jsonb(new);
+  else oldj:=to_jsonb(old); newj:=null; end if;
+  ent:=coalesce(newj->>'id',newj->>'code',newj->>'family_code',newj->>'user_id',
+                oldj->>'id',oldj->>'code',oldj->>'family_code',oldj->>'user_id','unknown');
+  insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data)
+  values(auth.uid(),tg_table_name,ent,tg_op,oldj,newj);
+  if tg_op='DELETE' then return old; else return new; end if;
+end $;
+
+drop trigger if exists shadow_profiles_audit on public.shadow_profiles;
+create trigger shadow_profiles_audit after insert or update or delete on public.shadow_profiles for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_warehouses_audit on public.shadow_warehouses;
+create trigger shadow_warehouses_audit after insert or update or delete on public.shadow_warehouses for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_locations_audit on public.shadow_storage_locations;
+create trigger shadow_locations_audit after insert or update or delete on public.shadow_storage_locations for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_items_audit on public.shadow_items;
+create trigger shadow_items_audit after insert or update or delete on public.shadow_items for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_conversions_audit on public.shadow_unit_conversions;
+create trigger shadow_conversions_audit after insert or update or delete on public.shadow_unit_conversions for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_weights_audit on public.shadow_item_weight_profiles;
+create trigger shadow_weights_audit after insert or update or delete on public.shadow_item_weight_profiles for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_families_audit on public.shadow_production_families;
+create trigger shadow_families_audit after insert or update or delete on public.shadow_production_families for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_bom_audit on public.shadow_bom_lines;
+create trigger shadow_bom_audit after insert or update or delete on public.shadow_bom_lines for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_plans_audit on public.shadow_production_plans;
+create trigger shadow_plans_audit after insert or update or delete on public.shadow_production_plans for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_plan_lines_audit on public.shadow_production_plan_lines;
+create trigger shadow_plan_lines_audit after insert or update or delete on public.shadow_production_plan_lines for each row execute function public.shadow_audit_generic();
+
 create or replace function public.shadow_guard_document()
 returns trigger language plpgsql set search_path=public
 as $$
