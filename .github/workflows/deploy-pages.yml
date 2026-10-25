@@ -121,7 +121,7 @@ jobs:
               'grant execute on function public.shadow_role() to authenticated;'
           ]:
               assert phrase in sql, f'Central schema control missing: {phrase}'
-          assert 'from public.shadow_documents d on d.id=l.document_id and d.status=\'approved\'' in sql, 'Stock balance view must use approved documents only'
+          assert "join public.shadow_documents d on d.id=l.document_id and d.status='approved'" in sql, 'Stock balance view must use approved documents only'
           assert 'revoke all on all tables in schema public from anon;' in sql, 'Anonymous table access must be revoked'
           assert (root / 'CENTRAL_BACKEND_SETUP_AR.md').is_file(), 'Central backend setup guide missing'
           assert (root / 'SHADOW_CENTRAL_DATA_CONTRACT_AR.md').is_file(), 'Central data contract missing'
