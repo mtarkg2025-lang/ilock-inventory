@@ -232,8 +232,8 @@ begin
   else oldj:=to_jsonb(old); newj:=null; ent:=old.id::text; end if;
   insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data,reason)
   values(auth.uid(),'document',ent,tg_op,oldj,newj,coalesce(new.notes,old.notes));
-  return coalesce(new,old);
-end $$;
+  if tg_op='DELETE' then return old; else return new; end if;
+end $;
 drop trigger if exists shadow_documents_audit on public.shadow_documents;
 create trigger shadow_documents_audit after insert or update or delete on public.shadow_documents for each row execute function public.shadow_audit_document();
 
@@ -247,8 +247,8 @@ begin
   if tg_op='DELETE' and old.status <> 'draft' then
     raise exception 'Only draft documents can be deleted.';
   end if;
-  return coalesce(new,old);
-end $$;
+  if tg_op='DELETE' then return old; else return new; end if;
+end $;
 drop trigger if exists shadow_documents_guard on public.shadow_documents;
 create trigger shadow_documents_guard before update or delete on public.shadow_documents for each row execute function public.shadow_guard_document();
 
@@ -257,15 +257,15 @@ returns trigger language plpgsql set search_path=public
 as $$
 declare doc_status text; doc_operator uuid;
 begin
-  select status,operator_id into doc_status,doc_operator from public.shadow_documents where id=coalesce(new.document_id,old.document_id) for update;
+  if tg_op='DELETE' then select status,operator_id into doc_status,doc_operator from public.shadow_documents where id=old.document_id for update; else select status,operator_id into doc_status,doc_operator from public.shadow_documents where id=new.document_id for update; end if;
   if doc_status is distinct from 'draft' then
     raise exception 'Lines can only be changed while their document is draft.';
   end if;
   if auth.uid() is not null and doc_operator <> auth.uid() and public.shadow_role() <> 'admin' then
     raise exception 'Only the document owner or an admin can edit draft lines.';
   end if;
-  return coalesce(new,old);
-end $$;
+  if tg_op='DELETE' then return old; else return new; end if;
+end $;
 drop trigger if exists shadow_lines_guard on public.shadow_document_lines;
 create trigger shadow_lines_guard before insert or update or delete on public.shadow_document_lines for each row execute function public.shadow_guard_line();
 
@@ -480,7 +480,8 @@ grant usage on schema public to authenticated;
 grant select,insert,update,delete on public.shadow_profiles,public.shadow_warehouses,public.shadow_storage_locations,public.shadow_items,public.shadow_documents,public.shadow_document_lines,public.shadow_unit_conversions,public.shadow_item_weight_profiles,public.shadow_production_families,public.shadow_bom_lines,public.shadow_production_plans,public.shadow_production_plan_lines to authenticated;
 grant select on public.shadow_audit_events,public.shadow_stock_balances to authenticated;
 grant usage,select on sequence public.shadow_audit_events_id_seq to authenticated;
-grant execute on function public.shadow_submit_document(uuid) to authenticated;
+grant execute on function public.shadow_role() to authenticated;
+grant execute on function public.shadow_is_active_user() to authenticated;\ngrant execute on function public.shadow_submit_document(uuid) to authenticated;
 grant execute on function public.shadow_approve_document(uuid,text) to authenticated;
 grant execute on function public.shadow_reject_document(uuid,text) to authenticated;
 grant execute on function public.shadow_create_correction(uuid,text,date,text) to authenticated;
