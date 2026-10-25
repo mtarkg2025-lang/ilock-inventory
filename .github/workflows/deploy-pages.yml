@@ -23,6 +23,28 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Validate shared SHADOW core integration
+        run: |
+          node --check shadow-core.js
+          python - <<'PY'
+          import pathlib
+          core = pathlib.Path('shadow-core.js').read_text()
+          for rule in ['DATA-01','MOV-01','WEIGHT-01','PLAN-01','GOV-01','PMP-01','SEC-01']:
+              assert rule in core, f'Missing shared core rule: {rule}'
+          for page, rel in [
+              ('shadow-planning/index.html', '../shadow-core.js'),
+              ('shadow-planning/movement-ledger.html', '../shadow-core.js'),
+              ('weight-receiving/index.html', '../shadow-core.js'),
+              ('shadow-pmo/index.html', '../shadow-core.js')
+          ]:
+              html = pathlib.Path(page).read_text()
+              assert f'<script src="{rel}"></script>' in html, f'Shared core not loaded in {page}'
+              assert '../shadow-pmo/' in html or page == 'shadow-pmo/index.html', f'PMO navigation missing in {page}'
+          pmo = pathlib.Path('shadow-pmo/index.html').read_text()
+          for token in ['reqText','raidText','decText','kpiName','gates','exportData','importData']:
+              assert token in pmo, f'PMO prototype control missing: {token}'
+          print('Validated shared SHADOW core, core rules, PMO navigation, and prototype controls')
+          PY
       - name: Validate bundled data and inline JavaScript
         run: |
           python - <<'PY'
