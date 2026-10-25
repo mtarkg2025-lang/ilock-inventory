@@ -132,7 +132,42 @@ $('clearPlan').onclick=()=>{if(confirm('مسح كميات خطة التشغيل�
 $('exportNeeds').onclick=()=>download('SHADOW_احتياجات_المكونات.csv',[['المنتج النهائي','المكون','المصنع/القسم','كمية الخطة','معدل الإنتاج','إجمالي المصدر','معامل الاحتياج المستنتج','الاحتياج'],...detail().map(x=>[x.family,x.component,x.factory,x.qty,x.rate,x.total,x.coefficient,x.need])]);
 $('exportStock').onclick=()=>download('SHADOW_مقارنة_المخزون.csv',[['المكون','المصنع/القسم','الاحتياج','الرصيد','العجز','الفائض','الحالة'],...aggregate().map(x=>{let v=S.stock[norm(x.component)+'|'+norm(x.factory)],h=v!==undefined&&v!=='';return [x.component,x.factory,x.need,h?N(v):'',h?Math.max(x.need-N(v),0):'',h?Math.max(N(v)-x.need,0):'',!h?'أدخل الرصيد':N(v)<x.need?'عجز':'مغطى']})]);
 $('exportSource').onclick=()=>{if(!S.source)return alert('حمّل المصدر أولًا');download('SHADOW_معدلات_المصدر.csv',[S.source.headers,...S.source.rows])};
-$('loadStock').onclick=async()=>{let f=$('sf').files[0];if(!f)return alert('اختر ملف الأرصدة.');try{let w=XLSX.read(await f.arrayBuffer(),{type:'array'}),a=XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]],{header:1,defval:null}),hi=a.findIndex(r=>r.some(c=>norm(c).includes('الصنف')||norm(c).includes('المكون')||norm(c).includes('الخامة')));if(hi<0)hi=0;let h=a[hi]||[],ni=idx(h,['اسم الصنف','الصنف','اسم المكون','المكون','الخامة'],1),qi=idx(h,['الرصيد الحالي','الرصيد المتاح','الرصيد','الكمية المتاحة','الرصيد الفعلي','كمية'],2),fi=idx(h,['المخزن','المصنع','القسم'],null),count=0;for(let j=hi+1;j<a.length;j++){let r=a[j],name=String(r[ni]??'').trim(),qty=r[qi],fac=fi==null?'':String(r[fi]??'').trim();if(!name||qty==null||qty==='')continue;aggregate().filter(x=>norm(x.component)===norm(name)&&(!fac||norm(x.factory)===norm(fac))).forEach(x=>{S.stock[norm(x.component)+'|'+norm(x.factory)]=N(qty);count++})}save();renderStock();kpis();brainRun();alert('تم ربط '+count+' رصيدًا حسب أسماء المكونات. راجع المطابقة يدويًا قبل الاعتماد.')}catch(e){alert('تعذر استيراد الأرصدة: '+e.message)}};
+$('loadStock').onclick=async()=>{
+ let f=$('sf').files[0];if(!f)return alert('اختر ملف الأرصدة.');
+ try{
+  let w=XLSX.read(await f.arrayBuffer(),{type:'array'}),a=XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]],{header:1,defval:null,raw:true});
+  let hi=a.findIndex(r=>r.some(c=>['الصنف','المكون','الخامة'].some(t=>norm(c).includes(norm(t)))));if(hi<0)hi=0;
+  let h=a[hi]||[],ni=idx(h,['اسم الصنف','الصنف','اسم المكون','المكون','الخامة'],1),qi=idx(h,['الرصيد الحالي','الرصيد المتاح','الرصيد','الكمية المتاحة','الرصيد الفعلي','كمية'],2),fi=idx(h,['المخزن','المصنع','القسم'],null);
+  const required=aggregate(),parsed=[],invalid=[],ambiguous=[],unmatched=[];
+  for(let j=hi+1;j<a.length;j++){
+   const r=a[j],name=String(r[ni]??'').trim(),rawQty=r[qi],fac=fi==null?'':String(r[fi]??'').trim();
+   if(!name&& (rawQty==null||rawQty===''))continue;
+   if(!name||rawQty==null||String(rawQty).trim()===''){invalid.push({row:j+1,reason:'اسم الصنف أو الرصيد فارغ'});continue}
+   const qty=typeof rawQty==='number'?rawQty:Number(String(rawQty).trim().replace(/,/g,''));
+   if(!Number.isFinite(qty)||qty<0){invalid.push({row:j+1,reason:'الرصيد ليس رقمًا غير سالب'});continue}
+   const matches=required.filter(x=>norm(x.component)===norm(name)&&(!fac||norm(x.factory)===norm(fac)));
+   if(!matches.length){unmatched.push({row:j+1,name,factory:fac,qty});continue}
+   if(matches.length>1){ambiguous.push({row:j+1,name,factory:fac,qty,targets:matches.map(x=>x.factory).join('، ')});continue}
+   parsed.push({row:j+1,key:norm(matches[0].component)+'|'+norm(matches[0].factory),component:matches[0].component,factory:matches[0].factory,qty});
+  }
+  const groups=new Map();parsed.forEach(x=>{if(!groups.has(x.key))groups.set(x.key,[]);groups.get(x.key).push(x)});
+  const duplicates=[...groups.values()].filter(g=>g.length>1);
+  const duplicateKeys=new Set(duplicates.map(g=>g[0].key));
+  const clean=parsed.filter(x=>!duplicateKeys.has(x.key));
+  const summary='مراجعة استيراد الأرصدة قبل التحديث:\n'+
+   'صفوف صالحة ذات مطابقة وحيدة: '+clean.length+'\n'+
+   'صفوف غير صالحة: '+invalid.length+'\n'+
+   'صفوف غير مطابقة: '+unmatched.length+'\n'+
+   'مطابقات ملتبسة (اسم/مصنع غير كافٍ): '+ambiguous.length+'\n'+
+   'أصناف مكررة داخل الملف ومستبعدة بالكامل: '+duplicates.length+'\n\n'+
+   'سيتم استيراد الصفوف ذات المطابقة الوحيدة فقط، مع استبعاد كل صنف مكرر أو ملتبس. هل تريد المتابعة؟';
+  if(!clean.length){alert(summary+'\n\nلم يُحدّث أي رصيد.');return}
+  if(!confirm(summary))return;
+  clean.forEach(x=>{S.stock[x.key]=x.qty});
+  save();renderStock();kpis();brainRun();
+  alert('اكتمل الاستيراد المبدئي: '+clean.length+' رصيدًا. لم يتم اعتماد الأرصدة رسميًا؛ راجع المصدر وتاريخ الجرد والمخزن والوحدة قبل استخدامها في قرار تشغيلي.\nالمستبعد: '+(invalid.length+unmatched.length+ambiguous.length+duplicates.reduce((n,g)=>n+g.length,0))+' صفًا.');
+ }catch(e){alert('تعذر استيراد الأرصدة: '+e.message)}
+};
 $('backup').onclick=()=>{let b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='SHADOW_Planning_Backup.json';a.click();URL.revokeObjectURL(u)};
 $('restore').onclick=async()=>{let f=$('restoreFile').files[0];if(!f)return alert('اختر ملف JSON');try{let x=JSON.parse(await f.text());if(!Array.isArray(x.rows)||!Array.isArray(x.families))throw Error('ملف غير صحيح');S={...S,...x};save();render();message('تمت استعادة النسخة.')}catch(e){alert('فشلت الاستعادة: '+e.message)}};
 $('reset').onclick=()=>{if(confirm('حذف بيانات التخطيط والأرصدة المحلية؟')){localStorage.removeItem(KEY);S={families:[],rows:[],plan:{},stock:{},loaded:false,source:null};render();message('تم المسح المحلي. حمّل ملف المعدلات للبدء.')}};
