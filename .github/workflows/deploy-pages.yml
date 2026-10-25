@@ -77,6 +77,8 @@ jobs:
           assert 'أكواد مكررة بعد التطبيع' in html and 'قيم رقمية سالبة أو غير رقمية' in html, 'Expanded master-data quality checks missing'
           assert 'rateExceptions' in html and 'صفوف معدلات إنتاج مستبعدة' in html, 'Invalid production-rate row guard missing'
           assert 'INVENTORY_BRAIN_OPERATING_MODEL_AR.md' in html, 'Unified inventory brain model not loaded by advisor'
+          assert 'COMPARATIVE_SYSTEMS_RESEARCH_AR.md' in html, 'Comparative inventory systems research not loaded by advisor'
+          assert (root / 'SHADOW_INVENTORY_ADVISOR' / 'COMPARATIVE_SYSTEMS_RESEARCH_AR.md').is_file(), 'Comparative inventory systems research file missing'
           assert not re.search(r'(?i)sk-[A-Za-z0-9]{20,}', html), 'Possible API key pattern found in browser HTML'
           print('Validated advisor knowledge wiring, server guards, and browser-secret scan')
           PY
