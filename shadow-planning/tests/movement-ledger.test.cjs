@@ -4,12 +4,15 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 const html = fs.readFileSync('shadow-planning/movement-ledger.html', 'utf8');
-function extract(name) {
-  const match = html.match(new RegExp('function ' + name + '\\([^)]*\\)\\{[^}]*\\}'));
-  assert.ok(match, 'Function missing: ' + name);
-  return match[0];
+function extractBetween(start, end) {
+  const from = html.indexOf(start);
+  const to = html.indexOf(end, from);
+  assert.ok(from >= 0 && to > from, 'Function block missing: ' + start);
+  return html.slice(from, to).trim();
 }
-const api = vm.runInNewContext(extract('validMove') + '\\n' + extract('signed') + '\\n({validMove, signed})');
+const validMove = extractBetween('function validMove(', 'function persist');
+const signed = extractBetween('function signed(', 'function key');
+const api = vm.runInNewContext(validMove + '\\n' + signed + '\\n({validMove, signed})');
 const base = {
   id: 'MV-TEST-1', date: '2026-10-25', type: 'استلام', code: 'REAL-CODE',
   name: 'صنف اختبار', warehouse: 'مخزن الحقن', qty: 12, unit: 'قطعة',
