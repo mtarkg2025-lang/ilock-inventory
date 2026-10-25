@@ -12,10 +12,12 @@ function extractBetween(start, end) {
 }
 const validMove = extractBetween('function validMove(', 'function persist');
 const signed = extractBetween('function signed(', 'function key');
-const api = vm.runInNewContext(validMove + '\n' + signed + '\n({validMove, signed})');
+const key = extractBetween('function key(', 'function balanceRows');
+const norm = "function norm(s){return String(s??'').trim().toLocaleLowerCase().replace(/[\\sـ]+/g,'')}";
+const api = vm.runInNewContext(validMove + '\n' + signed + '\n' + norm + '\n' + key + '\n({validMove, signed, key})');
 const base = {
   id: 'MV-TEST-1', date: '2026-10-25', type: 'استلام', code: 'REAL-CODE',
-  name: 'صنف اختبار', warehouse: 'مخزن الحقن', qty: 12, unit: 'قطعة',
+  name: 'صنف اختبار', warehouse: 'مخزن الحقن', location: 'منطقة أ', qty: 12, unit: 'قطعة',
   doc: 'TEST-DOC-1', operator: 'اختبار', reviewer: '', note: '',
   state: 'معلق', created: '2026-10-25T10:00:00.000Z', approvedAt: null
 };
@@ -23,6 +25,10 @@ assert.equal(api.validMove(base), true, 'valid movement should pass');
 assert.equal(api.validMove({...base, date: 'not-a-date'}), false, 'invalid date should fail');
 assert.equal(api.validMove({...base, qty: 0}), false, 'zero quantity should fail');
 assert.equal(api.validMove({...base, code: ' '}), false, 'blank item code should fail');
+assert.equal(api.validMove({...base, location: ''}), false, 'blank storage location should fail');
+assert.equal(api.validMove({...base, location: undefined}), true, 'legacy records without location remain readable');
+assert.notEqual(api.key(base), api.key({...base, location: 'منطقة ب'}), 'different internal locations must have separate balances');
+assert.equal(api.key({...base, location: 'منطقة أ'}), api.key({...base, location: 'منطقة أ'}), 'same item, warehouse, location and unit share a balance');
 assert.equal(api.validMove({...base, type: 'عكس حركة'}), false, 'unsupported reversal type must fail');
 assert.equal(api.validMove({...base, state: 'مجهول'}), false, 'unknown status should fail');
 assert.equal(api.signed({...base, type: 'استلام', qty: 10}), 10);
