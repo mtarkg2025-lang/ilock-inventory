@@ -55,6 +55,7 @@ jobs:
           print('Validated movement ledger structure, approval-only balance rules, backup/export controls, and navigation')
           PY
           node --check /tmp/shadow-ledger.js
+          node shadow-planning/tests/movement-ledger.test.cjs
           python - <<'PY'
           import pathlib, re
           root = pathlib.Path('.')
