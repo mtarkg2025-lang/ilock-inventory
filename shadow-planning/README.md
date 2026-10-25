@@ -16,7 +16,7 @@
 - [كتيب قرارات المصنع](../SHADOW_INVENTORY_ADVISOR/DECISION_PLAYBOOK_AR.md)
 - [معمارية الوكيل وفصل الصلاحيات](../SHADOW_INVENTORY_ADVISOR/AGENT_ARCHITECTURE_AR.md)
 - [سجل المراجع العلمية](../SHADOW_INVENTORY_ADVISOR/REFERENCE_REGISTER_AR.md)
-- [اختبارات القبول](../SHADOW_INVENTORY_ADVISOR/ACCEPTANCE_TESTS_AR.md)
+- [اختبارات القبول](../SHADOW_INVENTORY_ADVISOR/ACCEPTANCE_TESTS_AR.md)\n- [البرومبت المركّب من مبادئ الأنظمة العالمية](../SHADOW_INVENTORY_ADVISOR/GLOBAL_SYSTEMS_SYNTHESIS_PROMPT_AR.md)\n- [بوابات الرقابة التشغيلية](../SHADOW_INVENTORY_ADVISOR/CONTROL_GATES_AR.md)\n- [معمارية الوكيل وفصل الصلاحيات](../SHADOW_INVENTORY_ADVISOR/AGENT_ARCHITECTURE_AR.md)
 
 عند استخدام عنوان خادم وكيل خارجي موثوق في تبويب «محادثة شادو»، يحاول التطبيق تحميل ملفات المعرفة وإرسالها مع سياق الخطة والأرصدة والاستثناءات. إذا لم تتوفر الملفات أو لم يُضبط الخادم، يبقى التطبيق في الوضع المحلي القائم على قواعد محددة. **وجود ملفات المعرفة أو ظهور حالة الاتصال لا يثبت أن الخادم يفهمها أو أن الاستشارة نجحت؛ يجب اختبار الردود الفعلية ومعايير القبول.**
 
