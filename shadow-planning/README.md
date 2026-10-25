@@ -4,6 +4,9 @@
 - GitHub Pages (تأكد من نجاح أول تشغيل لسير العمل في Actions): https://mtarkg2025-lang.github.io/ilock-inventory/shadow-planning/
 - المصدر: [index.html](./index.html)
 
+## دراسة الأنظمة المشابهة وخطة التطوير
+- [دراسة مقارنة: Odoo وERPNext وOpenBoxes وخطة تكييف الأنماط مع SHADOW](../SHADOW_INVENTORY_ADVISOR/COMPARATIVE_SYSTEMS_RESEARCH_AR.md)
+
 ## البيانات المدمجة
 - [قاعدة بيانات الأصناف](./injection-database.json.gz.b64): **237 سجلًا** مستخرجًا من أحدث نسخة متاحة بالمكتبة `SHADOW_24_نسخة_مطورة_ورقابة_ومعادلات_مصوبة.xlsx`، وتشمل 18 حقلًا من دليل الأصناف.
 - [معدلات إنتاج سبتمبر](./production-rates.json.gz.b64): صفوف المصدر الأصلية من ورقة «معدلات » في `معدلات انتاج المصانع شهر9.xlsx`، مع الاحتفاظ بالخلايا الفارغة كما هي.
