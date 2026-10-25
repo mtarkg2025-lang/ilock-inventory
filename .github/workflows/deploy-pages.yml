@@ -39,7 +39,26 @@ jobs:
           pathlib.Path("/tmp/shadow-inline.js").write_text(scripts[-1])
           print(f"Validated {len(db['items'])} items, {len(db['columns'])} fields, {len(rates['rows'])} source-rate rows")
           PY
-          node --check /tmp/shadow-inline.js
+          node --check /tmp/shadow-inline.js\n          python - <<'PY'
+          import pathlib, re
+          root = pathlib.Path('.')
+          html = (root / 'shadow-planning/index.html').read_text()
+          worker = (root / 'shadow-planning/worker.js').read_text()
+          required_knowledge = [
+              'GLOBAL_SYSTEMS_SYNTHESIS_PROMPT_AR.md', 'CONTROL_GATES_AR.md',
+              'AGENT_SYSTEM_PROMPT_AR.md', 'KNOWLEDGE_FRAMEWORK_AR.md',
+              'DECISION_PLAYBOOK_AR.md', 'AGENT_ARCHITECTURE_AR.md',
+              'ACCEPTANCE_TESTS_AR.md', 'REFERENCE_REGISTER_AR.md'
+          ]
+          for name in required_knowledge:
+              assert name in html, f'Advisor knowledge file not wired into UI: {name}'
+              assert (root / 'SHADOW_INVENTORY_ADVISOR' / name).is_file(), f'Missing advisor file: {name}'
+          for phrase in ['SHADOW_ACCESS_TOKEN', 'OPENAI_API_KEY', 'Origin not allowed', 'Request too large']:
+              assert phrase in worker, f'Missing server guard: {phrase}'
+          assert 'لا تخترع' in worker and 'لا تنفذ' in worker, 'Core safety rules missing from system prompt'
+          assert not re.search(r'(?i)sk-[A-Za-z0-9]{20,}', html), 'Possible API key pattern found in browser HTML'
+          print('Validated advisor knowledge wiring, server guards, and browser-secret scan')
+          PY
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload static site
