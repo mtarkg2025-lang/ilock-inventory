@@ -98,6 +98,31 @@ jobs:
           assert (root / 'SHADOW_INVENTORY_ADVISOR' / 'COMPARATIVE_SYSTEMS_RESEARCH_AR.md').is_file(), 'Comparative inventory systems research file missing'
           assert not re.search(r'(?i)sk-[A-Za-z0-9]{20,}', html), 'Possible API key pattern found in browser HTML'
           print('Validated advisor knowledge wiring, server guards, and browser-secret scan')
+          sql = (root / 'supabase/migrations/202610250001_shadow_core.sql').read_text()
+          for phrase in [
+              'create table if not exists public.shadow_profiles',
+              'create table if not exists public.shadow_items',
+              'create table if not exists public.shadow_documents',
+              'create table if not exists public.shadow_document_lines',
+              'create table if not exists public.shadow_audit_events',
+              'alter table public.shadow_documents enable row level security',
+              'alter table public.shadow_document_lines enable row level security',
+              'create or replace view public.shadow_stock_balances',
+              'public.shadow_submit_document',
+              'public.shadow_approve_document',
+              'public.shadow_reject_document',
+              'public.shadow_create_correction',
+              'pg_advisory_xact_lock',
+              'Maker-checker rule',
+              'Approved/void documents are immutable',
+              'grant execute on function public.shadow_role() to authenticated;'
+          ]:
+              assert phrase in sql, f'Central schema control missing: {phrase}'
+          assert 'from public.shadow_documents d on d.id=l.document_id and d.status=\'approved\'' in sql, 'Stock balance view must use approved documents only'
+          assert 'revoke all on all tables in schema public from anon;' in sql, 'Anonymous table access must be revoked'
+          assert (root / 'CENTRAL_BACKEND_SETUP_AR.md').is_file(), 'Central backend setup guide missing'
+          assert (root / 'SHADOW_CENTRAL_DATA_CONTRACT_AR.md').is_file(), 'Central data contract missing'
+          print('Validated central schema, role controls, audit, approved-only balances, and setup docs')
           PY
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
