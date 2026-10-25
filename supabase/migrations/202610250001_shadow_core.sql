@@ -237,6 +237,21 @@ end $;
 drop trigger if exists shadow_documents_audit on public.shadow_documents;
 create trigger shadow_documents_audit after insert or update or delete on public.shadow_documents for each row execute function public.shadow_audit_document();
 
+create or replace function public.shadow_audit_line()
+returns trigger language plpgsql security definer set search_path=public,auth
+as $
+declare oldj jsonb; newj jsonb; ent text;
+begin
+  if tg_op='INSERT' then oldj:=null; newj:=to_jsonb(new); ent:=new.id::text;
+  elsif tg_op='UPDATE' then oldj:=to_jsonb(old); newj:=to_jsonb(new); ent:=new.id::text;
+  else oldj:=to_jsonb(old); newj:=null; ent:=old.id::text; end if;
+  insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data,reason)
+  values(auth.uid(),'document_line',ent,tg_op,oldj,newj,'document_id='||coalesce(new.document_id,old.document_id)::text);
+  if tg_op='DELETE' then return old; else return new; end if;
+end $;
+drop trigger if exists shadow_document_lines_audit on public.shadow_document_lines;
+create trigger shadow_document_lines_audit after insert or update or delete on public.shadow_document_lines for each row execute function public.shadow_audit_line();
+
 create or replace function public.shadow_guard_document()
 returns trigger language plpgsql set search_path=public
 as $$
@@ -306,7 +321,7 @@ end $$;
 create or replace function public.shadow_approve_document(p_document_id uuid, p_negative_stock_reason text default null)
 returns void language plpgsql security definer set search_path=public,auth
 as $$
-declare d public.shadow_documents%rowtype; bad record;
+declare d public.shadow_documents%rowtype; bad record; lockrow record;
 begin
   if not public.shadow_is_active_user() or public.shadow_role() not in ('admin','reviewer') then
     raise exception 'Only active reviewer/admin may approve inventory documents.';
@@ -321,6 +336,15 @@ begin
             where l.document_id=d.id and (not i.is_active or trim(l.unit)<>trim(i.base_unit))) then
     raise exception 'Item master/unit validation failed.';
   end if;
+  -- Serialize approvals that touch the same stock keys, preventing concurrent approvals from overspending stock.
+  for lockrow in
+    select distinct item_code,warehouse_id,location_id,unit
+    from public.shadow_document_lines where document_id=d.id
+    order by item_code,warehouse_id,location_id nulls first,unit
+  loop
+    perform pg_advisory_xact_lock(hashtextextended(
+      lockrow.item_code||'|'||lockrow.warehouse_id::text||'|'||coalesce(lockrow.location_id::text,'')||'|'||lockrow.unit,0));
+  end loop;
   for bad in
     select l.item_code,l.warehouse_id,l.location_id,l.unit,
       coalesce((select b.balance_qty from public.shadow_stock_balances b
