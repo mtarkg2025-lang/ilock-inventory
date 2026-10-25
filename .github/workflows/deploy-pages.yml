@@ -39,7 +39,8 @@ jobs:
           pathlib.Path("/tmp/shadow-inline.js").write_text(scripts[-1])
           print(f"Validated {len(db['items'])} items, {len(db['columns'])} fields, {len(rates['rows'])} source-rate rows")
           PY
-          node --check /tmp/shadow-inline.js\n          python - <<'PY'
+          node --check /tmp/shadow-inline.js
+          python - <<'PY'
           import pathlib, re
           root = pathlib.Path('.')
           html = (root / 'shadow-planning/index.html').read_text()
