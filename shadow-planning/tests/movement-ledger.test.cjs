@@ -12,7 +12,7 @@ function extractBetween(start, end) {
 }
 const validMove = extractBetween('function validMove(', 'function persist');
 const signed = extractBetween('function signed(', 'function key');
-const api = vm.runInNewContext(validMove + '\\n' + signed + '\\n({validMove, signed})');
+const api = vm.runInNewContext(validMove + '\n' + signed + '\\n({validMove, signed})');
 const base = {
   id: 'MV-TEST-1', date: '2026-10-25', type: 'استلام', code: 'REAL-CODE',
   name: 'صنف اختبار', warehouse: 'مخزن الحقن', qty: 12, unit: 'قطعة',
