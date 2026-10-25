@@ -106,7 +106,8 @@ jobs:
               'INVENTORY_BRAIN_OPERATING_MODEL_AR.md', 'GLOBAL_SYSTEMS_SYNTHESIS_PROMPT_AR.md', 'CONTROL_GATES_AR.md',
               'AGENT_SYSTEM_PROMPT_AR.md', 'KNOWLEDGE_FRAMEWORK_AR.md',
               'DECISION_PLAYBOOK_AR.md', 'AGENT_ARCHITECTURE_AR.md',
-              'ACCEPTANCE_TESTS_AR.md', 'REFERENCE_REGISTER_AR.md'
+              'ACCEPTANCE_TESTS_AR.md', 'REFERENCE_REGISTER_AR.md', 'PMP_PMO_CORE_NOTE.md',
+              'KNOWLEDGE_SOURCE_MAP_PMP_PMO_AR.md', 'SHADOW_PMO_DELIVERY_ROADMAP_AR.md', 'PMO_ACCEPTANCE_TESTS_AR.md'
           ]
           for name in required_knowledge:
               assert name in html, f'Advisor knowledge file not wired into UI: {name}'
@@ -120,6 +121,8 @@ jobs:
           assert 'rateExceptions' in html and 'صفوف معدلات إنتاج مستبعدة' in html, 'Invalid production-rate row guard missing'
           assert 'INVENTORY_BRAIN_OPERATING_MODEL_AR.md' in html, 'Unified inventory brain model not loaded by advisor'
           assert 'COMPARATIVE_SYSTEMS_RESEARCH_AR.md' in html, 'Comparative inventory systems research not loaded by advisor'
+          for name in ['PMP_PMO_CORE_NOTE.md', 'KNOWLEDGE_SOURCE_MAP_PMP_PMO_AR.md', 'SHADOW_PMO_DELIVERY_ROADMAP_AR.md', 'PMO_ACCEPTANCE_TESTS_AR.md']:
+              assert name in html, f'PMO knowledge not wired into advisor: {name}'
           assert (root / 'SHADOW_INVENTORY_ADVISOR' / 'COMPARATIVE_SYSTEMS_RESEARCH_AR.md').is_file(), 'Comparative inventory systems research file missing'
           assert not re.search(r'(?i)sk-[A-Za-z0-9]{20,}', html), 'Possible API key pattern found in browser HTML'
           print('Validated advisor knowledge wiring, server guards, and browser-secret scan')
