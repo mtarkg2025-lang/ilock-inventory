@@ -13,6 +13,7 @@ function extractBetween(start, end) {
 const validMove = extractBetween('function validMove(', 'function persist');
 const signed = extractBetween('function signed(', 'function key');
 const key = extractBetween('function key(', 'function balanceRows');
+const resolver = extractBetween('function resolveMasterItem(', 'function updateMasterItem');
 const norm = "function norm(s){return String(s??'').trim().toLocaleLowerCase().replace(/[\\sـ]+/g,'')}";
 const api = vm.runInNewContext(validMove + '\n' + signed + '\n' + norm + '\n' + key + '\n({validMove, signed, key})');
 const base = {
@@ -22,6 +23,11 @@ const base = {
   state: 'معلق', created: '2026-10-25T10:00:00.000Z', approvedAt: null
 };
 assert.equal(api.validMove(base), true, 'valid movement should pass');
+const master = [{code:'OFF-1',name:'صنف رسمي',unit:'قطعة'},{code:'OFF-2',name:'صنف آخر',unit:'كجم'}];
+assert.equal(api.resolveMasterItem('OFF-1', master).status, 'ok', 'unique complete official item should resolve');
+assert.equal(api.resolveMasterItem('OFF-X', master).status, 'not-found', 'unknown official code must fail');
+assert.equal(api.resolveMasterItem('OFF-1', [...master, master[0]]).status, 'ambiguous', 'duplicate code must fail closed');
+assert.equal(api.resolveMasterItem('OFF-3', [{code:'OFF-3',name:'',unit:'قطعة'}]).status, 'incomplete', 'missing master name/unit must fail closed');
 assert.equal(api.validMove({...base, date: 'not-a-date'}), false, 'invalid date should fail');
 assert.equal(api.validMove({...base, qty: 0}), false, 'zero quantity should fail');
 assert.equal(api.validMove({...base, code: ' '}), false, 'blank item code should fail');
