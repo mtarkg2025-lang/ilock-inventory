@@ -43,6 +43,20 @@ jobs:
           node --check shadow-planning/worker.js
           python - <<'PY'
           import pathlib, re
+          p = pathlib.Path('shadow-planning/movement-ledger.html')
+          html = p.read_text()
+          scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
+          assert scripts, 'Movement ledger inline JavaScript missing'
+          pathlib.Path('/tmp/shadow-ledger.js').write_text(scripts[-1])
+          for phrase in ['shadow_movement_ledger_pilot_v1', "m.state==='معتمد'", "m.state==='معلق'", 'تصدير سجل الحركات CSV', 'تنزيل نسخة احتياطية JSON']:
+              assert phrase in html, f'Movement ledger control missing: {phrase}'
+          main = pathlib.Path('shadow-planning/index.html').read_text()
+          assert 'movement-ledger.html' in main, 'Movement ledger navigation link missing'
+          print('Validated movement ledger structure, approval-only balance rules, backup/export controls, and navigation')
+          PY
+          node --check /tmp/shadow-ledger.js
+          python - <<'PY'
+          import pathlib, re
           root = pathlib.Path('.')
           html = (root / 'shadow-planning/index.html').read_text()
           worker = (root / 'shadow-planning/worker.js').read_text()
