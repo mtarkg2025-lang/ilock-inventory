@@ -398,6 +398,83 @@ begin
   return new_id;
 end $$;
 
+
+create or replace view public.shadow_plan_component_exceptions
+with (security_invoker=true)
+as
+select p.id as plan_id, p.plan_name, pl.id as plan_line_id, pl.family_code,
+       case
+         when count(b.id)=0 then 'لا يوجد معدل مكون معتمد وساري خلال فترة الخطة'
+         when count(b.id)>1 then 'يوجد أكثر من معدل معتمد متداخل للصنف/العائلة خلال فترة الخطة'
+         when bool_or(i.code is null or not i.is_active) then 'كود مكون مفقود أو غير نشط'
+         when bool_or(trim(b.usage_unit)<>trim(i.base_unit)) then 'وحدة معدل المكون لا تطابق الوحدة الأساسية؛ يلزم تحويل معتمد'
+         else null
+       end as exception_reason,
+       count(b.id) as candidate_rate_rows
+from public.shadow_production_plans p
+join public.shadow_production_plan_lines pl on pl.plan_id=p.id
+left join public.shadow_bom_lines b
+  on b.family_code=pl.family_code and b.is_approved
+ and b.effective_from<=p.period_end
+ and (b.effective_to is null or b.effective_to>=p.period_start)
+left join public.shadow_items i on i.code=b.component_code
+group by p.id,p.plan_name,pl.id,pl.family_code
+having count(b.id)=0 or count(b.id)>1
+   or bool_or(i.code is null or not i.is_active)
+   or bool_or(trim(b.usage_unit)<>trim(i.base_unit));
+
+create or replace view public.shadow_plan_component_requirements
+with (security_invoker=true)
+as
+with candidates as (
+  select p.id as plan_id,p.plan_name,p.period_start,p.period_end,
+         pl.id as plan_line_id,pl.family_code,pl.planned_qty,pl.unit as planned_unit,
+         b.component_code,b.usage_qty,b.usage_unit,i.base_unit,
+         count(b.id) over(partition by p.id,pl.id,b.component_code) as rate_count
+  from public.shadow_production_plans p
+  join public.shadow_production_plan_lines pl on pl.plan_id=p.id
+  join public.shadow_bom_lines b
+    on b.family_code=pl.family_code and b.is_approved
+   and b.effective_from<=p.period_end
+   and (b.effective_to is null or b.effective_to>=p.period_start)
+  join public.shadow_items i on i.code=b.component_code and i.is_active
+  where p.status='approved'
+)
+select plan_id,plan_name,period_start,period_end,component_code,base_unit as required_unit,
+       sum(planned_qty*usage_qty)::numeric(18,3) as required_qty,
+       count(distinct family_code) as contributing_families,
+       array_agg(distinct family_code order by family_code) as family_codes
+from candidates
+where rate_count=1 and trim(usage_unit)=trim(base_unit)
+group by plan_id,plan_name,period_start,period_end,component_code,base_unit;
+
+create or replace function public.shadow_approve_production_plan(p_plan_id uuid)
+returns void language plpgsql security definer set search_path=public,auth
+as $
+declare p public.shadow_production_plans%rowtype;
+begin
+  if not public.shadow_is_active_user() or public.shadow_role() not in ('admin','planner') then
+    raise exception 'Only active planner/admin may approve a production plan.';
+  end if;
+  select * into p from public.shadow_production_plans where id=p_plan_id for update;
+  if not found or p.status not in ('draft','reviewed') then
+    raise exception 'Only an existing draft/reviewed plan may be approved.';
+  end if;
+  if p.created_by=auth.uid() and public.shadow_role()<>'admin' then
+    raise exception 'Maker-checker rule: planner cannot approve own plan.';
+  end if;
+  if not exists(select 1 from public.shadow_production_plan_lines where plan_id=p.id) then
+    raise exception 'Cannot approve an empty production plan.';
+  end if;
+  if exists(select 1 from public.shadow_plan_component_exceptions where plan_id=p.id) then
+    raise exception 'Plan has missing, ambiguous, inactive, or unit-mismatched component rates. Resolve exceptions before approval.';
+  end if;
+  update public.shadow_production_plans
+    set status='approved',reviewed_by=coalesce(reviewed_by,auth.uid()),
+        approved_by=auth.uid(),approved_at=now()
+    where id=p.id;
+end $;
+
 alter table public.shadow_profiles enable row level security;
 alter table public.shadow_warehouses enable row level security;
 alter table public.shadow_storage_locations enable row level security;
@@ -502,12 +579,13 @@ revoke all on all tables in schema public from anon;
 revoke all on all functions in schema public from public;
 grant usage on schema public to authenticated;
 grant select,insert,update,delete on public.shadow_profiles,public.shadow_warehouses,public.shadow_storage_locations,public.shadow_items,public.shadow_documents,public.shadow_document_lines,public.shadow_unit_conversions,public.shadow_item_weight_profiles,public.shadow_production_families,public.shadow_bom_lines,public.shadow_production_plans,public.shadow_production_plan_lines to authenticated;
-grant select on public.shadow_audit_events,public.shadow_stock_balances to authenticated;
+grant select on public.shadow_audit_events,public.shadow_stock_balances,public.shadow_plan_component_exceptions,public.shadow_plan_component_requirements to authenticated;
 grant usage,select on sequence public.shadow_audit_events_id_seq to authenticated;
 grant execute on function public.shadow_role() to authenticated;
 grant execute on function public.shadow_is_active_user() to authenticated;\ngrant execute on function public.shadow_submit_document(uuid) to authenticated;
 grant execute on function public.shadow_approve_document(uuid,text) to authenticated;
 grant execute on function public.shadow_reject_document(uuid,text) to authenticated;
 grant execute on function public.shadow_create_correction(uuid,text,date,text) to authenticated;
+grant execute on function public.shadow_approve_production_plan(uuid) to authenticated;
 
 commit;
