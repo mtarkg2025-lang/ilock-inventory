@@ -10,6 +10,7 @@
 
 ## التطبيقات والمخططات
 - **[واجهة إدارة المخزون](./index.html)**
+- **[أداة الاستلام بالوزن والتحقق من الكميات](./weight-receiving/)**
 - **[محرك SHADOW Planning](./shadow-planning/)**
 - **[مخطط SIDRA إلى Odoo Online](./SIDRA_ODOO_ONLINE_BLUEPRINT.md)**
 - **[المراجع العلمية وسجل نواقص البيانات واختبارات القبول](./shadow-planning/README.md)**
