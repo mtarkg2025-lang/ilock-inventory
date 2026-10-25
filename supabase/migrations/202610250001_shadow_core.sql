@@ -240,13 +240,13 @@ create trigger shadow_documents_audit after insert or update or delete on public
 create or replace function public.shadow_audit_line()
 returns trigger language plpgsql security definer set search_path=public,auth
 as $
-declare oldj jsonb; newj jsonb; ent text;
+declare oldj jsonb; newj jsonb; ent text; docid uuid;
 begin
-  if tg_op='INSERT' then oldj:=null; newj:=to_jsonb(new); ent:=new.id::text;
-  elsif tg_op='UPDATE' then oldj:=to_jsonb(old); newj:=to_jsonb(new); ent:=new.id::text;
-  else oldj:=to_jsonb(old); newj:=null; ent:=old.id::text; end if;
+  if tg_op='INSERT' then oldj:=null; newj:=to_jsonb(new); ent:=new.id::text; docid:=new.document_id;
+  elsif tg_op='UPDATE' then oldj:=to_jsonb(old); newj:=to_jsonb(new); ent:=new.id::text; docid:=new.document_id;
+  else oldj:=to_jsonb(old); newj:=null; ent:=old.id::text; docid:=old.document_id; end if;
   insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data,reason)
-  values(auth.uid(),'document_line',ent,tg_op,oldj,newj,'document_id='||coalesce(new.document_id,old.document_id)::text);
+  values(auth.uid(),'document_line',ent,tg_op,oldj,newj,'document_id='||docid::text);
   if tg_op='DELETE' then return old; else return new; end if;
 end $;
 drop trigger if exists shadow_document_lines_audit on public.shadow_document_lines;
