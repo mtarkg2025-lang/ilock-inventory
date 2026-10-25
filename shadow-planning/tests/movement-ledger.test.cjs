@@ -15,7 +15,7 @@ const signed = extractBetween('function signed(', 'function key');
 const key = extractBetween('function key(', 'function balanceRows');
 const resolver = extractBetween('function resolveMasterItem(', 'function updateMasterItem');
 const norm = "function norm(s){return String(s??'').trim().toLocaleLowerCase().replace(/[\\sـ]+/g,'')}";
-const api = vm.runInNewContext(validMove + '\n' + signed + '\n' + norm + '\n' + key + '\n({validMove, signed, key})');
+const api = vm.runInNewContext(validMove + '\n' + signed + '\n' + norm + '\n' + key + '\n' + resolver + '\n({validMove, signed, key, resolveMasterItem})');
 const base = {
   id: 'MV-TEST-1', date: '2026-10-25', type: 'استلام', code: 'REAL-CODE',
   name: 'صنف اختبار', warehouse: 'مخزن الحقن', location: 'منطقة أ', qty: 12, unit: 'قطعة',
