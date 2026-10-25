@@ -28,7 +28,30 @@ let S={families:[],rows:[],plan:{},stock:{},loaded:false,source:null};let INJECT
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function idx(h,terms,fb){for(let i=0;i<h.length;i++){let x=norm(h[i]);if(terms.some(t=>x.includes(norm(t))))return i}return fb}
 function message(x){$('msg').textContent=x}
-function parseRates(buf,name){if(!window.XLSX)throw Error('مكتبة Excel لم تحمل؛ افتح الصفحة باتصال إنترنت.');let w=XLSX.read(buf,{type:'array'}),sn=w.SheetNames.find(n=>norm(n).includes('معدلات'))||w.SheetNames[0],a=XLSX.utils.sheet_to_json(w.Sheets[sn],{header:1,defval:null,raw:true});let hi=a.findIndex(r=>r.some(c=>norm(c).includes('المنتجالرئيسي'))||r.some(c=>norm(c).includes('معدل الانتاج')));if(hi<0)hi=0;let h=a[hi]||[],i={family:idx(h,['المنتج الرئيسي','المنتج الرئيسى'],1),rate:idx(h,['معدل الانتاج','معدل الإنتاج'],2),color:idx(h,['نسبة اللون'],3),ret:idx(h,['نسبه المرتجع','نسبة المرتجع'],4),comp:idx(h,['خام','المكون','المكوّن'],5),factory:idx(h,['المصنع','القسم'],6),total:idx(h,['اجمالي','إجمالي'],7),daily:idx(h,['الانتاج اليومي','الإنتاج اليومي'],8),factor:idx(h,['معامل'],9)},fam='',rows=[],families=[];for(let r=hi+1;r<a.length;r++){let x=a[r];if(!x||x.every(v=>v===null||v===''))continue;if(x[i.family]!=null&&String(x[i.family]).trim())fam=String(x[i.family]).trim();if(!fam)continue;let comp=x[i.comp],rate=N(x[i.rate]),total=N(x[i.total]);if(comp==null||!String(comp).trim()||String(comp).trim()==='-'||!rate)continue;let z={family:fam,component:String(comp).trim(),factory:String(x[i.factory]??'غير محدد').trim()||'غير محدد',rate,total,coefficient:total/rate,rawColor:x[i.color]??null,rawReturn:x[i.ret]??null,rawFactor:x[i.factor]??null,daily:x[i.daily]??null,sourceRow:r+1,source:x};rows.push(z);if(!families.includes(fam))families.push(fam)}if(!rows.length)throw Error('لم أجد صفوف مكونات. راجع أسماء أعمدة المصدر.');S.rows=rows;S.families=families.map(name=>({name,count:rows.filter(x=>x.family===name).length}));S.plan=Object.fromEntries(families.map(f=>[f,S.plan[f]??'']));S.loaded=true;S.source={name,headers:h,rows:a.slice(hi+1),sheet:sn};save();render();message('تم تحميل '+name+': '+families.length+' عائلة و'+rows.length+' صف مكونات. تم الاحتفاظ بنسب اللون والمرتجع والمعامل دون تعديل.')}
+function parseRates(buf,name){
+ if(!window.XLSX)throw Error('مكتبة قراءة Excel لم تحمل؛ افتح الصفحة باتصال إنترنت.');
+ let w=XLSX.read(buf,{type:'array'}),sn=w.SheetNames.find(n=>norm(n).includes('معدلات'))||w.SheetNames[0],a=XLSX.utils.sheet_to_json(w.Sheets[sn],{header:1,defval:null,raw:true});
+ let hi=a.findIndex(r=>r.some(c=>norm(c).includes('المنتجالرئيسي'))||r.some(c=>norm(c).includes('معدل الانتاج')));if(hi<0)hi=0;
+ let h=a[hi]||[],i={family:idx(h,['المنتج الرئيسي','المنتج الرئيسى'],1),rate:idx(h,['معدل الانتاج','معدل الإنتاج'],2),color:idx(h,['نسبة اللون'],3),ret:idx(h,['نسبه المرتجع','نسبة المرتجع'],4),comp:idx(h,['خام','المكون','المكوّن'],5),factory:idx(h,['المصنع','القسم'],6),total:idx(h,['اجمالي','إجمالي'],7),daily:idx(h,['الانتاج اليومي','الإنتاج اليومي'],8),factor:idx(h,['معامل'],9)};
+ let fam='',rows=[],families=[],invalidRows=[];
+ const numeric=v=>v!==null&&v!==undefined&&String(v).trim()!==''&&Number.isFinite(Number(v));
+ for(let r=hi+1;r<a.length;r++){
+  let x=a[r];if(!x||x.every(v=>v===null||v===''))continue;
+  if(x[i.family]!=null&&String(x[i.family]).trim())fam=String(x[i.family]).trim();
+  let comp=x[i.comp];if(comp==null||!String(comp).trim()||String(comp).trim()==='-')continue;
+  if(!fam){invalidRows.push({sourceRow:r+1,component:String(comp).trim(),reason:'اسم العائلة/المنتج الرئيسي مفقود'});continue}
+  const rateRaw=x[i.rate],totalRaw=x[i.total],rate=numeric(rateRaw)?Number(rateRaw):NaN,total=numeric(totalRaw)?Number(totalRaw):NaN;
+  if(!Number.isFinite(rate)||rate<=0||!Number.isFinite(total)||total<=0){
+   invalidRows.push({sourceRow:r+1,family:fam,component:String(comp).trim(),rate:rateRaw??null,total:totalRaw??null,reason:'معدل أو إجمالي مفقود/غير رقمي/غير موجب'});
+   continue;
+  }
+  let z={family:fam,component:String(comp).trim(),factory:String(x[i.factory]??'غير محدد').trim()||'غير محدد',rate,total,coefficient:total/rate,rawColor:x[i.color]??null,rawReturn:x[i.ret]??null,rawFactor:x[i.factor]??null,daily:x[i.daily]??null,sourceRow:r+1,source:x};
+  rows.push(z);if(!families.includes(fam))families.push(fam);
+ }
+ if(!rows.length)throw Error('لم أجد صفوف مكونات صالحة. راجع أسماء الأعمدة ومعدلات المصدر؛ لم يتم استبدال جلسة التخطيط الحالية.');
+ S.rows=rows;S.families=families.map(name=>({name,count:rows.filter(x=>x.family===name).length}));S.plan=Object.fromEntries(families.map(f=>[f,S.plan[f]??'']));S.loaded=true;S.rateExceptions=invalidRows;S.source={name,headers:h,rows:a.slice(hi+1),sheet:sn};save();render();
+ message('تم تحميل '+name+': '+families.length+' عائلة و'+rows.length+' صف مكونات صالح. الصفوف التي استُبعدت لعدم صلاحية المعدل/الإجمالي: '+invalidRows.length+'. لم تُستخدم القيم الناقصة أو غير الموجبة في الحساب؛ راجعها في فحص الجودة قبل الاعتماد.');
+}
 function detail(){return S.rows.flatMap(r=>{let q=S.plan[r.family];return q!==''&&N(q)>0?[{...r,qty:N(q),need:N(q)*r.coefficient}]:[]})}
 function aggregate(){let m=new Map();detail().forEach(r=>{let k=norm(r.component)+'|'+norm(r.factory),v=m.get(k)||{component:r.component,factory:r.factory,need:0};v.need+=r.need;m.set(k,v)});return [...m.values()].sort((a,b)=>a.component.localeCompare(b.component,'ar'))}
 function renderPlan(){let q=norm($('fs').value),f=S.families.filter(x=>norm(x.name).includes(q));$('pb').innerHTML=f.length?f.map((x,j)=>{let v=S.plan[x.name]??'';return '<tr><td>'+(j+1)+'</td><td>'+E(x.name)+'</td><td><input class="pi" data-f="'+E(x.name)+'" type="number" min="0" step="any" value="'+E(v)+'" placeholder="الكمية المطلوبة"></td><td>'+x.count+'</td><td><span class="pill '+(N(v)>0?'good':'warn')+'">'+(N(v)>0?'ضمن الخطة':'غير مخطط')+'</span></td></tr>'}).join(''):'<tr><td colspan="5">لا توجد عائلات مطابقة.</td></tr>';document.querySelectorAll('.pi').forEach(el=>el.onchange=e=>{S.plan[e.target.dataset.f]=e.target.value;save();render()})}
