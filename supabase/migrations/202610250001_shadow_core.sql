@@ -438,26 +438,34 @@ end $$;
 create or replace view public.shadow_plan_component_exceptions
 with (security_invoker=true)
 as
-select p.id as plan_id, p.plan_name, pl.id as plan_line_id, pl.family_code,
+with candidates as (
+  select p.id as plan_id, p.plan_name, pl.id as plan_line_id, pl.family_code,
+         b.id as bom_id, b.component_code, b.usage_unit, i.code as matched_item_code,
+         i.is_active, i.base_unit,
+         count(b.id) over(partition by p.id,pl.id,b.component_code) as rate_count
+  from public.shadow_production_plans p
+  join public.shadow_production_plan_lines pl on pl.plan_id=p.id
+  left join public.shadow_bom_lines b
+    on b.family_code=pl.family_code and b.is_approved
+   and b.effective_from<=p.period_end
+   and (b.effective_to is null or b.effective_to>=p.period_start)
+  left join public.shadow_items i on i.code=b.component_code
+)
+select plan_id,plan_name,plan_line_id,family_code,
        case
-         when count(b.id)=0 then 'لا يوجد معدل مكون معتمد وساري خلال فترة الخطة'
-         when count(b.id)>1 then 'يوجد أكثر من معدل معتمد متداخل للصنف/العائلة خلال فترة الخطة'
-         when bool_or(i.code is null or not i.is_active) then 'كود مكون مفقود أو غير نشط'
-         when bool_or(trim(b.usage_unit)<>trim(i.base_unit)) then 'وحدة معدل المكون لا تطابق الوحدة الأساسية؛ يلزم تحويل معتمد'
+         when count(bom_id)=0 then 'لا يوجد معدل مكون معتمد وساري خلال فترة الخطة'
+         when bool_or(rate_count>1) then 'يوجد أكثر من معدل معتمد متداخل للمكون نفسه خلال فترة الخطة'
+         when bool_or(bom_id is not null and (matched_item_code is null or not is_active)) then 'كود مكون مفقود أو غير نشط'
+         when bool_or(bom_id is not null and trim(usage_unit)<>trim(base_unit)) then 'وحدة معدل المكون لا تطابق الوحدة الأساسية؛ يلزم تحويل معتمد'
          else null
        end as exception_reason,
-       count(b.id) as candidate_rate_rows
-from public.shadow_production_plans p
-join public.shadow_production_plan_lines pl on pl.plan_id=p.id
-left join public.shadow_bom_lines b
-  on b.family_code=pl.family_code and b.is_approved
- and b.effective_from<=p.period_end
- and (b.effective_to is null or b.effective_to>=p.period_start)
-left join public.shadow_items i on i.code=b.component_code
-group by p.id,p.plan_name,pl.id,pl.family_code
-having count(b.id)=0 or count(b.id)>1
-   or bool_or(i.code is null or not i.is_active)
-   or bool_or(trim(b.usage_unit)<>trim(i.base_unit));
+       count(bom_id) as candidate_rate_rows
+from candidates
+group by plan_id,plan_name,plan_line_id,family_code
+having count(bom_id)=0
+   or bool_or(rate_count>1)
+   or bool_or(bom_id is not null and (matched_item_code is null or not is_active))
+   or bool_or(bom_id is not null and trim(usage_unit)<>trim(base_unit));
 
 create or replace view public.shadow_plan_component_requirements
 with (security_invoker=true)
