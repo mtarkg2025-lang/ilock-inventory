@@ -76,6 +76,12 @@ jobs:
               assert phrase in html, f'Movement ledger control missing: {phrase}'
           main = pathlib.Path('shadow-planning/index.html').read_text()
           assert 'movement-ledger.html' in main, 'Movement ledger navigation link missing'
+          assert 'plan-vs-actual.html' in main, 'Plan vs actual comparison navigation link missing'
+          comparison = pathlib.Path('shadow-planning/plan-vs-actual.html').read_text()
+          assert 'plan-vs-actual-core.js' in comparison, 'Plan vs actual comparison core not linked'
+          comparison_scripts = re.findall(r'<script>(.*?)</script>', comparison, re.S)
+          assert comparison_scripts, 'Plan vs actual inline JavaScript missing'
+          pathlib.Path('/tmp/shadow-plan-vs-actual.js').write_text(comparison_scripts[-1])
           assert 'id="movementIntegration"' in main and 'function renderLedgerIntegration' in main, 'Planning dashboard is not linked to movement ledger summary'
           assert 'shadow_movement_ledger_pilot_v1' in main, 'Shared local ledger key missing from planning dashboard'
           assert 'حالة التشغيل الحالية:</b> محلي داخل المتصفح' in main, 'Local-only status must be visible in the planning dashboard'
@@ -85,6 +91,8 @@ jobs:
           print('Validated movement ledger, separate storage-location balances, correction policy, backup/export controls, and navigation')
           PY
           node --check /tmp/shadow-ledger.js
+          node --check shadow-planning/plan-vs-actual-core.js
+          node --check /tmp/shadow-plan-vs-actual.js
           python - <<'PY'
           import pathlib, re
           html = pathlib.Path('weight-receiving/index.html').read_text()
@@ -99,6 +107,7 @@ jobs:
           PY
           node --check /tmp/shadow-weight.js
           node shadow-planning/tests/movement-ledger.test.cjs
+          node shadow-planning/tests/plan-vs-actual.test.cjs
           python - <<'PY'
           import pathlib, re
           root = pathlib.Path('.')
@@ -158,11 +167,14 @@ jobs:
           print('Validated central schema, role controls, audit, approved-only balances, and setup docs')
           PY
       - name: Configure GitHub Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
       - name: Upload static site
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
       - name: Deploy
+        if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v4
