@@ -17,8 +17,10 @@ const CORE={
   {id:'SEC-01',title:'الأمان',rule:'لا تضع كلمة مرور أو service-role key في المتصفح أو مستودع GitHub.'}
  ],
  links:[
+  {label:'واجهة إدارة المخزون',href:'/ilock-inventory/'},
   {label:'لوحة PMO',href:'/ilock-inventory/shadow-pmo/'},
   {label:'تخطيط المخزون',href:'/ilock-inventory/shadow-planning/'},
+  {label:'مقارنة الخطة والفعلي',href:'/ilock-inventory/shadow-planning/plan-vs-actual.html'},
   {label:'سجل الحركات',href:'/ilock-inventory/shadow-planning/movement-ledger.html'},
   {label:'الاستلام بالوزن',href:'/ilock-inventory/weight-receiving/'},
   {label:'مواصفة النواة',href:'/ilock-inventory/SHADOW_INVENTORY_ADVISOR/PMP_PMO_CORE_NOTE.md'},
@@ -37,18 +39,17 @@ function mount(){
  document.head.appendChild(style);
  const root=el('section',{id:'shadowCoreRibbon','aria-label':'نواة شادو المشتركة'});
  const row=el('div',{});
- const msg=el('span',{},'النواة المشتركة v'+CORE.version+' — قواعد بيانات وحوكمة موحدة بين الواجهات');
- const state=el('span',{class:'scr-state'},'تشغيل محلي تجريبي');
+ const msg=el('span',{},'SHADOW Core v'+CORE.version+' — قواعد تحقق وتنقل مشتركة بين الواجهات');
+ const state=el('span',{class:'scr-state'},'بيانات محلية منفصلة');
  const btn=el('button',{type:'button','aria-expanded':'false'},'عرض قواعد النواة');
  btn.addEventListener('click',()=>{const p=root.querySelector('.scr-panel');const show=p.hidden;p.hidden=!show;btn.setAttribute('aria-expanded',String(show));btn.textContent=show?'إخفاء قواعد النواة':'عرض قواعد النواة'});
  row.append(msg,state,document.createTextNode(' '),btn);root.appendChild(row);
  const panel=el('div',{class:'scr-panel'});panel.hidden=true;
  panel.appendChild(el('strong',{},'القواعد المشتركة'));
  const list=el('ul',{});CORE.rules.forEach(r=>list.appendChild(el('li',{},r.id+' — '+r.title+': '+r.rule)));panel.appendChild(list);
- panel.appendChild(el('strong',{},'التنقل بين أطراف SHADOW'));
+ panel.appendChild(el('strong',{},'التنقل بين وحدات SHADOW'));
  const links=el('div',{class:'scr-links'});CORE.links.forEach(l=>{const a=el('a',{href:l.href},l.label);links.appendChild(a)});panel.appendChild(links);
- panel.appendChild(el('p',{},'تنبيه: هذا الملف يوحّد قواعد العرض والتحقق والتنقل في المتصفح فقط. لا يوفر مصادقة أو قاعدة مركزية ولا يجعل localStorage مشتركًا بين الأجهزة. التفعيل المركزي يتطلب Supabase واختبارات تكامل وصلاحيات.'));
- root.appendChild(panel);
+ panel.appendChild(el('p',{},'تنبيه تكامل: النواة توحّد قواعد التحقق والتنقل فقط. بيانات الواجهات لا تتزامن تلقائيًا، ولا توجد قاعدة مركزية مفعلة حاليًا. لا تعتبر رصيدًا أو حركة من واجهة أخرى مسجلة هنا إلا بعد استيراد ومراجعة موثقين.'));
  const header=document.querySelector('header');if(header&&header.parentNode)header.insertAdjacentElement('afterend',root);else document.body.insertAdjacentElement('afterbegin',root);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
