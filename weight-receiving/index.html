@@ -9,7 +9,7 @@
 </style>
 </head>
 <body>
-<header><h1>SHADOW Agent | سجل الاستلام بالوزن</h1><p>نموذج للتحقق من الكميات المستلمة. يربط كود واسم الصنف بدليل الحقن الرسمي، ويتيح إرسال الكميات الفعلية المعتمدة كحركات استلام معلقة للمراجعة في دفتر الحركات المحلي.</p><div class="actions"><a class="btn secondary" href="../shadow-planning/">واجهة التخطيط والمخزون</a><a class="btn secondary" href="../shadow-planning/movement-ledger.html">دفتر الحركات</a><a class="btn secondary" href="../CENTRAL_BACKEND_SETUP_AR.md">حالة القاعدة المركزية</a></div></header>
+<header><h1>SHADOW Agent | سجل الاستلام بالوزن</h1><p>نموذج للتحقق من الكميات المستلمة. يربط كود واسم الصنف بدليل الحقن الرسمي، ويتيح إرسال الكميات الفعلية المعتمدة كحركات استلام معلقة للمراجعة في دفتر الحركات المحلي.</p><div class="actions"><a class="btn secondary" href="../shadow-planning/">واجهة التخطيط والمخزون</a><a class="btn secondary" href="../shadow-pmo/">لوحة حوكمة PMO</a><a class="btn secondary" href="../shadow-planning/movement-ledger.html">دفتر الحركات</a><a class="btn secondary" href="../CENTRAL_BACKEND_SETUP_AR.md">حالة القاعدة المركزية</a></div></header>
 <main>
 <div class="notice"><b>ضابط أساسي:</b> العدد التقديري من الوزن لا يُرحّل. الربط إلى دفتر الحركات يستخدم العدد الفعلي المعدود فقط، ويتطلب توثيق اعتماد الدفعة ومرجعها والمستلم والمعتمد. الترحيل ينشئ حركات «معلقة» فقط ولا يغير الرصيد قبل اعتمادها في دفتر الحركات. البيانات محلية في المتصفح نفسه وليست قاعدة مركزية أو اتصالًا بأودو. <span id="masterStatus" class="status">جارٍ تحميل دليل الأصناف…</span></div>
 <section class="panel"><h2>بيانات دفعة الاستلام</h2><div class="fields">
@@ -96,4 +96,4 @@ $('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const bu
 const today=new Date();today.setMinutes(today.getMinutes()-today.getTimezoneOffset());$('date').value=today.toISOString().slice(0,10);
 loadMasterItems();newRow();})();
 </script>
-</body></html>
+<script src="../shadow-core.js"></script></body></html>

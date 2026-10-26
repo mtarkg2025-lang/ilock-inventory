@@ -3,6 +3,8 @@ name: Deploy SHADOW to GitHub Pages
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -23,6 +25,28 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Validate shared SHADOW core integration
+        run: |
+          node --check shadow-core.js
+          python - <<'PY'
+          import pathlib
+          core = pathlib.Path('shadow-core.js').read_text()
+          for rule in ['DATA-01','MOV-01','WEIGHT-01','PLAN-01','GOV-01','PMP-01','SEC-01']:
+              assert rule in core, f'Missing shared core rule: {rule}'
+          for page, rel in [
+              ('shadow-planning/index.html', '../shadow-core.js'),
+              ('shadow-planning/movement-ledger.html', '../shadow-core.js'),
+              ('weight-receiving/index.html', '../shadow-core.js'),
+              ('shadow-pmo/index.html', '../shadow-core.js')
+          ]:
+              html = pathlib.Path(page).read_text()
+              assert f'<script src="{rel}"></script>' in html, f'Shared core not loaded in {page}'
+              assert '../shadow-pmo/' in html or page == 'shadow-pmo/index.html', f'PMO navigation missing in {page}'
+          pmo = pathlib.Path('shadow-pmo/index.html').read_text()
+          for token in ['reqText','raidText','decText','kpiName','gates','exportData','importData']:
+              assert token in pmo, f'PMO prototype control missing: {token}'
+          print('Validated shared SHADOW core, core rules, PMO navigation, and prototype controls')
+          PY
       - name: Validate bundled data and inline JavaScript
         run: |
           python - <<'PY'
@@ -52,6 +76,14 @@ jobs:
               assert phrase in html, f'Movement ledger control missing: {phrase}'
           main = pathlib.Path('shadow-planning/index.html').read_text()
           assert 'movement-ledger.html' in main, 'Movement ledger navigation link missing'
+          assert 'plan-vs-actual.html' in main, 'Plan vs actual comparison navigation link missing'
+          comparison = pathlib.Path('shadow-planning/plan-vs-actual.html').read_text()
+          assert 'PLAN_VS_ACTUAL_GUIDE_AR.md' in comparison, 'Plan vs actual usage guide link missing'
+          assert (root / 'shadow-planning/PLAN_VS_ACTUAL_GUIDE_AR.md').is_file(), 'Plan vs actual usage guide missing'
+          assert 'plan-vs-actual-core.js' in comparison, 'Plan vs actual comparison core not linked'
+          comparison_scripts = re.findall(r'<script>(.*?)</script>', comparison, re.S)
+          assert comparison_scripts, 'Plan vs actual inline JavaScript missing'
+          pathlib.Path('/tmp/shadow-plan-vs-actual.js').write_text(comparison_scripts[-1])
           assert 'id="movementIntegration"' in main and 'function renderLedgerIntegration' in main, 'Planning dashboard is not linked to movement ledger summary'
           assert 'shadow_movement_ledger_pilot_v1' in main, 'Shared local ledger key missing from planning dashboard'
           assert 'حالة التشغيل الحالية:</b> محلي داخل المتصفح' in main, 'Local-only status must be visible in the planning dashboard'
@@ -61,6 +93,8 @@ jobs:
           print('Validated movement ledger, separate storage-location balances, correction policy, backup/export controls, and navigation')
           PY
           node --check /tmp/shadow-ledger.js
+          node --check shadow-planning/plan-vs-actual-core.js
+          node --check /tmp/shadow-plan-vs-actual.js
           python - <<'PY'
           import pathlib, re
           html = pathlib.Path('weight-receiving/index.html').read_text()
@@ -75,6 +109,7 @@ jobs:
           PY
           node --check /tmp/shadow-weight.js
           node shadow-planning/tests/movement-ledger.test.cjs
+          node shadow-planning/tests/plan-vs-actual.test.cjs
           python - <<'PY'
           import pathlib, re
           root = pathlib.Path('.')
@@ -84,7 +119,8 @@ jobs:
               'INVENTORY_BRAIN_OPERATING_MODEL_AR.md', 'GLOBAL_SYSTEMS_SYNTHESIS_PROMPT_AR.md', 'CONTROL_GATES_AR.md',
               'AGENT_SYSTEM_PROMPT_AR.md', 'KNOWLEDGE_FRAMEWORK_AR.md',
               'DECISION_PLAYBOOK_AR.md', 'AGENT_ARCHITECTURE_AR.md',
-              'ACCEPTANCE_TESTS_AR.md', 'REFERENCE_REGISTER_AR.md'
+              'ACCEPTANCE_TESTS_AR.md', 'REFERENCE_REGISTER_AR.md', 'PMP_PMO_CORE_NOTE.md',
+              'KNOWLEDGE_SOURCE_MAP_PMP_PMO_AR.md', 'SHADOW_PMO_DELIVERY_ROADMAP_AR.md', 'PMO_ACCEPTANCE_TESTS_AR.md'
           ]
           for name in required_knowledge:
               assert name in html, f'Advisor knowledge file not wired into UI: {name}'
@@ -98,6 +134,8 @@ jobs:
           assert 'rateExceptions' in html and 'صفوف معدلات إنتاج مستبعدة' in html, 'Invalid production-rate row guard missing'
           assert 'INVENTORY_BRAIN_OPERATING_MODEL_AR.md' in html, 'Unified inventory brain model not loaded by advisor'
           assert 'COMPARATIVE_SYSTEMS_RESEARCH_AR.md' in html, 'Comparative inventory systems research not loaded by advisor'
+          for name in ['PMP_PMO_CORE_NOTE.md', 'KNOWLEDGE_SOURCE_MAP_PMP_PMO_AR.md', 'SHADOW_PMO_DELIVERY_ROADMAP_AR.md', 'PMO_ACCEPTANCE_TESTS_AR.md']:
+              assert name in html, f'PMO knowledge not wired into advisor: {name}'
           assert (root / 'SHADOW_INVENTORY_ADVISOR' / 'COMPARATIVE_SYSTEMS_RESEARCH_AR.md').is_file(), 'Comparative inventory systems research file missing'
           assert not re.search(r'(?i)sk-[A-Za-z0-9]{20,}', html), 'Possible API key pattern found in browser HTML'
           print('Validated advisor knowledge wiring, server guards, and browser-secret scan')
@@ -131,11 +169,14 @@ jobs:
           print('Validated central schema, role controls, audit, approved-only balances, and setup docs')
           PY
       - name: Configure GitHub Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
       - name: Upload static site
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
       - name: Deploy
+        if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v4
