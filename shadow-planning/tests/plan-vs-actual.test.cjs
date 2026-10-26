@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict');
-const {aggregate,compare,num,norm}=require('./plan-vs-actual-core.js');
+const {aggregate,compare,num,norm}=require('../plan-vs-actual-core.js');
 assert.equal(num('١٢٣'),123);
 assert.equal(num('۱۲۳٫۵'),123.5);
 assert.equal(num('1,250.5'),1250.5);
