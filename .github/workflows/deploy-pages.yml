@@ -112,7 +112,7 @@ jobs:
           assert scripts, 'Central console JavaScript missing'
           pathlib.Path('/tmp/shadow-central-console.js').write_text(scripts[-1])
           sql = pathlib.Path('supabase/migrations/202610250001_shadow_core.sql').read_text()
-          assert not re.search(r'(?m)^as $(?:\r?\n)', sql), 'Malformed single-dollar SQL function delimiter'
+          assert not re.search(r'(?m)^as \\$(?:\r?\n)', sql), 'Malformed single-dollar SQL function delimiter'
           assert not re.search(r'(?m)^end \$;', sql), 'Malformed SQL function terminator'
           assert '\\n' not in sql, 'Literal escaped newline remains in SQL migration'
           for phrase in ['shadow_source_import_batches','shadow_source_import_rows','create policy shadow_source_batches_admin','create policy shadow_source_rows_admin']:
