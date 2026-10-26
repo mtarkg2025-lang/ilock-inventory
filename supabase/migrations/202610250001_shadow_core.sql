@@ -625,4 +625,49 @@ grant execute on function public.shadow_reject_document(uuid,text) to authentica
 grant execute on function public.shadow_create_correction(uuid,text,date,text) to authenticated;
 grant execute on function public.shadow_approve_production_plan(uuid) to authenticated;
 
+
+-- Immutable source-import staging preserves source rows without promoting provisional values.
+create table if not exists public.shadow_source_import_batches (
+  id uuid primary key default gen_random_uuid(),
+  source_name text not null,
+  source_type text not null check (source_type in ('item_master','production_rates','legacy_movements','other')),
+  source_reference text,
+  source_sha256 text,
+  imported_by uuid not null references auth.users(id),
+  imported_at timestamptz not null default now(),
+  row_count integer not null default 0 check (row_count >= 0),
+  status text not null default 'staged' check (status in ('staged','reviewing','partially_reviewed','approved','rejected')),
+  notes text
+);
+create table if not exists public.shadow_source_import_rows (
+  id bigint generated always as identity primary key,
+  batch_id uuid not null references public.shadow_source_import_batches(id) on delete restrict,
+  source_row_no integer not null check (source_row_no > 0),
+  source_sheet text not null default '',
+  row_type text not null check (row_type in ('item_master','production_rate','legacy_movement','other')),
+  source_key text,
+  source_data jsonb not null,
+  review_status text not null default 'pending' check (review_status in ('pending','matched','approved','rejected','needs_mapping')),
+  matched_item_code text references public.shadow_items(code) on update restrict on delete restrict,
+  reviewed_by uuid references auth.users(id),
+  reviewed_at timestamptz,
+  review_note text,
+  unique(batch_id, row_type, source_row_no)
+);
+create index if not exists shadow_source_rows_batch_idx on public.shadow_source_import_rows(batch_id, review_status);
+alter table public.shadow_source_import_batches enable row level security;
+alter table public.shadow_source_import_rows enable row level security;
+drop policy if exists shadow_source_batches_admin on public.shadow_source_import_batches;
+create policy shadow_source_batches_admin on public.shadow_source_import_batches for all to authenticated
+using (public.shadow_role()='admin') with check (public.shadow_role()='admin');
+drop policy if exists shadow_source_rows_admin on public.shadow_source_import_rows;
+create policy shadow_source_rows_admin on public.shadow_source_import_rows for all to authenticated
+using (public.shadow_role()='admin') with check (public.shadow_role()='admin');
+grant select,insert,update,delete on public.shadow_source_import_batches,public.shadow_source_import_rows to authenticated;
+grant usage,select on sequence public.shadow_source_import_rows_id_seq to authenticated;
+drop trigger if exists shadow_source_batches_audit on public.shadow_source_import_batches;
+create trigger shadow_source_batches_audit after insert or update or delete on public.shadow_source_import_batches for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_source_rows_audit on public.shadow_source_import_rows;
+create trigger shadow_source_rows_audit after insert or update or delete on public.shadow_source_import_rows for each row execute function public.shadow_audit_generic();
+
 commit;
