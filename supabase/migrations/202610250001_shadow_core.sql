@@ -671,7 +671,7 @@ using (public.shadow_role()='admin') with check (public.shadow_role()='admin');
 drop policy if exists shadow_source_rows_admin on public.shadow_source_import_rows;
 create policy shadow_source_rows_admin on public.shadow_source_import_rows for all to authenticated
 using (public.shadow_role()='admin') with check (public.shadow_role()='admin');
-grant select,insert,update,delete on public.shadow_source_import_batches,public.shadow_source_import_rows to authenticated;
+revoke all on public.shadow_source_import_batches,public.shadow_source_import_rows from anon;\ngrant select,insert,update,delete on public.shadow_source_import_batches,public.shadow_source_import_rows to authenticated;
 grant usage,select on sequence public.shadow_source_import_rows_id_seq to authenticated;
 drop trigger if exists shadow_source_batches_audit on public.shadow_source_import_batches;
 create trigger shadow_source_batches_audit after insert or update or delete on public.shadow_source_import_batches for each row execute function public.shadow_audit_generic();
