@@ -67,17 +67,18 @@ jobs:
           node --check shadow-planning/worker.js
           python - <<'PY'
           import pathlib, re
-          p = pathlib.Path('shadow-planning/movement-ledger.html')
+          root = pathlib.Path('.')
+          p = root / 'shadow-planning/movement-ledger.html'
           html = p.read_text()
           scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
           assert scripts, 'Movement ledger inline JavaScript missing'
           pathlib.Path('/tmp/shadow-ledger.js').write_text(scripts[-1])
           for phrase in ['shadow_movement_ledger_pilot_v1', "m.state==='معتمد'", "m.state==='معلق'", 'تصدير سجل الحركات CSV', 'تنزيل نسخة احتياطية JSON', 'id="location"', "norm(m.location||'غير محدد')", "location:m.location||'غير محدد'", 'function resolveMasterItem(', 'loadMasterItems();', 'id="masterCodes"']:
               assert phrase in html, f'Movement ledger control missing: {phrase}'
-          main = pathlib.Path('shadow-planning/index.html').read_text()
+          main = (root / 'shadow-planning/index.html').read_text()
           assert 'movement-ledger.html' in main, 'Movement ledger navigation link missing'
           assert 'plan-vs-actual.html' in main, 'Plan vs actual comparison navigation link missing'
-          comparison = pathlib.Path('shadow-planning/plan-vs-actual.html').read_text()
+          comparison = (root / 'shadow-planning/plan-vs-actual.html').read_text()
           assert 'PLAN_VS_ACTUAL_GUIDE_AR.md' in comparison, 'Plan vs actual usage guide link missing'
           assert (root / 'shadow-planning/PLAN_VS_ACTUAL_GUIDE_AR.md').is_file(), 'Plan vs actual usage guide missing'
           assert 'plan-vs-actual-core.js' in comparison, 'Plan vs actual comparison core not linked'
@@ -85,7 +86,7 @@ jobs:
           assert comparison_scripts, 'Plan vs actual inline JavaScript missing'
           pathlib.Path('/tmp/shadow-plan-vs-actual.js').write_text(comparison_scripts[-1])
           assert 'id="movementIntegration"' in main and 'function renderLedgerIntegration' in main, 'Planning dashboard is not linked to movement ledger summary'
-          assert 'shadow_movement_ledger_pilot_v1' in main, 'Shared local ledger key missing from planning dashboard'
+          assert 'shadow_movement_ledger_pilot_v1' in main, 'Shared local ledger key missing'
           assert 'حالة التشغيل الحالية:</b> محلي داخل المتصفح' in main, 'Local-only status must be visible in the planning dashboard'
           assert '../CENTRAL_BACKEND_SETUP_AR.md' in main, 'Central backend setup link missing from dashboard'
           assert 'موقع التخزين الداخلي' in html, 'Separate internal storage location field missing'
@@ -97,7 +98,8 @@ jobs:
           node --check /tmp/shadow-plan-vs-actual.js
           python - <<'PY'
           import pathlib, re
-          html = pathlib.Path('weight-receiving/index.html').read_text()
+          root = pathlib.Path('.')
+          html = (root / 'weight-receiving/index.html').read_text()
           scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
           assert scripts, 'Weight-receiving inline JavaScript missing'
           pathlib.Path('/tmp/shadow-weight.js').write_text(scripts[-1])
