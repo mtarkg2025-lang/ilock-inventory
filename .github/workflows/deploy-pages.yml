@@ -77,9 +77,9 @@ jobs:
           main = pathlib.Path('shadow-planning/index.html').read_text()
           assert 'movement-ledger.html' in main, 'Movement ledger navigation link missing'
           assert 'plan-vs-actual.html' in main, 'Plan vs actual comparison navigation link missing'
+          comparison = pathlib.Path('shadow-planning/plan-vs-actual.html').read_text()
           assert 'PLAN_VS_ACTUAL_GUIDE_AR.md' in comparison, 'Plan vs actual usage guide link missing'
           assert (root / 'shadow-planning/PLAN_VS_ACTUAL_GUIDE_AR.md').is_file(), 'Plan vs actual usage guide missing'
-          comparison = pathlib.Path('shadow-planning/plan-vs-actual.html').read_text()
           assert 'plan-vs-actual-core.js' in comparison, 'Plan vs actual comparison core not linked'
           comparison_scripts = re.findall(r'<script>(.*?)</script>', comparison, re.S)
           assert comparison_scripts, 'Plan vs actual inline JavaScript missing'
