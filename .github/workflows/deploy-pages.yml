@@ -61,12 +61,17 @@ jobs:
           assert len(db["items"]) == 237, f"Unexpected item count: {len(db['items'])}"
           assert len(db["columns"]) == 18, f"Unexpected item fields: {len(db['columns'])}"
           assert len(rates["rows"]) == 257, f"Unexpected rates row count: {len(rates['rows'])}"
+          root_html = (root / "index.html").read_text()
+          root_scripts = re.findall(r"<script>(.*?)</script>", root_html, re.S)
+          assert root_scripts, "Root inventory inline JavaScript missing"
+          pathlib.Path("/tmp/shadow-root.js").write_text(root_scripts[-1])
           html = (root / "shadow-planning/index.html").read_text()
           scripts = re.findall(r"<script>(.*?)</script>", html, re.S)
           assert scripts, "Inline JavaScript block not found"
           pathlib.Path("/tmp/shadow-inline.js").write_text(scripts[-1])
           print(f"Validated {len(db['items'])} items, {len(db['columns'])} fields, {len(rates['rows'])} source-rate rows")
           PY
+          node --check /tmp/shadow-root.js
           node --check /tmp/shadow-inline.js
           node --check shadow-planning/worker.js
           python - <<'PY'
