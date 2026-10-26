@@ -1,0 +1,36 @@
+name: Validate SHADOW plan vs actual
+on:
+  push:
+    branches: ["main", "feat/shadow-pmp-pmo-core"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-comparison:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: |
+          node --check shadow-planning/plan-vs-actual-core.js
+          python - <<'PY'
+          import pathlib, re
+          page = pathlib.Path('shadow-planning/plan-vs-actual.html').read_text()
+          scripts = re.findall(r'<script>(.*?)</script>', page, re.S)
+          assert scripts, 'Comparison page inline script missing'
+          pathlib.Path('/tmp/plan-vs-actual-inline.js').write_text(scripts[-1])
+          assert '<script src="./plan-vs-actual-core.js"></script>' in page, 'Comparison core link missing'
+          assert 'PLAN_VS_ACTUAL_GUIDE_AR.md' in page, 'Comparison guide link missing'
+          assert pathlib.Path('shadow-planning/PLAN_VS_ACTUAL_GUIDE_AR.md').is_file(), 'Comparison guide file missing'
+          main = pathlib.Path('shadow-planning/index.html').read_text()
+          assert 'plan-vs-actual.html' in main, 'Planning navigation link missing'
+          print('PASS: comparison page, core, navigation, and guide are wired')
+          PY
+          node --check /tmp/plan-vs-actual-inline.js
+      - name: Run comparison calculation tests
+        run: node shadow-planning/tests/plan-vs-actual.test.cjs
