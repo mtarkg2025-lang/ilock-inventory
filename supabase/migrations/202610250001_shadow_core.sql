@@ -233,13 +233,13 @@ begin
   insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data,reason)
   values(auth.uid(),'document',ent,tg_op,oldj,newj,coalesce(new.notes,old.notes));
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 drop trigger if exists shadow_documents_audit on public.shadow_documents;
 create trigger shadow_documents_audit after insert or update or delete on public.shadow_documents for each row execute function public.shadow_audit_document();
 
 create or replace function public.shadow_audit_line()
 returns trigger language plpgsql security definer set search_path=public,auth
-as $
+as $$
 declare oldj jsonb; newj jsonb; ent text; docid uuid;
 begin
   if tg_op='INSERT' then oldj:=null; newj:=to_jsonb(new); ent:=new.id::text; docid:=new.document_id;
@@ -248,13 +248,13 @@ begin
   insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data,reason)
   values(auth.uid(),'document_line',ent,tg_op,oldj,newj,'document_id='||docid::text);
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 drop trigger if exists shadow_document_lines_audit on public.shadow_document_lines;
 create trigger shadow_document_lines_audit after insert or update or delete on public.shadow_document_lines for each row execute function public.shadow_audit_line();
 
 create or replace function public.shadow_audit_generic()
 returns trigger language plpgsql security definer set search_path=public,auth
-as $
+as $$
 declare oldj jsonb; newj jsonb; ent text;
 begin
   if tg_op='INSERT' then oldj:=null; newj:=to_jsonb(new);
@@ -265,7 +265,7 @@ begin
   insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data)
   values(auth.uid(),tg_table_name,ent,tg_op,oldj,newj);
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 
 drop trigger if exists shadow_profiles_audit on public.shadow_profiles;
 create trigger shadow_profiles_audit after insert or update or delete on public.shadow_profiles for each row execute function public.shadow_audit_generic();
@@ -299,7 +299,7 @@ begin
     raise exception 'Only draft documents can be deleted.';
   end if;
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 drop trigger if exists shadow_documents_guard on public.shadow_documents;
 create trigger shadow_documents_guard before update or delete on public.shadow_documents for each row execute function public.shadow_guard_document();
 
@@ -316,7 +316,7 @@ begin
     raise exception 'Only the document owner or an admin can edit draft lines.';
   end if;
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 drop trigger if exists shadow_lines_guard on public.shadow_document_lines;
 create trigger shadow_lines_guard before insert or update or delete on public.shadow_document_lines for each row execute function public.shadow_guard_line();
 
@@ -438,26 +438,34 @@ end $$;
 create or replace view public.shadow_plan_component_exceptions
 with (security_invoker=true)
 as
-select p.id as plan_id, p.plan_name, pl.id as plan_line_id, pl.family_code,
+with candidates as (
+  select p.id as plan_id, p.plan_name, pl.id as plan_line_id, pl.family_code,
+         b.id as bom_id, b.component_code, b.usage_unit, i.code as matched_item_code,
+         i.is_active, i.base_unit,
+         count(b.id) over(partition by p.id,pl.id,b.component_code) as rate_count
+  from public.shadow_production_plans p
+  join public.shadow_production_plan_lines pl on pl.plan_id=p.id
+  left join public.shadow_bom_lines b
+    on b.family_code=pl.family_code and b.is_approved
+   and b.effective_from<=p.period_end
+   and (b.effective_to is null or b.effective_to>=p.period_start)
+  left join public.shadow_items i on i.code=b.component_code
+)
+select plan_id,plan_name,plan_line_id,family_code,
        case
-         when count(b.id)=0 then 'لا يوجد معدل مكون معتمد وساري خلال فترة الخطة'
-         when count(b.id)>1 then 'يوجد أكثر من معدل معتمد متداخل للصنف/العائلة خلال فترة الخطة'
-         when bool_or(i.code is null or not i.is_active) then 'كود مكون مفقود أو غير نشط'
-         when bool_or(trim(b.usage_unit)<>trim(i.base_unit)) then 'وحدة معدل المكون لا تطابق الوحدة الأساسية؛ يلزم تحويل معتمد'
+         when count(bom_id)=0 then 'لا يوجد معدل مكون معتمد وساري خلال فترة الخطة'
+         when bool_or(rate_count>1) then 'يوجد أكثر من معدل معتمد متداخل للمكون نفسه خلال فترة الخطة'
+         when bool_or(bom_id is not null and (matched_item_code is null or not is_active)) then 'كود مكون مفقود أو غير نشط'
+         when bool_or(bom_id is not null and trim(usage_unit)<>trim(base_unit)) then 'وحدة معدل المكون لا تطابق الوحدة الأساسية؛ يلزم تحويل معتمد'
          else null
        end as exception_reason,
-       count(b.id) as candidate_rate_rows
-from public.shadow_production_plans p
-join public.shadow_production_plan_lines pl on pl.plan_id=p.id
-left join public.shadow_bom_lines b
-  on b.family_code=pl.family_code and b.is_approved
- and b.effective_from<=p.period_end
- and (b.effective_to is null or b.effective_to>=p.period_start)
-left join public.shadow_items i on i.code=b.component_code
-group by p.id,p.plan_name,pl.id,pl.family_code
-having count(b.id)=0 or count(b.id)>1
-   or bool_or(i.code is null or not i.is_active)
-   or bool_or(trim(b.usage_unit)<>trim(i.base_unit));
+       count(bom_id) as candidate_rate_rows
+from candidates
+group by plan_id,plan_name,plan_line_id,family_code
+having count(bom_id)=0
+   or bool_or(rate_count>1)
+   or bool_or(bom_id is not null and (matched_item_code is null or not is_active))
+   or bool_or(bom_id is not null and trim(usage_unit)<>trim(base_unit));
 
 create or replace view public.shadow_plan_component_requirements
 with (security_invoker=true)
@@ -486,7 +494,7 @@ group by plan_id,plan_name,period_start,period_end,component_code,base_unit;
 
 create or replace function public.shadow_approve_production_plan(p_plan_id uuid)
 returns void language plpgsql security definer set search_path=public,auth
-as $
+as $$
 declare p public.shadow_production_plans%rowtype;
 begin
   if not public.shadow_is_active_user() or public.shadow_role() not in ('admin','planner') then
@@ -509,7 +517,7 @@ begin
     set status='approved',reviewed_by=coalesce(reviewed_by,auth.uid()),
         approved_by=auth.uid(),approved_at=now()
     where id=p.id;
-end $;
+end $$;
 
 alter table public.shadow_profiles enable row level security;
 alter table public.shadow_warehouses enable row level security;
@@ -618,10 +626,57 @@ grant select,insert,update,delete on public.shadow_profiles,public.shadow_wareho
 grant select on public.shadow_audit_events,public.shadow_stock_balances,public.shadow_plan_component_exceptions,public.shadow_plan_component_requirements to authenticated;
 grant usage,select on sequence public.shadow_audit_events_id_seq to authenticated;
 grant execute on function public.shadow_role() to authenticated;
-grant execute on function public.shadow_is_active_user() to authenticated;\ngrant execute on function public.shadow_submit_document(uuid) to authenticated;
+grant execute on function public.shadow_is_active_user() to authenticated
+grant execute on function public.shadow_submit_document(uuid) to authenticated;
 grant execute on function public.shadow_approve_document(uuid,text) to authenticated;
 grant execute on function public.shadow_reject_document(uuid,text) to authenticated;
 grant execute on function public.shadow_create_correction(uuid,text,date,text) to authenticated;
 grant execute on function public.shadow_approve_production_plan(uuid) to authenticated;
+
+
+-- Immutable source-import staging preserves source rows without promoting provisional values.
+create table if not exists public.shadow_source_import_batches (
+  id uuid primary key default gen_random_uuid(),
+  source_name text not null,
+  source_type text not null check (source_type in ('item_master','production_rates','legacy_movements','other')),
+  source_reference text,
+  source_sha256 text,
+  imported_by uuid not null references auth.users(id),
+  imported_at timestamptz not null default now(),
+  row_count integer not null default 0 check (row_count >= 0),
+  status text not null default 'staged' check (status in ('staged','reviewing','partially_reviewed','approved','rejected')),
+  notes text
+);
+create table if not exists public.shadow_source_import_rows (
+  id bigint generated always as identity primary key,
+  batch_id uuid not null references public.shadow_source_import_batches(id) on delete restrict,
+  source_row_no integer not null check (source_row_no > 0),
+  source_sheet text not null default '',
+  row_type text not null check (row_type in ('item_master','production_rate','legacy_movement','other')),
+  source_key text,
+  source_data jsonb not null,
+  review_status text not null default 'pending' check (review_status in ('pending','matched','approved','rejected','needs_mapping')),
+  matched_item_code text references public.shadow_items(code) on update restrict on delete restrict,
+  reviewed_by uuid references auth.users(id),
+  reviewed_at timestamptz,
+  review_note text,
+  unique(batch_id, row_type, source_row_no)
+);
+create index if not exists shadow_source_rows_batch_idx on public.shadow_source_import_rows(batch_id, review_status);
+alter table public.shadow_source_import_batches enable row level security;
+alter table public.shadow_source_import_rows enable row level security;
+drop policy if exists shadow_source_batches_admin on public.shadow_source_import_batches;
+create policy shadow_source_batches_admin on public.shadow_source_import_batches for all to authenticated
+using (public.shadow_role()='admin') with check (public.shadow_role()='admin');
+drop policy if exists shadow_source_rows_admin on public.shadow_source_import_rows;
+create policy shadow_source_rows_admin on public.shadow_source_import_rows for all to authenticated
+using (public.shadow_role()='admin') with check (public.shadow_role()='admin');
+revoke all on public.shadow_source_import_batches,public.shadow_source_import_rows from anon;
+grant select,insert,update,delete on public.shadow_source_import_batches,public.shadow_source_import_rows to authenticated;
+grant usage,select on sequence public.shadow_source_import_rows_id_seq to authenticated;
+drop trigger if exists shadow_source_batches_audit on public.shadow_source_import_batches;
+create trigger shadow_source_batches_audit after insert or update or delete on public.shadow_source_import_batches for each row execute function public.shadow_audit_generic();
+drop trigger if exists shadow_source_rows_audit on public.shadow_source_import_rows;
+create trigger shadow_source_rows_audit after insert or update or delete on public.shadow_source_import_rows for each row execute function public.shadow_audit_generic();
 
 commit;

@@ -107,6 +107,23 @@ jobs:
           node --check /tmp/shadow-plan-vs-actual.js
           python - <<'PY'
           import pathlib, re
+          html = pathlib.Path('central-console.html').read_text()
+          scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
+          assert scripts, 'Central console JavaScript missing'
+          pathlib.Path('/tmp/shadow-central-console.js').write_text(scripts[-1])
+          sql = pathlib.Path('supabase/migrations/202610250001_shadow_core.sql').read_text()
+          assert not re.search(r'(?m)^as \$(?:\r?\n)', sql), 'Malformed single-dollar SQL function delimiter'
+          assert not re.search(r'(?m)^end \$;', sql), 'Malformed SQL function terminator'
+          assert '\\n' not in sql, 'Literal escaped newline remains in SQL migration'
+          for phrase in ['shadow_source_import_batches','shadow_source_import_rows','create policy shadow_source_batches_admin','create policy shadow_source_rows_admin']:
+              assert phrase in sql, f'Missing source staging control: {phrase}'
+          assert '../central-console.html' in pathlib.Path('shadow-planning/index.html').read_text(), 'Planning page lacks central console navigation'
+          assert './central-console.html' in pathlib.Path('index.html').read_text(), 'Root inventory lacks central console navigation'
+          print('Validated central console source, central SQL delimiters, source staging, and navigation')
+          PY
+          node --check /tmp/shadow-central-console.js
+          python - <<'PY'
+          import pathlib, re
           root = pathlib.Path('.')
           html = (root / 'weight-receiving/index.html').read_text()
           scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
