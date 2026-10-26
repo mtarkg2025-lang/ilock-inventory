@@ -233,13 +233,13 @@ begin
   insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data,reason)
   values(auth.uid(),'document',ent,tg_op,oldj,newj,coalesce(new.notes,old.notes));
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 drop trigger if exists shadow_documents_audit on public.shadow_documents;
 create trigger shadow_documents_audit after insert or update or delete on public.shadow_documents for each row execute function public.shadow_audit_document();
 
 create or replace function public.shadow_audit_line()
 returns trigger language plpgsql security definer set search_path=public,auth
-as $
+as $$
 declare oldj jsonb; newj jsonb; ent text; docid uuid;
 begin
   if tg_op='INSERT' then oldj:=null; newj:=to_jsonb(new); ent:=new.id::text; docid:=new.document_id;
@@ -248,13 +248,13 @@ begin
   insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data,reason)
   values(auth.uid(),'document_line',ent,tg_op,oldj,newj,'document_id='||docid::text);
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 drop trigger if exists shadow_document_lines_audit on public.shadow_document_lines;
 create trigger shadow_document_lines_audit after insert or update or delete on public.shadow_document_lines for each row execute function public.shadow_audit_line();
 
 create or replace function public.shadow_audit_generic()
 returns trigger language plpgsql security definer set search_path=public,auth
-as $
+as $$
 declare oldj jsonb; newj jsonb; ent text;
 begin
   if tg_op='INSERT' then oldj:=null; newj:=to_jsonb(new);
@@ -265,7 +265,7 @@ begin
   insert into public.shadow_audit_events(actor_id,entity_type,entity_id,action,before_data,after_data)
   values(auth.uid(),tg_table_name,ent,tg_op,oldj,newj);
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 
 drop trigger if exists shadow_profiles_audit on public.shadow_profiles;
 create trigger shadow_profiles_audit after insert or update or delete on public.shadow_profiles for each row execute function public.shadow_audit_generic();
@@ -299,7 +299,7 @@ begin
     raise exception 'Only draft documents can be deleted.';
   end if;
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 drop trigger if exists shadow_documents_guard on public.shadow_documents;
 create trigger shadow_documents_guard before update or delete on public.shadow_documents for each row execute function public.shadow_guard_document();
 
@@ -316,7 +316,7 @@ begin
     raise exception 'Only the document owner or an admin can edit draft lines.';
   end if;
   if tg_op='DELETE' then return old; else return new; end if;
-end $;
+end $$;
 drop trigger if exists shadow_lines_guard on public.shadow_document_lines;
 create trigger shadow_lines_guard before insert or update or delete on public.shadow_document_lines for each row execute function public.shadow_guard_line();
 
@@ -486,7 +486,7 @@ group by plan_id,plan_name,period_start,period_end,component_code,base_unit;
 
 create or replace function public.shadow_approve_production_plan(p_plan_id uuid)
 returns void language plpgsql security definer set search_path=public,auth
-as $
+as $$
 declare p public.shadow_production_plans%rowtype;
 begin
   if not public.shadow_is_active_user() or public.shadow_role() not in ('admin','planner') then
@@ -509,7 +509,7 @@ begin
     set status='approved',reviewed_by=coalesce(reviewed_by,auth.uid()),
         approved_by=auth.uid(),approved_at=now()
     where id=p.id;
-end $;
+end $$;
 
 alter table public.shadow_profiles enable row level security;
 alter table public.shadow_warehouses enable row level security;
@@ -618,7 +618,8 @@ grant select,insert,update,delete on public.shadow_profiles,public.shadow_wareho
 grant select on public.shadow_audit_events,public.shadow_stock_balances,public.shadow_plan_component_exceptions,public.shadow_plan_component_requirements to authenticated;
 grant usage,select on sequence public.shadow_audit_events_id_seq to authenticated;
 grant execute on function public.shadow_role() to authenticated;
-grant execute on function public.shadow_is_active_user() to authenticated;\ngrant execute on function public.shadow_submit_document(uuid) to authenticated;
+grant execute on function public.shadow_is_active_user() to authenticated
+grant execute on function public.shadow_submit_document(uuid) to authenticated;
 grant execute on function public.shadow_approve_document(uuid,text) to authenticated;
 grant execute on function public.shadow_reject_document(uuid,text) to authenticated;
 grant execute on function public.shadow_create_correction(uuid,text,date,text) to authenticated;
