@@ -42,6 +42,10 @@ jobs:
               html = pathlib.Path(page).read_text()
               assert f'<script src="{rel}"></script>' in html, f'Shared core not loaded in {page}'
               assert '../shadow-pmo/' in html or page == 'shadow-pmo/index.html', f'PMO navigation missing in {page}'
+          main_inventory = pathlib.Path('index.html').read_text()
+          assert '<script src="shadow-core.js"></script>' in main_inventory, 'Base inventory UI is not linked to shared SHADOW navigation'
+          assert 'ليست سجلًا مركزيًا معتمدًا' in main_inventory, 'Base inventory local-only status must be clear'
+          assert 'بيانات محلية منفصلة' in pathlib.Path('shadow-core.js').read_text(), 'Shared core must disclose independent local data stores'
           pmo = pathlib.Path('shadow-pmo/index.html').read_text()
           for token in ['reqText','raidText','decText','kpiName','gates','exportData','importData']:
               assert token in pmo, f'PMO prototype control missing: {token}'
