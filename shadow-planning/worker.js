@@ -126,8 +126,7 @@ export default {
     try { data = JSON.parse(raw); } catch { return Response.json({ error: "Invalid AI provider response." }, { status: 502, headers }); }
     let reply = data.output_text;
     if (!reply && Array.isArray(data.output)) {
-      reply = data.output.flatMap(item => Array.isArray(item.content) ? item.content : []).filter(part => part.type === "output_text").map(part => part.text).join("
-");
+      reply = data.output.flatMap(item => Array.isArray(item.content) ? item.content : []).filter(part => part.type === "output_text").map(part => part.text).join("\n");
     }
     return Response.json({ reply: reply || "لم يرجع النموذج إجابة نصية.", model: data.model || env.SHADOW_MODEL || "gpt-5-mini" }, { headers });
   }
