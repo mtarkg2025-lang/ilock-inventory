@@ -101,7 +101,6 @@ begin
       count(distinct d.id) filter (where d.document_date between p_start_date and p_end_date)::bigint approved_document_count
     from keys k
     left join public.shadow_document_lines l on l.item_code=k.item_code and l.warehouse_id=k.warehouse_id and l.unit=k.unit
-      and l.location_id is not distinct from l.location_id
     left join public.shadow_documents d on d.id=l.document_id and d.status='approved' and d.document_date <= p_end_date
     group by k.item_code,k.warehouse_id,k.unit
   )
