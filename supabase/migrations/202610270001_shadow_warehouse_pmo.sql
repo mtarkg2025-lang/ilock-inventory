@@ -54,7 +54,7 @@ create table if not exists public.shadow_stocktake_lines (
   id uuid primary key default gen_random_uuid(),
   stocktake_id uuid not null references public.shadow_stocktakes(id) on delete restrict,
   item_code text not null references public.shadow_items(code) on update restrict on delete restrict,
-  location_id uuid,
+  location_id uuid references public.shadow_storage_locations(id),
   book_qty numeric(18,3),
   counted_qty numeric(18,3) check (counted_qty is null or counted_qty >= 0),
   unit text not null,
@@ -67,8 +67,7 @@ create table if not exists public.shadow_stocktake_lines (
   line_status text not null default 'not_counted' check (line_status in ('not_counted','counted','recount_required','reviewed','approved')),
   notes text,
   created_at timestamptz not null default now(),
-  unique(stocktake_id,item_code,location_id),
-  foreign key (stocktake_id, location_id) references public.shadow_stocktakes(id) on delete restrict
+  unique(stocktake_id,item_code,location_id)
 );
 
 -- Opening balances are tracked as a distinct approved document type; no fabricated opening values are seeded.
