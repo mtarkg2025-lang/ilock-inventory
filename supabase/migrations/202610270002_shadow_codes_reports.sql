@@ -55,7 +55,9 @@ create index if not exists shadow_docs_date_status_idx on public.shadow_document
 create index if not exists shadow_doc_lines_item_wh_idx on public.shadow_document_lines(item_code,warehouse_id,location_id);
 
 -- Correct, bounded reporting function: only approved documents in the requested inclusive date range.
-create or replace function public.shadow_inventory_period_summary(p_start_date date, p_end_date date)
+-- PostgreSQL cannot replace a function when its OUT/RETURNS TABLE signature changes.
+drop function if exists public.shadow_inventory_period_summary(date,date);
+create function public.shadow_inventory_period_summary(p_start_date date, p_end_date date)
 returns table (
   item_code text,
   item_name text,
