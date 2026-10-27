@@ -626,7 +626,7 @@ grant select,insert,update,delete on public.shadow_profiles,public.shadow_wareho
 grant select on public.shadow_audit_events,public.shadow_stock_balances,public.shadow_plan_component_exceptions,public.shadow_plan_component_requirements to authenticated;
 grant usage,select on sequence public.shadow_audit_events_id_seq to authenticated;
 grant execute on function public.shadow_role() to authenticated;
-grant execute on function public.shadow_is_active_user() to authenticated
+grant execute on function public.shadow_is_active_user() to authenticated;
 grant execute on function public.shadow_submit_document(uuid) to authenticated;
 grant execute on function public.shadow_approve_document(uuid,text) to authenticated;
 grant execute on function public.shadow_reject_document(uuid,text) to authenticated;

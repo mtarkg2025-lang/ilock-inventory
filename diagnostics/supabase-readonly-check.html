@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SHADOW | فحص اتصال Supabase</title>
+<style>
+:root{font-family:Tahoma,Arial,sans-serif;color:#182b3a;background:#f3f6f9;--navy:#10263e;--blue:#245b83;--teal:#0d7377;--line:#d8e1e8}
+*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(120deg,var(--navy),var(--blue));color:#fff;padding:22px max(16px,calc((100vw - 1000px)/2))}h1{font-size:22px;margin:0 0 8px}header p{font-size:13px;line-height:1.8;margin:0}main{max-width:1000px;margin:18px auto;padding:0 14px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 3px 12px #10263e0a}.warning{background:#fff6db;border-color:#e8d38e}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:650px){.row{grid-template-columns:1fr}}label{display:block;font-weight:bold;font-size:13px;margin:0 0 7px}input{width:100%;padding:11px;border:1px solid #bdcbd6;border-radius:8px;font:14px Tahoma,Arial}button{border:0;border-radius:8px;background:var(--teal);color:#fff;padding:11px 16px;font-weight:bold;cursor:pointer;margin:8px 0}button:disabled{opacity:.55;cursor:wait}.muted{color:#5b6d7a;font-size:12px;line-height:1.8}.result{border-top:1px solid var(--line);padding:10px 0}.status{font-weight:bold}.ok{color:#18764a}.bad{color:#a42a32}.pending{color:#916300}code{overflow-wrap:anywhere}ul{line-height:1.9;padding-right:22px}
+</style>
+</head>
+<body>
+<header><h1>SHADOW — فحص اتصال Supabase (قراءة فقط)</h1><p>أداة تشخيص أولية للتحقق من عنوان المشروع ومفتاح النشر العام ووجود جداول SHADOW. لا تنشئ جداول ولا تعدّل بيانات ولا تحفظ المفتاح في المتصفح.</p></header>
+<main>
+<section class="card warning"><strong>قبل البدء</strong><ul><li>استخدم فقط <b>Publishable key</b> أو المفتاح العام <b>anon</b> من إعدادات API للمشروع.</li><li>لا تدخل service_role أو secret key أو كلمة مرور قاعدة البيانات.</li><li>الفحص للقراءة فقط؛ نتيجة الجداول لا تثبت أن الواجهة متصلة تشغيليًا أو أن صلاحيات المستخدمين جاهزة.</li></ul></section>
+<section class="card">
+<div class="row">
+<div><label for="projectUrl">رابط مشروع Supabase</label><input id="projectUrl" type="url" value="https://jdhwdmlpmzkccomffcni.supabase.co" autocomplete="url"></div>
+<div><label for="publicKey">Publishable / anon key</label><input id="publicKey" type="password" placeholder="الصق المفتاح العام فقط" autocomplete="off"></div>
+</div>
+<button id="run">ابدأ الفحص الآمن</button><button id="clear" type="button" style="background:#536779">مسح المفتاح والنتائج</button>
+<p class="muted">المفتاح يُستخدم داخل هذه الصفحة لإجراء طلبات قراءة مباشرة، ولا يُحفظ في localStorage أو sessionStorage ولا يُرسل إلى أي جهة أخرى غير عنوان Supabase الذي أدخلته.</p>
+<div id="results" aria-live="polite"></div>
+</section>
+<section class="card"><strong>كيف تقرأ النتيجة؟</strong><ul><li><b>200</b>: الجدول موجود ويمكن للطلب الوصول إليه؛ قد تكون النتيجة فارغة بسبب سياسات الصلاحيات.</li><li><b>401 / 403</b>: المفتاح أو صلاحيات القراءة غير كافية؛ لا نستنتج أن الجدول مفقود.</li><li><b>404 / PGRST205</b>: غالبًا الجدول غير موجود في المخطط المكشوف أو لم يُنفّذ الترحيل؛ يلزم التأكد من اسم المشروع قبل أي تغيير.</li><li>فشل الاتصال قد ينتج عن عنوان أو مفتاح غير صحيح أو قيود شبكة.</li></ul></section>
+</main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const targets=[
+  {name:'دليل الأصناف',table:'shadow_items',select:'code'},
+  {name:'رؤوس مستندات الحركة',table:'shadow_documents',select:'id,status'},
+  {name:'ملفات صلاحيات المستخدمين',table:'shadow_profiles',select:'user_id,role'}
+];
+function addResult(title,status,detail,kind){
+ const row=document.createElement('div');row.className='result';
+ const head=document.createElement('div');head.className='status '+kind;head.textContent=title+' — '+status;
+ const body=document.createElement('div');body.className='muted';body.textContent=detail;
+ row.append(head,body);$('results').append(row);
+}
+function safeBase(value){
+ const u=new URL(value);
+ if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('أدخل رابط HTTPS للمشروع فقط، دون بيانات دخول أو معاملات إضافية.');
+ return u.origin;
+}
+$('run').addEventListener('click',async()=>{
+ const btn=$('run');const key=$('publicKey').value.trim();$('results').replaceChildren();
+ if(!key){addResult('التحقق من المدخلات','لم يبدأ','أدخل المفتاح العام Publishable/anon فقط.','bad');return;}
+ let base;
+ try{base=safeBase($('projectUrl').value.trim());}
+ catch(e){addResult('التحقق من الرابط','خطأ',e.message,'bad');return;}
+ btn.disabled=true;btn.textContent='جارٍ الفحص…';
+ try{
+  const res=await fetch(base+'/auth/v1/settings',{headers:{apikey:key}});
+  addResult('واجهة المصادقة','HTTP '+res.status,res.ok?'استجابت واجهة Auth.':'لم تؤكد واجهة Auth الاستجابة بنجاح؛ راجع المفتاح وعنوان المشروع.',res.ok?'ok':'bad');
+ }catch(e){addResult('واجهة المصادقة','تعذر الاتصال','راجع اتصال الإنترنت وعنوان المشروع والمفتاح العام.','bad');}
+ for(const target of targets){
+  try{
+   const url=base+'/rest/v1/'+target.table+'?select='+encodeURIComponent(target.select)+'&limit=1';
+   const res=await fetch(url,{headers:{apikey:key,Accept:'application/json'}});
+   let detail='استجابة HTTP '+res.status+'.';
+   let kind=res.ok?'ok':'bad';
+   if(res.ok){
+    let data=[];try{data=await res.json()}catch(e){}
+    detail=Array.isArray(data)&&data.length===0?'الجدول قابل للاستعلام، لكن لا توجد صفوف ظاهرة لهذا الطلب أو تمنع السياسات إظهارها.':'الجدول قابل للاستعلام؛ تم إخفاء محتوى الصفوف من تقرير التشخيص.';
+   }else{
+    let msg='';try{const j=await res.json();msg=String(j.message||j.code||'')}catch(e){}
+    detail=msg?('HTTP '+res.status+' — '+msg):('HTTP '+res.status+' — راجع صلاحيات القراءة أو وجود الجدول.');
+    if(res.status===401||res.status===403)kind='pending';
+   }
+   addResult(target.name+' ('+target.table+')','HTTP '+res.status,detail,kind);
+  }catch(e){addResult(target.name+' ('+target.table+')','تعذر الاتصال','لم يكتمل الطلب؛ افحص الشبكة أو عنوان المشروع.','bad');}
+ }
+ addResult('حدود هذا الفحص','مهم','لم يتم إنشاء أو تعديل أي بيانات. لا يختبر تسجيل دخول المستخدم ولا اعتماد الحركات أو سلامة RLS بالكامل.','pending');
+ btn.disabled=false;btn.textContent='إعادة الفحص';
+});
+$('clear').addEventListener('click',()=>{$('publicKey').value='';$('results').replaceChildren();$('run').disabled=false;$('run').textContent='ابدأ الفحص الآمن';});
+})();
+</script>
+</body>
+</html>
