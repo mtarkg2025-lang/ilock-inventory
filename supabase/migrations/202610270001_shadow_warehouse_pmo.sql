@@ -205,4 +205,38 @@ end $;
 
 grant execute on function public.shadow_approve_stocktake(uuid,text) to authenticated;
 
+
+-- Date-bounded inventory movement report. All quantities use the item's official base unit.
+create or replace function public.shadow_inventory_period_summary(p_start_date date, p_end_date date)
+returns table(
+  item_code text,item_name text,color_code text,color_name text,
+  warehouse_id uuid,warehouse_code text,warehouse_name text,location_id uuid,unit text,
+  opening_qty numeric,receipts_qty numeric,issues_qty numeric,closing_qty numeric,
+  approved_document_count bigint
+)
+language sql stable set search_path=public
+as $
+  with base as (
+    select l.item_code,i.name,i.color_code,i.color_name,l.warehouse_id,w.code as warehouse_code,
+      w.name as warehouse_name,l.location_id,l.unit,d.document_date,d.document_type,
+      l.quantity*l.direction as signed_qty,l.direction,d.id as document_id
+    from public.shadow_document_lines l
+    join public.shadow_documents d on d.id=l.document_id and d.status='approved'
+    join public.shadow_items i on i.code=l.item_code
+    join public.shadow_warehouses w on w.id=l.warehouse_id
+    where d.document_date<=p_end_date
+  )
+  select b.item_code,b.name,b.color_code,b.color_name,b.warehouse_id,b.warehouse_code,b.warehouse_name,
+    b.location_id,b.unit,
+    coalesce(sum(b.signed_qty) filter(where b.document_date<p_start_date),0)::numeric(18,3) as opening_qty,
+    coalesce(sum(b.signed_qty) filter(where b.document_date between p_start_date and p_end_date and b.direction=1 and b.document_type<>'opening_balance'),0)::numeric(18,3) as receipts_qty,
+    coalesce(-sum(b.signed_qty) filter(where b.document_date between p_start_date and p_end_date and b.direction=-1),0)::numeric(18,3) as issues_qty,
+    coalesce(sum(b.signed_qty) filter(where b.document_date<=p_end_date),0)::numeric(18,3) as closing_qty,
+    count(distinct b.document_id) filter(where b.document_date between p_start_date and p_end_date) as approved_document_count
+  from base b
+  where p_start_date is not null and p_end_date is not null and p_end_date>=p_start_date
+  group by b.item_code,b.name,b.color_code,b.color_name,b.warehouse_id,b.warehouse_code,b.warehouse_name,b.location_id,b.unit
+$;
+grant execute on function public.shadow_inventory_period_summary(date,date) to authenticated;
+
 commit;
