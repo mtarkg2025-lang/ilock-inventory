@@ -66,6 +66,7 @@ returns table (
   color_name text,
   warehouse_code text,
   warehouse_name text,
+  location_id uuid,
   unit text,
   opening_qty numeric,
   receipts_qty numeric,
@@ -88,13 +89,13 @@ begin
 
   return query
   with keys as (
-    select distinct l.item_code,l.warehouse_id,l.unit
+    select distinct l.item_code,l.warehouse_id,l.location_id,l.unit
     from public.shadow_document_lines l
     join public.shadow_documents d on d.id=l.document_id and d.status='approved'
     where d.document_date <= p_end_date
   ),
   balances as (
-    select k.item_code,k.warehouse_id,k.unit,
+    select k.item_code,k.warehouse_id,k.location_id,k.unit,
       coalesce(sum(case when d.document_date < p_start_date then l.quantity*l.direction else 0 end),0)::numeric(18,3) opening_qty,
       coalesce(sum(case when d.document_date between p_start_date and p_end_date and l.direction=1 then l.quantity else 0 end),0)::numeric(18,3) receipts_qty,
       coalesce(sum(case when d.document_date between p_start_date and p_end_date and l.direction=-1 then l.quantity else 0 end),0)::numeric(18,3) issues_qty,
@@ -102,11 +103,11 @@ begin
       coalesce(sum(case when d.document_date <= p_end_date then l.quantity*l.direction else 0 end),0)::numeric(18,3) closing_qty,
       count(distinct d.id) filter (where d.document_date between p_start_date and p_end_date)::bigint approved_document_count
     from keys k
-    left join public.shadow_document_lines l on l.item_code=k.item_code and l.warehouse_id=k.warehouse_id and l.unit=k.unit
+    left join public.shadow_document_lines l on l.item_code=k.item_code and l.warehouse_id=k.warehouse_id and l.location_id is not distinct from k.location_id and l.unit=k.unit
     left join public.shadow_documents d on d.id=l.document_id and d.status='approved' and d.document_date <= p_end_date
-    group by k.item_code,k.warehouse_id,k.unit
+    group by k.item_code,k.warehouse_id,k.location_id,k.unit
   )
-  select b.item_code,i.name,i.item_type,i.color_code,i.color_name,w.code,w.name,b.unit,
+  select b.item_code,i.name,i.item_type,i.color_code,i.color_name,w.code,w.name,b.location_id,b.unit,
          b.opening_qty,b.receipts_qty,b.issues_qty,b.net_movement,b.closing_qty,b.approved_document_count
   from balances b
   join public.shadow_items i on i.code=b.item_code
