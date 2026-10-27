@@ -1,0 +1,21 @@
+{
+  "name": "SHADOW | دفتر المخزون",
+  "short_name": "SHADOW مخزون",
+  "description": "دفتر تسجيل مخزون محلي قابل للتثبيت والعمل دون Supabase",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./offline.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2f5f8",
+  "theme_color": "#17324b",
+  "icons": [
+    {
+      "src": "./shadow-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
