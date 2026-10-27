@@ -149,4 +149,60 @@ grant select on public.shadow_stock_balances_by_period,public.shadow_inventory_p
 
 -- Item code/name/color lookups are supported by indexed columns; duplicate names remain legal.
 -- Official deletion is soft-archive through is_active=false; approved transactions retain referential integrity.
+
+-- Approving a stocktake freezes the count and creates a separate draft adjustment document.
+-- The adjustment must pass the normal submit/review/approval workflow before changing stock.
+create or replace function public.shadow_approve_stocktake(p_stocktake_id uuid, p_adjustment_document_no text)
+returns uuid language plpgsql security definer set search_path=public,auth
+as $
+declare s public.shadow_stocktakes%rowtype; adj_id uuid; line_rec record; line_num integer:=0; has_variance boolean:=false;
+begin
+  if not public.shadow_is_active_user() or public.shadow_role() not in ('admin','reviewer') then
+    raise exception 'Only active reviewer/admin may approve a stocktake.';
+  end if;
+  select * into s from public.shadow_stocktakes where id=p_stocktake_id for update;
+  if not found or s.status not in ('counting','review') then
+    raise exception 'Only an existing counting/review stocktake may be approved.';
+  end if;
+  if exists(select 1 from public.shadow_stocktake_lines where stocktake_id=s.id and counted_qty is null) then
+    raise exception 'Every stocktake line must have a physical count before approval.';
+  end if;
+  if exists(select 1 from public.shadow_stocktake_lines where stocktake_id=s.id and variance_qty is null) then
+    raise exception 'A book quantity is missing. Reconcile missing book balances before approval.';
+  end if;
+  if s.created_by=auth.uid() and public.shadow_role()<>'admin' then
+    raise exception 'Maker-checker rule: the campaign creator cannot approve their own stocktake.';
+  end if;
+  select exists(select 1 from public.shadow_stocktake_lines where stocktake_id=s.id and variance_qty<>0) into has_variance;
+  if has_variance and nullif(trim(coalesce(p_adjustment_document_no,'')),'') is null then
+    raise exception 'Adjustment document number is required when stock variances exist.';
+  end if;
+  if has_variance then
+    insert into public.shadow_documents(document_no,document_type,document_date,status,warehouse_reference,
+      source_module,source_id,operator_id,notes)
+    values(p_adjustment_document_no,'adjustment',s.count_date,'draft',s.warehouse_id::text,
+      'stocktake',s.stocktake_no,auth.uid(),'Adjustment proposed from approved stocktake '||s.stocktake_no||'; separate approval required.')
+    returning id into adj_id;
+    for line_rec in
+      select l.*, i.base_unit from public.shadow_stocktake_lines l
+      join public.shadow_items i on i.code=l.item_code
+      where l.stocktake_id=s.id and l.variance_qty<>0
+      order by l.item_code,l.location_id
+    loop
+      line_num:=line_num+1;
+      insert into public.shadow_document_lines(document_id,line_no,item_code,warehouse_id,location_id,
+        quantity,unit,direction,line_note)
+      values(adj_id,line_num,line_rec.item_code,s.warehouse_id,line_rec.location_id,
+        abs(line_rec.variance_qty),line_rec.base_unit,
+        case when line_rec.variance_qty>0 then 1 else -1 end,
+        'Physical count variance from stocktake '||s.stocktake_no||'; reason: '||coalesce(line_rec.variance_reason,'not supplied'));
+    end loop;
+  end if;
+  update public.shadow_stocktakes set status='approved',reviewed_by=auth.uid(),approved_by=auth.uid(),approved_at=now()
+  where id=s.id;
+  return adj_id;
+end $;
+
+grant execute on function public.shadow_approve_stocktake(uuid,text) to authenticated;
+
 commit;
