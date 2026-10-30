@@ -25,6 +25,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Validate SHADOW independent workspace review controls
+        run: |
+          python - <<'PY'
+          import pathlib, re
+          html = pathlib.Path('shadow-independent/index.html').read_text()
+          scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
+          assert scripts, 'Independent workspace inline JavaScript missing'
+          pathlib.Path('/tmp/shadow-independent.js').write_text(scripts[-1])
+          for phrase in ["m.reviewStatus==='APPROVED'", 'function reviewMovement(', 'reviewedBy', 'rejectionReason', 'reviewMovement(', 'الرصيد المعتمد بالقطعة']:
+              assert phrase in html, f'Missing independent workspace control: {phrase}'
+          print('Validated independent workspace: approved-only balances and review controls')
+          PY
+          node --check /tmp/shadow-independent.js
       - name: Validate shared SHADOW core integration
         run: |
           node --check shadow-core.js
