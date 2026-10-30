@@ -138,6 +138,7 @@ jobs:
           node --check /tmp/shadow-weight.js
           node shadow-planning/tests/movement-ledger.test.cjs
           node shadow-planning/tests/plan-vs-actual.test.cjs
+          node shadow-domain/tests/domain.test.cjs
           python - <<'PY'
           import pathlib, re
           root = pathlib.Path('.')
